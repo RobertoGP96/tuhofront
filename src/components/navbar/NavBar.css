@@ -1,0 +1,31 @@
+.p-menubar {
+  background-color: transparent;
+  border: 0;
+  font-size: 14px;
+}
+/*
+#Container element.
+*/
+
+/*
+List element.
+*/
+.p-menuitem {
+}
+
+/*
+Menuitem element.
+*/
+.p-menuitem-text {
+  color: var(--color-primary);
+}
+/*
+Label of a menuitem.
+*/
+.p-menuitem-icon {
+}
+/*
+Icon of a menuitem.
+*/
+.p-submenu-icon {
+}

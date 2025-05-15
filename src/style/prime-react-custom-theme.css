@@ -1,0 +1,827 @@
+html {
+  font-size: 16px;
+}
+
+@media only screen and (max-width: 3440px) {
+  html {
+    font-size: 20px;
+  }
+}
+
+@media only screen and (max-width: 2560px) {
+  html {
+    font-size: 18px;
+  }
+}
+
+@media only screen and (max-width: 1920px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+@media only screen and (max-width: 1536px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media only screen and (max-width: 1024px) {
+  html {
+    font-size: 12px;
+  }
+}
+
+@keyframes p-progress-spinner-color {
+  100%,
+  0% {
+    stroke: #3b82f6;
+  }
+
+  40% {
+    stroke: #0057e7;
+  }
+
+  66% {
+    stroke: #008744;
+  }
+
+  80%,
+  90% {
+    stroke: #ffa700;
+  }
+}
+
+.banner img {
+  @apply absolute top-0 left-0 h-full w-full;
+}
+
+.p-inputtext:enabled:focus,
+.p-dropdown:not(.p-disabled, .no-focusable).p-focus,
+.p-treeselect:not(.p-disabled).p-focus,
+[type="text"]:focus,
+[type="email"]:focus,
+[type="url"]:focus,
+[type="password"]:focus,
+[type="number"]:focus,
+[type="date"]:focus,
+[type="datetime-local"]:focus,
+[type="month"]:focus,
+[type="search"]:focus,
+[type="tel"]:focus,
+[type="time"]:focus,
+[type="week"]:focus,
+[multiple]:focus,
+textarea:focus,
+select:focus {
+  @apply hover:border-primary focus:border-primary focus:primary-ring-shadow;
+}
+
+.p-inputtext[inputmode="numeric"] {
+  @apply z-10;
+}
+
+.p-inputnumber {
+  @apply relative;
+}
+
+.p-inputnumber-button-group::after {
+  @apply transition-all ease-in-out;
+}
+
+.p-inputnumber.p-inputwrapper.p-inputnumber-buttons-stacked.p-inputwrapper-focus > .p-inputnumber-button-group {
+  @apply border-primary/50 primary-ring-shadow transition-all ease-in-out;
+  border-radius: 6px;
+}
+
+.p-calendar.p-inputwrapper.p-calendar-w-btn-right.p-inputwrapper-focus > .p-datepicker-trigger {
+  @apply border-primary/50 primary-ring-shadow transition-all ease-in-out;
+  border-radius: 6px;
+}
+
+.p-inputnumber-input:focus + .p-inputnumber-button-group::after {
+  @apply border-primary/50;
+  width: calc(100% + 8px);
+  height: calc(100% + 8px);
+}
+
+.p-autocomplete-multiple-container:not(.p-disabled).p-focus {
+  @apply !overflow-x-auto !shadow-xs !ring-0 !shadow-primary !ring-offset-transparent;
+}
+
+.p-autocomplete-multiple-container input[type="text"] {
+  @apply !shadow-none;
+}
+
+.p-autocomplete-dd .p-autocomplete-dropdown.p-button-icon-only {
+  @apply absolute right-0 border-none bg-transparent px-[0.50025rem] py-[0.65625rem] text-slate-500 focus:ring-0;
+}
+
+.p-autocomplete-dd .p-autocomplete-input.p-autocomplete-dd-input {
+  @apply relative rounded-r-md;
+}
+
+.p-inputtext-sm:not(.p-inputtextarea) {
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+}
+
+.float-label .p-inputwrapper-filled ~ label,
+.float-label .p-inputwrapper-focus ~ label,
+.float-label input.p-filled ~ label,
+.float-label input:focus ~ label,
+.float-label textarea.p-filled ~ label,
+.float-label textarea:focus ~ label {
+  @apply -top-5 left-1 text-xs;
+}
+
+.p-component.p-inputtext-sm.p-inputwrapper:not(.slashed) input,
+.p-component.p-inputtext-sm.p-inputwrapper:not(.slashed) > button.p-button-icon-only {
+  line-height: inherit;
+  padding: 0.65625rem 0.65625rem;
+}
+
+.p-fileupload.p-fileupload-basic.p-component.p-button-sm > .p-button.p-component.p-fileupload-choose {
+  line-height: inherit;
+  padding: 0.65625rem 0.65625rem;
+}
+
+.p-dropdown-filter-container > .p-dropdown-filter {
+  @apply p-2 text-sm;
+}
+
+.p-dropdown-filter-container.p-dropdown-clearable-filter
+  > .p-dropdown-filter-clear-icon:has(+ .p-dropdown-filter-icon) {
+  @apply right-10 cursor-pointer;
+}
+
+.p-component.horizontal.p-inputwrapper,
+.p-component.horizontal.p-inputtext,
+.p-component.horizontal.textarea,
+.p-component.horizontal.p-numberinput {
+  @apply flex-1;
+}
+
+.p-component.p-autocomplete.horizontal > .p-autocomplete-input {
+  @apply flex-1;
+}
+
+.p-calendar .p-component:focus {
+  @apply z-10;
+}
+
+.p-component.p-inputwrapper.slashed:not(.p-autocomplete),
+.p-component.p-inputtext.slashed,
+.p-component.textarea.slashed,
+.p-component.p-autocomplete.slashed,
+.p-component.p-calendar.slashed,
+.p-component.p-numberinput.slashed {
+  @apply rounded-xs border-0 border-b border-slate-300 p-0.5 shadow-none hover:bg-slate-100 focus:border-0 focus:border-b;
+}
+
+.p-component.slashed .p-inputtext,
+.p-component.slashed .p-multiselect-label {
+  @apply rounded-xs border-0 bg-transparent p-0.5 focus:rounded-xs focus:shadow-none;
+}
+
+.p-component.p-calendar.slashed .p-inputtext {
+  @apply cursor-pointer;
+}
+
+.p-component.p-calendar.slashed .p-datepicker-trigger {
+  @apply !border-0 !bg-transparent !p-0 !text-inherit;
+}
+
+.p-dropdown.slashed .p-dropdown-trigger,
+.p-multiselect.slashed .p-multiselect-trigger,
+.p-component.p-calendar.slashed .p-datepicker-trigger {
+  @apply w-fit justify-end;
+}
+
+.p-dropdown.small-trigger .p-dropdown-trigger,
+.p-multiselect.small-trigger .p-multiselect-trigger {
+  @apply mx-2 w-fit;
+}
+
+.p-dropdown.p-dropdown.small-trigger.trigger-dashed .p-dropdown-trigger {
+  @apply h-8 w-8 items-center justify-center rounded-full border-2 border-dashed border-gray-300 p-1 text-center;
+}
+
+.p-dropdown.p-dropdown.small-trigger.trigger-dashed:hover .p-dropdown-trigger {
+  @apply border-gray-400 text-gray-500;
+}
+
+.p-component.p-inputwrapper.p-dropdown.small-trigger:hover,
+.p-component.p-inputwrapper.p-dropdown.small-trigger:focus {
+  @apply bg-transparent;
+}
+
+.p-component.p-inputnumber.input-text-center > .p-inputtext.p-inputnumber-input {
+  @apply text-center;
+}
+
+textarea::placeholder {
+  @apply text-slate-400;
+}
+
+.p-inputtext.static-border,
+textarea.static-border,
+.p-inputnumber.static-border .p-inputtext,
+.p-dropdown.static-border .p-inputtext {
+  @apply hover:border-slate-300 focus:border-slate-300 focus:shadow-none;
+}
+
+.p-inputgroup.credit-card-field > .p-inputgroup-addon {
+  @apply p-3;
+}
+
+.left-icon + .p-component.p-inputwrapper.p-inputtext-sm > input.p-inputtext {
+  @apply pl-9;
+}
+
+.p-input-icon + .p-component.p-inputwrapper.p-inputtext-sm > input.p-inputtext {
+  @apply pl-9;
+}
+
+.p-input-icon {
+  @apply z-10 -translate-y-0.5;
+}
+
+.field-error-spacing {
+  @apply mt-0.5 h-4;
+}
+
+/* tabs element */
+.p-tabview .p-tabview-panels {
+  color: unset !important;
+  padding: inherit !important;
+}
+
+.p-tabview .p-tabview-nav li .p-tabview-nav-link {
+  @apply p-3.5 text-base font-medium;
+}
+
+.p-tabview .p-tabview-nav li .p-tabview-nav-link:not(.p-disabled) {
+  @apply focus:shadow-none;
+}
+
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+  @apply border-primary text-primary;
+}
+
+.p-tabview .p-tabview-nav .p-tabview-ink-bar {
+  @apply bg-primary;
+}
+
+.p-tabmenu.tab-small-padding > .p-tabmenu-nav .p-menuitem-link {
+  @apply p-3;
+}
+
+.field > .p-inputswitch {
+  @apply h-full;
+}
+
+.field > .p-inputswitch > .p-inputswitch-slider {
+  @apply my-2;
+}
+
+/* menu element */
+
+.p-menu {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.p-menu li {
+  border-bottom: 1px solid rgb(246, 246, 246);
+}
+
+.p-menu li:last-of-type {
+  border-bottom: none;
+}
+
+.p-menu li:first-of-type :hover {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.p-menu li:last-of-type :hover {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border-bottom: none;
+}
+
+.p-inputtext,
+.p-dropdown:not(.p-disabled, .no-focusable):hover {
+  @apply hover:!border-primary focus:!border-primary focus:!primary-ring-shadow;
+}
+
+.p-dropdown:not(.p-disabled, .no-focusable).p-focus {
+  @apply border-primary primary-ring-shadow;
+}
+
+/* button element */
+
+.p-button.p-button-outlined.p-button-primary {
+  @apply !border !border-solid !border-gray-300;
+}
+
+.p-button.p-button-sm .p-button-icon-left {
+  @apply mr-1;
+}
+
+.button-banner {
+  @apply !min-h-9 !border-none !bg-white !text-sm !text-slate-700 hover:!bg-gray-100 focus:!shadow-none;
+}
+
+.button-banner span.p-button-label {
+  @apply !font-normal;
+}
+
+button.button-default {
+  @apply !border-gray-300 !bg-white !text-gray-700 hover:!bg-gray-100 focus:!primary-ring-shadow;
+}
+
+button.button-primary,
+a.button-primary {
+  @apply !border-primary !bg-primary !text-white hover:!bg-primary-hover focus:!primary-ring-shadow;
+}
+
+.p-fileupload.p-fileupload-basic .p-button {
+  @apply !border-primary !bg-primary !text-white hover:!bg-primary-hover focus:!primary-ring-shadow;
+}
+
+button.button-primary,
+.p-selectbutton.p-buttongroup.p-component .p-button.p-highlight,
+.p-selectbutton.p-component .p-button.p-highlight,
+.p-selectbutton.p-buttongroup.p-component .p-button:active,
+.p-button.p-datepicker-trigger,
+.button-primary .p-fileupload.p-fileupload-basic .p-button {
+  @apply !border-primary !bg-primary !text-white hover:!bg-primary-hover focus:!primary-ring-shadow;
+}
+
+button.button-primary-outlined {
+  @apply !border-primary !text-primary focus:!primary-ring-shadow;
+}
+
+button.p-button-outlined {
+  @apply !border-primary !text-primary focus:!primary-ring-shadow;
+}
+
+button.p-button-outlined:hover,
+button.p-button-text:hover {
+  background-color: hsl(var(--color-primary) / 0.1) !important;
+}
+
+button.p-button-outlined:focus,
+button.p-button-outlined:active,
+button.p-button-text:focus,
+button.p-button-text:active {
+  background-color: hsl(var(--color-primary) / 0.15) !important;
+}
+
+button.button-primary-outlined:hover {
+  background-color: hsl(var(--color-primary) / 0.1) !important;
+}
+
+button.button-primary-outlined:focus,
+button.button-primary-outlined:active {
+  background-color: hsl(var(--color-primary) / 0.15) !important;
+}
+
+button.p-button-text {
+  @apply !text-primary focus:!ring-1 focus:!ring-primary;
+}
+
+button.p-button.small-padding {
+  @apply px-2 py-1.5;
+}
+
+button.p-button.paddingless {
+  @apply p-0;
+}
+
+button.button-icon {
+  @apply p-2;
+}
+
+/* SplitButton */
+.p-splitbutton .p-button,
+.p-splitbutton .p-button:active {
+  @apply border-primary bg-primary hover:border-primary hover:bg-primary-hover focus:z-10 focus:primary-ring-shadow;
+}
+
+.p-splitbutton .p-splitbutton-menubutton {
+  @apply !rounded-l-none;
+}
+
+/* Select Button */
+.p-selectbutton.p-button-group.p-component .p-button {
+  @apply p-2.5 text-sm focus:primary-ring-shadow;
+}
+
+/* Input Number Button */
+.p-inputnumber-buttons-horizontal .p-inputnumber-button {
+  @apply !border-primary !bg-primary hover:!border-primary hover:!bg-primary-hover focus:!primary-ring-shadow;
+}
+
+.p-inputnumber-buttons-horizontal .p-inputnumber-input.p-inputtext {
+  @apply hover:!border-primary focus:!border-primary focus:!shadow-none;
+}
+
+.p-inputnumber-buttons-stacked .p-inputnumber-button {
+  @apply !border-primary !bg-primary hover:!border-primary hover:!bg-primary-hover;
+}
+
+.p-inputnumber.p-component.p-inputwrapper.p-inputtext-sm > input {
+  padding: 0.50025rem 0.65625rem;
+}
+
+/* InputSwitch */
+.p-inputswitch.p-inputswitch-checked .p-inputswitch-slider,
+.p-inputswitch.p-highlight .p-inputswitch-slider {
+  @apply !bg-primary hover:!bg-primary-hover focus:!primary-ring-shadow;
+}
+
+/* Tooltip */
+.p-tooltip > span {
+  @apply m-0 space-y-0 p-0;
+}
+
+.p-tooltip-text {
+  @apply !p-2 !text-sm;
+}
+
+.p-skeleton-circle {
+  @apply rounded-full;
+}
+
+/* Chip */
+.p-chip.custom-chip {
+  font-size: x-small;
+}
+
+.p-chip.custom-chip.default {
+  font-size: inherit;
+}
+
+.p-chip.custom-chip > .p-chip-text {
+  margin-block: 0px;
+}
+
+.p-chip.custom-chip.is-danger {
+  @apply bg-red-400 font-semibold text-white;
+}
+
+.p-chip.custom-chip.is-warning {
+  @apply bg-yellow-400 font-semibold text-white;
+}
+
+.p-chip.custom-chip.is-success {
+  @apply bg-green-400 font-semibold text-white;
+}
+
+.p-chip.custom-chip.is-secondary {
+  @apply bg-gray-200 font-semibold text-black;
+}
+
+.p-chip.custom-chip.is-draft {
+  @apply bg-yellow-100 font-semibold text-red-600;
+}
+
+.p-chip.custom-chip.is-info {
+  @apply bg-blue-400 font-semibold text-white;
+}
+
+/* Multiselect */
+.p-multiselect-panel.p-component.hidden-header .p-multiselect-header {
+  @apply hidden;
+}
+.p-multiselect-header {
+  @apply flex h-14 items-center;
+}
+.p-multiselect-select-all {
+  @apply flex items-center;
+}
+
+.p-multiselect.p-component.small-padding .p-multiselect-label {
+  @apply p-1;
+}
+
+.p-multiselect.p-component.hidden-labels .p-multiselect-label {
+  @apply hidden;
+}
+
+.p-multiselect-panel .p-multiselect-item.p-highlight {
+  @apply !text-primary;
+}
+
+/* DataTable */
+.p-datatable.p-component.gohst-header .p-datatable-thead {
+  @apply hidden;
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+  @apply p-[revert-layer];
+}
+
+.default-header {
+  @apply bg-transparent text-sm font-light whitespace-nowrap text-gray-400;
+}
+
+.p-badge-dot {
+  @apply h-2;
+  @apply min-w-[.5rem];
+}
+
+/* Sidebar */
+.p-sidebar.sidebar-form > .p-sidebar-content {
+  @apply pb-0;
+}
+
+.p-sidebar-content {
+  @apply !p-0;
+}
+
+/* Overlay Panel */
+.p-overlaypanel.p-component.form-panel .p-overlaypanel-content {
+  @apply !p-3;
+}
+
+/* Text */
+.text-is-danger {
+  @apply text-red-400;
+}
+
+.text-is-warning {
+  @apply text-yellow-400;
+}
+
+.text-is-success {
+  @apply text-green-400;
+}
+
+.text-is-info {
+  @apply text-blue-400;
+}
+
+.text-is-draft {
+  @apply text-orange-400;
+}
+
+/* Speed Dial */
+.p-speeddial > button.p-button-sm {
+  @apply !h-14 !w-14;
+}
+
+/* Input */
+.p-inputtext.p-inputtext-sm {
+  line-height: 1rem !important;
+}
+
+/* Checkbox */
+.p-checkbox {
+  @apply flex items-center;
+}
+.p-checkbox .p-checkbox-box {
+  @apply h-4 w-4 rounded-xs;
+}
+.p-checkbox.p-highlight .p-checkbox-box,
+.p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-highlight:hover {
+  @apply border-primary bg-primary;
+}
+
+.p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box:hover,
+.p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-focus,
+.p-checkbox:not(.p-disabled):has(.p-checkbox-input:hover) .p-checkbox-box {
+  @apply border-primary;
+}
+
+.p-checkbox.checkbox-sm .p-checkbox-box {
+  @apply h-3.5 w-3.5 rounded-xs;
+}
+
+.p-checkbox.checkbox-md .p-checkbox-box {
+  @apply h-4 w-4;
+}
+
+.p-checkbox.checkbox-lg .p-checkbox-box {
+  @apply h-5 w-5;
+}
+
+/* Radio button */
+.p-radiobutton {
+  @apply flex h-4 w-4 items-center;
+}
+
+.p-radiobutton .p-radiobutton-box {
+  @apply h-4 w-4;
+}
+.p-radiobutton .p-radiobutton-box .p-radiobutton-icon {
+  @apply h-0 w-0;
+}
+.p-radiobutton.p-highlight .p-radiobutton-box,
+.p-radiobutton:not(.p-radiobutton-disabled) .p-radiobutton-box:hover {
+  @apply border-[5px] border-primary;
+  background: none;
+}
+
+.p-radiobutton .p-radiobutton-box:not(.p-disabled):not(.p-highlight):hover,
+.p-radiobutton .p-radiobutton-box:not(.p-disabled).p-focus,
+.p-radiobutton:not(.p-disabled):has(.p-radiobutton-input:hover) .p-radiobutton-box {
+  @apply !border-primary;
+}
+
+.p-sidebar-mask.p-component-overlay.slideover .p-sidebar-header {
+  @apply !hidden;
+}
+
+/* Dialog */
+.p-dialog-footer {
+  @apply flex justify-end;
+}
+
+.dialog-form-container .p-dialog-content,
+.p-dialog.paddingless .p-dialog-content {
+  @apply flex overflow-hidden rounded-b-md p-0;
+}
+
+.p-dialog.headerless .p-dialog-header {
+  @apply hidden;
+}
+.p-dialog.paddingless .p-dialog-header {
+  @apply px-3;
+}
+
+.p-dialog.headerless.paddingless .p-dialog-content {
+  @apply rounded-md;
+}
+
+.p-menu.p-component.p-menu-overlay li.p-menuitem svg.svg-inline--fa {
+  @apply mr-2;
+}
+
+/*  Dropdown */
+.p-dropdown.p-inputwrapper.p-inputtext-sm > .p-inputtext {
+  padding: 0.50025rem 0.65625rem;
+}
+
+.p-dropdown.p-inputwrapper .p-dropdown-panel .p-dropdown-item-label {
+  @apply w-full;
+}
+
+.p-dropdown-items-wrapper .p-dropdown-item .p-dropdown-item-label {
+  @apply w-full;
+}
+
+.p-dropdown-item.p-focus,
+.p-dropdown-item:hover {
+  @apply outline-none;
+}
+
+/* Calendar */
+
+.p-component.p-inputtext-sm.p-inputwrapper:not(.slashed).p-calendar > input.p-inputtext,
+.p-component.p-inputtext-sm.p-inputwrapper:not(.slashed).p-calendar > button.p-button-icon-only {
+  padding: 0.50025rem 0.65625rem;
+}
+
+.p-calendar-w-btn-right .p-datepicker-trigger {
+  height: inherit !important;
+}
+
+/* Accordion */
+.p-accordion.expand-as-card > .p-accordion-tab {
+  @apply border-t border-gray-200 first:border-t-0;
+}
+
+.p-accordion.expand-as-card > .p-accordion-tab.p-accordion-tab-active {
+  @apply rounded-lg border-2 border-gray-200 first:border-2;
+}
+
+.p-accordion.expand-as-card > .p-accordion-tab.p-accordion-tab-active .p-toggleable-content {
+  @apply rounded-lg pb-1;
+}
+.p-accordion-header.paddingless .p-accordion-header-link {
+  @apply p-0;
+}
+
+.p-accordion .p-accordion-header.paddingless a.p-accordion-header-link {
+  @apply w-full p-0;
+}
+
+.p-accordion .p-accordion-header.paddingless .p-accordion-header-text {
+  @apply mx-0 w-full;
+}
+
+.p-accordion .p-accordion-header.hidden-icon .p-accordion-toggle-icon {
+  @apply hidden;
+}
+
+.p-accordion.paddingless .p-accordion-content {
+  @apply w-full p-0;
+}
+
+/* File Upload */
+.p-button.p-fileupload-choose > svg {
+  @apply min-w-4;
+}
+
+.intercom-lightweight-app {
+  @apply !z-10;
+}
+
+.no-focusable {
+  @apply hover:!shadow-none hover:!outline-hidden focus:!border-none focus:!shadow-none focus:!ring-0 focus:!outline-hidden;
+}
+
+/* Image */
+.p-image-mask.p-component-overlay.p-component-overlay-enter {
+  z-index: 9999;
+}
+
+/* TabView */
+.p-tabview.sticky-header .p-tabview-nav-container {
+  @apply sticky top-0 z-10;
+}
+
+/* Editor */
+.editor-note h1,
+h2,
+h3 {
+  @apply font-semibold;
+}
+
+.editor-note h1 {
+  @apply text-xl;
+}
+
+.editor-note h2 {
+  @apply text-lg;
+}
+
+.editor-note h3 {
+  @apply text-sm;
+}
+
+.ql-mention-list-container {
+  background-color: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(30, 30, 30, 0.08);
+  overflow: auto;
+  width: 270px;
+  z-index: 9001;
+}
+
+.ql-mention-loading {
+  @apply px-3 py-5 align-middle;
+}
+
+.ql-mention-list {
+  @apply m-0 list-none overflow-hidden p-0;
+}
+
+.ql-mention-list-item {
+  @apply cursor-pointer truncate px-3 py-5 align-middle whitespace-nowrap;
+}
+
+.ql-mention-list-item.disabled {
+  cursor: auto;
+}
+
+.ql-mention-list-item.selected {
+  @apply bg-slate-100;
+}
+
+.ql-toolbar {
+  @apply w-full;
+}
+
+[data-pc-section="toolbar"]:not(:only-child) {
+  @apply hidden;
+}
+
+/* Datepicker */
+
+.p-datepicker.small-calendar {
+  @apply !w-80 !min-w-80;
+}
+
+.p-datepicker.small-calendar .p-datepicker-header {
+  @apply py-0;
+}
+
+.p-datepicker.small-calendar .p-timepicker {
+  @apply m-0;
+}
+
+.p-datepicker.small-calendar .p-timepicker button {
+  @apply h-5;
+}
+
+.p-datepicker.small-calendar table td,
+.p-datepicker.small-calendar table th {
+  @apply p-0;
+}
