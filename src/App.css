@@ -1,5 +1,25 @@
-.card-info{
-    background-image: url("/img/background/backadround-03-mini.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
+.card-info {
+  background-image: url("/img/background/backadround-03-mini.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  border: none;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  border: none;
+  color: var(--color-primary);
+}
+
+.file-upload-component .p-button {
+  background-color: rgba(128, 128, 128, 0.062);
+  border: 0;
+  padding: 0.5rem 1rem;
+  color: rgb(83, 83, 83);
+  font-weight: lighter;
+  
 }

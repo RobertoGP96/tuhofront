@@ -23,6 +23,7 @@ Menuitem element.
 Label of a menuitem.
 */
 .p-menuitem-icon {
+  color: var(--color-secondary);
 }
 /*
 Icon of a menuitem.
