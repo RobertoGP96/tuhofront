@@ -21,5 +21,16 @@
   padding: 0.5rem 1rem;
   color: rgb(83, 83, 83);
   font-weight: lighter;
-  
+}
+
+body {
+  background-image: url(/img/background/backadround-02.jpg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-attachment: initial;
+}
+
+footer{
+  padding: 0;
 }
