@@ -5,6 +5,7 @@ import "./NavBar.css";
 import { NavLink, useNavigate } from "react-router";
 import { useState } from "react";
 import { UserChipMenu } from "../userchip/UserChipMenu";
+import { ToggleButton, type ToggleButtonChangeEvent } from "primereact/togglebutton";
 
 export const NavBar = () => {
   const [active, setActive] = useState<string>("home")
@@ -43,7 +44,7 @@ export const NavBar = () => {
               label: "Pregrado",
               icon: "bx bxs-graduation bx-sm",
               items: [
-                { label: "Nacional", icon: "bx bx-globe bx-sm",command: () => { RouterApp("/secretary/undernat") } },
+                { label: "Nacional", icon: "bx bx-globe bx-sm", command: () => { RouterApp("/secretary/undernat") } },
                 { label: "Internacional", icon: "bx bx-send bx-sm", command: () => { RouterApp("/secretary/underinter") } }
               ]
             },
@@ -51,12 +52,13 @@ export const NavBar = () => {
               label: "Postgrado",
               icon: "bx bx-briefcase bx-sm",
               items: [
-                { label: "Nacional", icon: "bx bx-globe bx-sm",command: () => { RouterApp("/secretary/postnat") } },
+                { label: "Nacional", icon: "bx bx-globe bx-sm", command: () => { RouterApp("/secretary/postnat") } },
                 { label: "Internacional", icon: "bx bx-send bx-sm", command: () => { RouterApp("/secretary/postinter") } }
               ]
             },
-            {label: "Legalización de Título",
-              icon:"bx bxs-certification bx-sm",
+            {
+              label: "Legalización de Título",
+              icon: "bx bxs-certification bx-sm",
               command: () => { RouterApp("/secretary/legaliz") }
             }
           ],
@@ -84,6 +86,7 @@ export const NavBar = () => {
       command: () => { RouterApp("/support") }
     },
   ];
+  const [checked, setChecked] = useState<boolean>(false);
   return (
     <nav className="bg-white max-h-[65px] ">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto h-full">
@@ -101,16 +104,22 @@ export const NavBar = () => {
           <Menubar model={items} />
         </div>
         <div className="flex flex-row gap-2 justify-center items-center">
-          <NavLink to={"/login"}>
-            <p className="text-sm font-bold">Inicia sesion</p>
-          </NavLink>
-          <p>o</p>
-          <NavLink to={"/register"}>
-            <p className="text-sm text-primary font-bold m-0">
-              Regístrate
-            </p>
-          </NavLink>
-          <UserChipMenu user={{name: "Carlitos", last:"", addres:"", email:"", phone:"", role:"", id:"" }}/>
+          <ToggleButton onLabel="" offLabel="" onIcon="pi pi-sign-out" offIcon="pi pi-sign-in" checked={checked} onChange={(e: ToggleButtonChangeEvent) => setChecked(e.value)} className="" />
+
+          {
+            !checked ? <>
+              <NavLink to={"/login"}>
+                <p className="text-sm font-bold">Inicia sesion</p>
+              </NavLink>
+              <p>o</p>
+              <NavLink to={"/register"}>
+                <p className="text-sm text-primary font-bold m-0">
+                  Regístrate
+                </p>
+              </NavLink>
+            </> :
+              <UserChipMenu user={{ name: "Username", last: "", addres: "", email: "", phone: "", role: "", id: "" }} />
+          }
         </div>
       </div>
     </nav>

@@ -11,7 +11,7 @@ export const PostInter = () => {
         <div className="w-full">
             <img src="/img/logo/secretaria/Hoja-carta-09.jpg" width={250} className="aspect-auto" alt="secretaria identificador" />
         </div>
-        <h1 className="text-2xl text-primary font-bold uppercase my-4">Formulario para Trámite de Postgrado Nacional.</h1>
+        <h1 className="text-2xl text-primary font-bold uppercase my-4">Formulario para Trámite de Postgrado Internacional.</h1>
         <PersonalInfo />
         <Divider layout="horizontal" />
         <PostInterInfo />
