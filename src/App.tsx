@@ -4,8 +4,9 @@ import "primereact/resources/themes/lara-light-blue/theme.css";
 //import 'primereact/resources/primereact.min.css';
 
 
-import { NavBar } from "./components/navbar/NavBar";
+import { NavBar } from "./components/platform/navbar/NavBar";
 import { AppRoutes } from "./routes/Routes";
+import { AddFooter } from "./components/platform/addfooter/AddFooter";
 
 function App() {
   return (
@@ -14,13 +15,16 @@ function App() {
 
       <AppRoutes />
 
-      <footer className="w-screen text-sm font-bold px-1.5 flex justify-center items-center p-3 max-h-[60px]">
-        <img
-          className="aspect-square w-10"
-          src="/img/logo/svg/IdUHo-03.svg"
-          alt=""
-        />
-        <span>2025© Universidad de Holguín.</span>
+      <footer className="flex flex-col justify-center items-start w-screen text-sm font-bold">
+        <AddFooter />
+        <div className="w-full flex flex-row justify-center items-center gap-3">
+          <img
+            className="aspect-square w-10"
+            src="/img/logo/svg/IdUHo-03.svg"
+            alt=""
+          />
+          <span>2025© Universidad de Holguín.</span>
+        </div>
       </footer>
     </>
   );

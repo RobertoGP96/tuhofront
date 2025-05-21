@@ -71,17 +71,6 @@ const Home: React.FC = () => {
                     </p>
                   </div>
                 </li>
-                <li className=" p-4 w-full flex flex-row justify-center items-start border border-gray-300 gap-2 cursor-pointer hover:border-primary/65 rounded-sm transition shadow-md">
-                  <div className="w-[75px] border-2 border-primary rounded-sm p-2 flex justify-center items-center aspect-square mt-1">
-                    <i className="pi pi-tag"></i>
-                  </div>
-                  <div className="px-4 w-full">
-                    <h5 className=" uppercase text-primary font-bold mb-2">Digitalizacion</h5>
-                    <p className="font-light">
-                      Promover la digitalización de los servicios universitarios para garantizar una experiencia más cómoda y eficiente.
-                    </p>
-                  </div>
-                </li>
               </ul>
             </article>
           </section >

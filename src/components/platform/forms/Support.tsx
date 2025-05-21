@@ -4,8 +4,8 @@ import { InputText } from "primereact/inputtext"
 import { InputTextarea } from "primereact/inputtextarea"
 import "./Suport.css"
 
-export const SuportForm = () => {
-    return <form className="w-3/5 flex flex-col gap-2 p-8 items-center justify-center border-2 border-primary/25 rounded-2xl">
+export const SupportForm = () => {
+    return <form className="w-3/5 flex flex-col gap-2 p-8 bg-white items-center justify-center border-2 border-primary/25 rounded-2xl">
         <div className="w-full flex flex-col gap-2 pb-2">
             <h3 className="uppercase mb-3 font-bold text-primary text-2xl"> Atención a la Población</h3>
             <p className="text-gray-500">

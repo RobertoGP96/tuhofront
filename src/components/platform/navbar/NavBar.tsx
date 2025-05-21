@@ -1,10 +1,10 @@
 import { Menubar } from "primereact/menubar";
 import type { MenuItem } from "primereact/menuitem";
 import "./NavBar.css";
-import { Avatar } from "primereact/avatar";
 
 import { NavLink, useNavigate } from "react-router";
 import { useState } from "react";
+import { UserChipMenu } from "../userchip/UserChipMenu";
 
 export const NavBar = () => {
   const [active, setActive] = useState<string>("home")
@@ -37,22 +37,27 @@ export const NavBar = () => {
         {
           label: "Secretaría Docente",
           icon: "bx bx-book bx-sm",
+          command: () => { RouterApp("/secretary") },
           items: [
             {
               label: "Pregrado",
               icon: "bx bxs-graduation bx-sm",
               items: [
-                { label: "Nacional", icon: "bx bx-globe bx-sm" },
-                { label: "Internacional", icon: "bx bx-send bx-sm" }
+                { label: "Nacional", icon: "bx bx-globe bx-sm",command: () => { RouterApp("/secretary/undernat") } },
+                { label: "Internacional", icon: "bx bx-send bx-sm", command: () => { RouterApp("/secretary/underinter") } }
               ]
             },
             {
               label: "Postgrado",
               icon: "bx bx-briefcase bx-sm",
               items: [
-                { label: "Nacional", icon: "bx bx-globe bx-sm" },
-                { label: "Internacional", icon: "bx bx-send bx-sm" }
+                { label: "Nacional", icon: "bx bx-globe bx-sm",command: () => { RouterApp("/secretary/postnat") } },
+                { label: "Internacional", icon: "bx bx-send bx-sm", command: () => { RouterApp("/secretary/postinter") } }
               ]
+            },
+            {label: "Legalización de Título",
+              icon:"bx bxs-certification bx-sm",
+              command: () => { RouterApp("/secretary/legaliz") }
             }
           ],
         },
@@ -96,18 +101,16 @@ export const NavBar = () => {
           <Menubar model={items} />
         </div>
         <div className="flex flex-row gap-2 justify-center items-center">
-          <Avatar shape="circle" icon="pi pi-user" />
-
           <NavLink to={"/login"}>
-            <p className="text-sm">Inicia sesion</p>
+            <p className="text-sm font-bold">Inicia sesion</p>
           </NavLink>
           <p>o</p>
           <NavLink to={"/register"}>
-            <p className="text-sm text-primary">
+            <p className="text-sm text-primary font-bold m-0">
               Regístrate
             </p>
           </NavLink>
-
+          <UserChipMenu user={{name: "Carlitos", last:"", addres:"", email:"", phone:"", role:"", id:"" }}/>
         </div>
       </div>
     </nav>

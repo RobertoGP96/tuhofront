@@ -1,20 +1,19 @@
-
-
 import { Divider } from "primereact/divider";
 import { Button } from "primereact/button";
-import { PersonalInfo } from "../../../utils/PersonalInfo";
-import { TitleRegisterInfo } from "../../../utils/TitleRegisterInfo";
-import { UnderNatInfo } from "../../../utils/queryinfo/UnderNatInfo";
+import { PersonalInfo } from "../../platform/forms/utils/PersonalInfo";
+import { TitleRegisterInfo } from "../forms/TitleRegisterInfo";
+import { PostNatInfo } from "../forms/PostNatInfo";
 
-export const UnderNat = () => {
-    return <form action="" className="w-5/6 px-[50px] py-[40px] border border-primary/25 rounded-sm shadow-2xl flex flex-col justify-center items-center gap-2 ">
+export const PostNat = () => {
+
+    return <form action="" className="w-5/6 px-[50px] py-[40px] border bg-white border-primary/25 rounded-sm shadow-2xl flex flex-col justify-center items-center gap-2 ">
         <div className="w-full">
             <img src="/img/logo/secretaria/Hoja-carta-09.jpg" width={250} className="aspect-auto" alt="secretaria identificador" />
         </div>
-        <h1 className="text-2xl text-primary font-bold uppercase my-4">Formulario para Trámite de Pregrado Nacional.</h1>
+        <h1 className="text-2xl text-primary font-bold uppercase my-4">Formulario para Trámite de Postgrado Nacional.</h1>
         <PersonalInfo />
         <Divider layout="horizontal" />
-        <UnderNatInfo />
+        <PostNatInfo />
         <Divider layout="horizontal" />
         <TitleRegisterInfo />
         <div className="w-full flex flex-row gap-2 justify-end items-center pt-4">
