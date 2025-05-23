@@ -34,3 +34,43 @@ body {
 footer{
   padding: 0;
 }
+
+.admin{
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  grid-template-rows: 1fr;
+}
+
+
+.menu-navbar .p-menubar {
+  background-color: transparent;
+  border: 0;
+  font-size: 14px;
+}
+/*
+#Container element.
+*/
+
+/*
+List element.
+*/
+.aside-admin .p-menuitem {
+}
+
+/*
+Menuitem element.
+*/
+.aside-admin .p-menuitem-text {
+  color: var(--color-primary);
+}
+/*
+Label of a menuitem.
+*/
+.aside-admin .p-menuitem-icon {
+  color: var(--color-secondary);
+}
+/*
+Icon of a menuitem.
+*/
+.aside-admin .p-submenu-icon {
+}

@@ -1,0 +1,28 @@
+.aside-admin {
+    border: 0, 
+}
+
+.aside-admin{
+
+}
+.aside-admin .p-menuitem {
+}
+
+/*
+Menuitem element.
+*/
+.aside-admin .p-menuitem-text {
+
+}
+/*
+Label of a menuitem.
+*/
+.aside-admin .p-menuitem-icon {
+  color: var(--color-primary);
+  font-size: 16px;
+}
+/*
+Icon of a menuitem.
+*/
+.aside-admin .p-submenu-icon {
+}

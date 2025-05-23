@@ -7,16 +7,16 @@ const Home: React.FC = () => {
               <div className="w-full flex flex-col gap-3 items-center justify-center bg-white/45 backdrop-blur-sm z-0 p-4">
                 <img
                   src="/img/logo/svg/IdUHo-01.svg"
-                  className=" w-[200px] "
+                  width={300}
                   alt=""
                 />
               </div>
             </article>
             <article className="py-8">
     
-              <ul className="w-full flex flex-col px-[15%] gap-2 justify-center items-baseline">
+              <ul className="w-full flex flex-col px-[15%] gap-2 justify-center items-center">
                 <li className="flex flex-col justify-center items-center">
-                  <h1 className="text-primary text-pretty uppercase font-bold text-2xl my-5">
+                  <h1 className="text-primary text-pretty uppercase font-bold text-2xl my-9">
                     Plataforma de Trámites de la Universidad de Holguín.
                   </h1>
                   <div className="w-4/5 mb-6 text-primary flex flex-col justify-center items-center gap-2">
@@ -32,7 +32,7 @@ const Home: React.FC = () => {
                     </p>
                   </div>
                 </li>
-                <li className=" p-4 w-full flex flex-row justify-center items-start border border-gray-300 gap-2 cursor-pointer hover:border-primary/45 rounded-sm transition shadow-md">
+                <li className="  p-4 w-4/5 flex flex-row justify-center items-start border border-gray-300 gap-2 cursor-pointer hover:border-primary/45 rounded-sm transition shadow-md">
                   <div className="w-[75px] border-2 border-primary rounded-sm p-2 flex justify-center items-center aspect-square mt-1">
                     <i className="bx bx-network-chart text-3xl"></i>
                   </div>
@@ -48,7 +48,7 @@ const Home: React.FC = () => {
                     </p>
                   </div>
                 </li>
-                <li className=" p-4 w-full flex flex-row justify-center items-start border border-gray-300 gap-2 cursor-pointer hover:border-primary/65 rounded-sm transition shadow-md">
+                <li className=" p-4 w-4/5 flex flex-row justify-center items-start border border-gray-300 gap-2 cursor-pointer hover:border-primary/65 rounded-sm transition shadow-md">
                   <div className="w-[75px]  border-2 border-primary rounded-sm p-2 flex justify-center items-center aspect-square mt-1">
                     <i className="bx bx-file text-3xl"></i>
                   </div>
@@ -60,7 +60,7 @@ const Home: React.FC = () => {
                     </p>
                   </div>
                 </li>
-                <li className=" p-4 w-full flex flex-row justify-center items-start border border-gray-300 gap-2 cursor-pointer hover:border-primary/65 rounded-sm transition shadow-md">
+                <li className=" p-4 w-4/5 flex flex-row justify-center items-start border border-gray-300 gap-2 cursor-pointer hover:border-primary/65 rounded-sm transition shadow-md">
                   <div className="w-[75px] border-2 border-primary rounded-sm p-2 flex justify-center items-center aspect-square mt-1">
                     <i className="bx bx-cloud-upload text-3xl"></i>
                   </div>

@@ -25,7 +25,7 @@ export const TeachingSecretary: React.FC = () => {
             case "legaliz":
                 return <TitleLegalization />;
             default:
-                return <div>No template found for this city.</div>; // Manejo de caso por defecto
+                return <TitleLegalization/>;
         }
     };
 

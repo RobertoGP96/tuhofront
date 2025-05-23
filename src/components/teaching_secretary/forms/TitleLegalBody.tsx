@@ -10,12 +10,12 @@ export const TitleLegalBody = () => {
         <div className="w-full flex flex-row gap-2 flex-nowrap">
             <div className="flex flex-col gap-2 w-1/3">
                 <label htmlFor="username">Tipo de Estudio:</label>
-                <InputText id="username" aria-describedby="username-help" disabled value={"Pregrado"} />
+                <InputText id="username" aria-describedby="username-help" />
 
             </div>
             <div className="flex flex-col gap-2 w-1/3">
                 <label htmlFor="lastname">Tipo de Uso:</label>
-                <InputText id="lastname" aria-describedby="lastname-help" disabled value={"Nacional"} />
+                <InputText id="lastname" aria-describedby="lastname-help" />
             </div>
 
             <div className="flex flex-col gap-2 w-1/3">

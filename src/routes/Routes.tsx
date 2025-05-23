@@ -8,6 +8,7 @@ import { Register } from '../pages/Register';
 import { TeachingSecretary } from '../pages/TeachingSecretary';
 import { Porfile } from '../pages/Porfile';
 import { Procedures } from '../pages/Procedures';
+import { Admin } from '../pages/Admin';
 
 
 export const AppRoutes = () => {
@@ -23,6 +24,9 @@ export const AppRoutes = () => {
 
       <Route path="/login" element={<Login/>} />
       <Route path="/register" element={<Register/>} />
+      
+      <Route path="/admin" element={<Admin/>} />
+
     </Routes>
   );
 };

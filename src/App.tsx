@@ -17,13 +17,13 @@ function App() {
 
       <footer className="flex flex-col justify-center items-start w-screen text-sm font-bold">
         <AddFooter />
-        <div className="w-full flex flex-row justify-center items-center gap-3">
+        <div className="w-full flex flex-row justify-center items-center gap-3 py-2">
           <img
-            className="aspect-square w-10"
-            src="/img/logo/svg/IdUHo-03.svg"
+            className="aspect-square w-6"
+            src="/img/logo/svg/IdUHo-06.svg"
             alt=""
           />
-          <span>2025© Universidad de Holguín.</span>
+          <span>Universidad de Holguín.2025©</span>
         </div>
       </footer>
     </>

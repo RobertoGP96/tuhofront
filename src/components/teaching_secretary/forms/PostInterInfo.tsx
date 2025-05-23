@@ -4,7 +4,21 @@ import { Checkbox } from "primereact/checkbox"
 import { Dropdown } from "primereact/dropdown"
 import { InputText } from "primereact/inputtext"
 
+
+
 export const PostInterInfo = () => {
+    type typeP = {
+        label: string
+    }
+    const procedureType: typeP[] = [
+        {
+            label: "Tipo1"
+
+        }, {
+            label: "Tipo2"
+        }
+    ]
+
     return <div className="w-full flex flex-col gap-2">
         <h3 className="uppercase mb-3 font-bold text-primary text-xl"> Datos de Solicitud</h3>
         <div className="w-full flex flex-row gap-2 flex-nowrap">
@@ -19,8 +33,8 @@ export const PostInterInfo = () => {
             </div>
             <div className="flex flex-col gap-2 w-1/3">
                 <label htmlFor="center">Tipo de Trámite:</label>
-                <Dropdown optionLabel="name"
-                    showClear placeholder="Selecciona el tipo" className="w-full" />
+                <Dropdown
+                    showClear placeholder="Selecciona el tipo" className="w-full" options={procedureType} optionLabel="label" />
             </div>
         </div>
         <div className="w-full flex flex-row gap-2 py-5">

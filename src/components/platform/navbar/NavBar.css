@@ -1,4 +1,4 @@
-.p-menubar {
+.menu-adapt {
   background-color: transparent;
   border: 0;
   font-size: 14px;
@@ -16,17 +16,17 @@ List element.
 /*
 Menuitem element.
 */
-.p-menuitem-text {
+.menu-navbar .p-menuitem-text {
   color: var(--color-primary);
 }
 /*
 Label of a menuitem.
 */
-.p-menuitem-icon {
+.menu-navbar .p-menuitem-icon {
   color: var(--color-secondary);
 }
 /*
 Icon of a menuitem.
 */
-.p-submenu-icon {
+.menu-navbar .p-submenu-icon {
 }

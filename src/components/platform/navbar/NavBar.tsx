@@ -29,16 +29,15 @@ export const NavBar = () => {
           label: "Internos",
           icon: "bx bx-plus bx-sm",
           items: [
-            { label: "Comedor", icon: "bx bx-restaurant bx-sm" },
-            { label: "Transporte", icon: "bx bx-bus bx-sm" },
-            { label: "Entrada", icon: "bx bx-log-in bx-sm" },
-            { label: "Salida", icon: "bx bx-log-out bx-sm" },
+            { label: "Alimentacion", icon: "bx bx-restaurant bx-sm" },
+            { label: "Hospedaje", icon: "bx bxs-hotel bx-sm" },
+            { label: "Transporte", icon: "bx bxs-bus bx-sm" },
+            { label: "Mantenimiento", icon: "bx bxs-wrench bx-sm" },
           ],
         },
         {
           label: "Secretaría Docente",
           icon: "bx bx-book bx-sm",
-          command: () => { RouterApp("/secretary") },
           items: [
             {
               label: "Pregrado",
@@ -101,7 +100,7 @@ export const NavBar = () => {
           />
         </a>
         <div>
-          <Menubar model={items} />
+          <Menubar className="menu-navbar menu-adapt" model={items} />
         </div>
         <div className="flex flex-row gap-2 justify-center items-center">
           <ToggleButton onLabel="" offLabel="" onIcon="pi pi-sign-out" offIcon="pi pi-sign-in" checked={checked} onChange={(e: ToggleButtonChangeEvent) => setChecked(e.value)} className="" />
