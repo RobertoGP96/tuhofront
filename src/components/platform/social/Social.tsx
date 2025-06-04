@@ -35,7 +35,7 @@ export const Social = () => {
 }
 
 const SocialChip = ({item}:{item:socialitem}) => {
-    return <div className="w-10 aspect-square p-2 flex justify-center items-center gap-3 transition bg-transparent rounded-xl text-white group border-primary border-2 hover:scale-110 hover:bg-secondary cursor-pointer">
+    return <div className="w-10 aspect-square p-2 flex justify-center items-center gap-3 transition bg-transparent rounded-md text-white group border-primary border-2 hover:scale-110 hover:bg-secondary cursor-pointer">
         <i className={item.icon+" text-primary  transition group-hover:scale-120 "}></i>
         <span className="hidden">{item.label}</span>
     </div>

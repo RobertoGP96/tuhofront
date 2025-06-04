@@ -74,3 +74,15 @@ Icon of a menuitem.
 */
 .aside-admin .p-submenu-icon {
 }
+
+
+.dashboard-admin{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 100px 1fr;
+  gap: 1rem;
+}
+
+.dashboard-admin .charts{
+  grid-column: 1/5;
+}

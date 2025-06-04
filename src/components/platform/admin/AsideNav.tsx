@@ -3,9 +3,11 @@ import { Menu } from "primereact/menu"
 import type { MenuItem } from "primereact/menuitem"
 import { useNavigate } from "react-router"
 import "./AsideNav.css"
+interface AsideNavProps {
+  handleView: (view: string) => void;
+}
 
-
-export const AsideNav: React.FC = () => {
+export const AsideNav: React.FC<AsideNavProps> = ({ handleView }) => {
     const AdminRouter = useNavigate()
     const items: MenuItem[] = [
         {
@@ -14,27 +16,32 @@ export const AsideNav: React.FC = () => {
                 {
                     label: "Dashboard",
                     icon: "pi pi-objects-column",
-                    command: () => { AdminRouter("/") }
+                    command: () => { handleView("dashboard-admin") }
                 },
                 {
                     label: "Noticias",
                     icon: "pi pi-file-edit",
-                    command: () => { AdminRouter("/news") }
+                    command: () => { handleView("users") }
                 },
                 {
                     label: "Usuarios",
                     icon: "pi pi-users",
-                    command: () => { AdminRouter("admin-users") }
+                    command: () => { handleView("users-admin") }
                 },
                 {
                     label: "Roles",
                     icon: "pi pi-shield",
-                    command: () => { AdminRouter("admin-users") }
+                    command: () => { handleView("rols-admin") }
                 },
                 {
                     label: "Correo",
                     icon: "pi pi-envelope",
                     command: () => { AdminRouter("admin-users") }
+                },
+                {
+                    label: "Estructura",
+                    icon: "pi pi-sitemap",
+                    command: () => { handleView("structure-admin") }
                 },
             ]
         },

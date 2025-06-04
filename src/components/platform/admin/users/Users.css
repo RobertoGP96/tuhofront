@@ -1,0 +1,8 @@
+.user-admin {
+  background: transparent;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  min-height: 100%;
+  width: 100%;
+}
