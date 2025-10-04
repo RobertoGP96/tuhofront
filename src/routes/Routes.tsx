@@ -1,34 +1,9 @@
-
 import { Routes, Route } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
-import routes from './paths';
+import { Suspense } from 'react';
+import routes from '@/routes/paths';
+import { lazyPages, lazyAdminComponents } from '@/utils/lazy-imports';
 
-// Lazy loading para mejorar rendimiento
-const Home = lazy(() => import('../pages/Home'));
-const Contact = lazy(() => import('../pages/Contact').then(module => ({ default: module.Contact })));
-const News = lazy(() => import('../pages/News').then(module => ({ default: module.News })));
-const Login = lazy(() => import('../pages/Login').then(module => ({ default: module.Login })));
-const Register = lazy(() => import('../pages/Register').then(module => ({ default: module.Register })));
-const TeachingSecretary = lazy(() => import('../pages/TeachingSecretary').then(module => ({ default: module.TeachingSecretary })));
-const Porfile = lazy(() => import('../pages/Porfile').then(module => ({ default: module.Porfile })));
-const Procedures = lazy(() => import('../pages/Procedures').then(module => ({ default: module.Procedures })));
-const Admin = lazy(() => import('../pages/Admin').then(module => ({ default: module.Admin })));
-const UsersAdmin = lazy(() => import('../components/platform/admin/users/Users').then(module => ({ default: module.UsersAdmin })));
-const StructureAdmin = lazy(() => import('../components/platform/admin/structure/StructureAdmin').then(module => ({ default: module.StructureAdmin })));
-const RolesAdmin = lazy(() => import('../components/platform/admin/rols/Rols').then(module => ({ default: module.RolesAdmin })));
-const DashboardAdmin = lazy(() => import('../components/platform/admin/dashboard/Dashboard').then(module => ({ default: module.DashboardAdmin })));
-const InternalAdmin = lazy(() => import('../pages/admin/internal/InternalAdmin'));
-const InternalConfig = lazy(() => import('../pages/admin/internal/InternalConfig'));
-const MyProcedures = lazy(() => import('../pages/admin/internal/MyProcedures'));
-const InternalLayout = lazy(() => import('../pages/admin/internal/InternalLayout'));
-const EmailConfig = lazy(() => import('../components/platform/admin/config/EmailConfig'));
-const NotFound = lazy(() => import('../pages/not-found'));
-const Transport = lazy(() => import('../pages/admin/internal/procedures').then(module => ({ default: module.Transport })));
-const Accomodation = lazy(() => import('../pages/admin/internal/procedures').then(module => ({ default: module.Accomodation })));
-const Feeding = lazy(() => import('../pages/admin/internal/procedures').then(module => ({ default: module.Feeding })));
-const Maintence = lazy(() => import('../pages/admin/internal/procedures').then(module => ({ default: module.Maintence })));
-
-// Componente de loading
+// Componente de loading mejorado
 const RouteLoader = () => (
   <div className="flex items-center justify-center min-h-screen">
     <div className="text-center">
@@ -37,6 +12,17 @@ const RouteLoader = () => (
     </div>
   </div>
 );
+
+// Destructuring de componentes lazy
+const {
+  Home, Contact, News, Login, Register, TeachingSecretary, Profile, Procedures,
+  Admin, InternalAdmin, InternalConfig, MyProcedures, InternalLayout,
+  Feeding, Transport, Accommodation, Maintenance, NotFound
+} = lazyPages;
+
+const {
+  UsersAdmin, StructureAdmin, RolesAdmin, DashboardAdmin, EmailConfig
+} = lazyAdminComponents;
 
 export const AppRoutes = () => {
   return (
@@ -54,7 +40,7 @@ export const AppRoutes = () => {
       <Route path={routes.procedures.secretary.postinter} element={<TeachingSecretary />} />
       <Route path={routes.procedures.secretary.legaliz} element={<TeachingSecretary />} />
 
-      <Route path={routes.profile} element={<Porfile />} />
+      <Route path={routes.profile} element={<Profile />} />
       <Route path={routes.procedures.root} element={<Procedures />} />
 
       <Route path={routes.login} element={<Login />} />
@@ -89,8 +75,8 @@ export const AppRoutes = () => {
         {/* Rutas de procedimientos internos como rutas anidadas dentro del layout */}
         <Route path="procedures/feeding" element={<Feeding />} />
         <Route path="procedures/transport" element={<Transport />} />
-        <Route path="procedures/maintenance" element={<Maintence />} />
-        <Route path="procedures/accommodation" element={<Accomodation />} />
+        <Route path="procedures/maintenance" element={<Maintenance />} />
+        <Route path="procedures/accommodation" element={<Accommodation />} />
       </Route>
 
       {/* Ruta fallback para páginas no encontradas - DEBE SER LA ÚLTIMA */}

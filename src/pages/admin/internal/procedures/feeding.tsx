@@ -1,11 +1,9 @@
 
 import React, { useState } from "react";
-import FeedingComponent from "../../../../components/internal/FeedingComponent";
-import useDepartment from "../../../../hooks/general/use-department";
-import useArea from "../../../../hooks/general/use-area";
-import type { FeedingProcedure } from "../../../../types/internal/feeding";
-import type { NoteState } from "../../../../types/internal/general";
-import { useFeedingProcedures } from "../../../../hooks/internal";
+import { FeedingComponent } from "@/components";
+import { useDepartment, useArea } from "@/hooks/general";
+import { useFeedingProcedures } from "@/hooks/internal";
+import type { FeedingProcedure, NoteState } from "@/types";
 
 export const Feeding: React.FC = () => {
 

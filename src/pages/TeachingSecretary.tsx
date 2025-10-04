@@ -2,11 +2,13 @@
 import React, { type JSX } from "react";
 import { useParams } from "react-router-dom";
 
-import { UnderInter } from "../components/teaching_secretary/undergraduate/International";
-import { UnderNat } from "../components/teaching_secretary/undergraduate/National";
-import { PostInter } from "../components/teaching_secretary/postgraduate/International";
-import { PostNat } from "../components/teaching_secretary/postgraduate/National";
-import { TitleLegalization } from "../components/teaching_secretary/TitleLegalization";
+import { 
+  UnderInter,
+  UnderNat,
+  PostInter,
+  PostNat,
+  TitleLegalization 
+} from "@/components";
 
 export const TeachingSecretary: React.FC = () => {
 

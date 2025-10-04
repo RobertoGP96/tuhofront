@@ -3,10 +3,12 @@ import styled from "styled-components";
 import { FiX, FiSearch } from "react-icons/fi";
 import { FaTrash } from "react-icons/fa";
 
-import { getProcedureStats } from "../../../services/internal/internal.procedures.api";
-import { deleteFeedingProcedure, deleteAccommodationProcedure, deleteTransportProcedure, deleteMaintanceProcedure } from "../../../services/internal/internal.procedures.api";
-import { useParams } from "react-router-dom";
-import {
+import { 
+  getProcedureStats,
+  deleteFeedingProcedure, 
+  deleteAccommodationProcedure, 
+  deleteTransportProcedure, 
+  deleteMaintanceProcedure,
   getAllFeedingProcedures,
   getAllAccommodationProcedures,
   getAllTransportProcedures,
@@ -14,19 +16,21 @@ import {
   getAllAreas,
   getAllDepartments,
   patchProcedureState,
-} from "../../../services/internal/internal.procedures.api";
+} from "@/services";
+import { useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import StateChangeDialog from "../../../components/internal/StateChangeDialog";
-import MeterGroup from "../../../components/internal/MeterGroup";
+import { StateChangeDialog, MeterGroup } from "@/components";
 
 // Import types
-import type { ProcedureStats, Area, Department, Note } from "../../../types/internal/general";
+import type { ProcedureStats, Area, Department, Note } from "@/types";
 
 // Import components
-import FeedingComponent from "../../../components/internal/FeedingComponent";
-import AccommodationComponent from "../../../components/internal/AccommodationComponent";
-import TransportComponent from "../../../components/internal/TransportComponent";
-import MaintanceComponent from "../../../components/internal/MaintanceComponent";
+import { 
+  FeedingComponent,
+  AccommodationComponent,
+  TransportComponent,
+  MaintanceComponent 
+} from "@/components";
 
 // Extended procedure with additional API fields
 interface ApiProcedure {

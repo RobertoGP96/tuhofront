@@ -1,18 +1,22 @@
 import {useEffect, useState} from "react";
 import styled from "styled-components";
 
-
 import { useParams } from "react-router-dom";
-import { getAllAreas, getAllDepartments } from "../../../services/internal/internal.procedures.api";
-import FeedingComponent from "../../../components/internal/FeedingComponent";
-import AccommodationComponent from "../../../components/internal/AccommodationComponent";
-import TransportComponent from "../../../components/internal/TransportComponent";
-import MaintanceComponent from "../../../components/internal/MaintanceComponent";
-import type { Area, Department } from "../../../types/internal/general";
-import type { FeedingProcedure } from "../../../types/internal/feeding";
-import type { AccommodationProcedure } from "../../../types/internal/accomodation";
-import type { TransportProcedure } from "../../../types/internal/transport";
-import type { MaintanceProcedure } from "../../../types/internal/mantenice";
+import { getAllAreas, getAllDepartments } from "@/services";
+import {
+  FeedingComponent,
+  AccommodationComponent,
+  TransportComponent,
+  MaintanceComponent
+} from "@/components";
+import type { 
+  Area, 
+  Department, 
+  FeedingProcedure,
+  AccommodationProcedure,
+  TransportProcedure,
+  MaintanceProcedure 
+} from "@/types";
 
 const MainContainer = styled.div`
   display: flex;
