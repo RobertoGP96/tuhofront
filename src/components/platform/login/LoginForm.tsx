@@ -6,6 +6,7 @@ import { InputIcon } from "primereact/inputicon";
 
 import "./Login.css"
 import { NavLink } from "react-router";
+import routes from '../../../routes/paths';
 
 export const LoginForm = () => {
     return <form action="" className="relative flex flex-col gap-2 justify-center items-start p-10 border-primary/25 border rounded-xl shadow-2xl max-w-[500px] overflow-hidden">
@@ -27,7 +28,7 @@ export const LoginForm = () => {
         </div>
         <Button className="btn-primary border-0 w-full" label="Inciar" />
         <div className="flex flex-row gap-1 justify-center items-center">
-            <NavLink to={"/register"}>
+                        <NavLink to={routes.register}>
                 <p className=" font-bold z-1">
                     Regístrate
                 </p>

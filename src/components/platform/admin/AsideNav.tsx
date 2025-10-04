@@ -2,13 +2,10 @@ import { Avatar } from "primereact/avatar"
 import { Menu } from "primereact/menu"
 import type { MenuItem } from "primereact/menuitem"
 import { useNavigate } from "react-router"
+import routes from '../../../routes/paths';
 import "./AsideNav.css"
-interface AsideNavProps {
-  handleView: (view: string) => void;
-}
-
-export const AsideNav: React.FC<AsideNavProps> = ({ handleView }) => {
-    const AdminRouter = useNavigate()
+export const AsideNav: React.FC = () => {
+        const AdminRouter = useNavigate()
     const items: MenuItem[] = [
         {
             label: "General",
@@ -16,34 +13,36 @@ export const AsideNav: React.FC<AsideNavProps> = ({ handleView }) => {
                 {
                     label: "Dashboard",
                     icon: "pi pi-objects-column",
-                    command: () => { handleView("dashboard-admin") }
+                    command: () => { AdminRouter(routes.admin.dashboard) }
                 },
                 {
                     label: "Noticias",
                     icon: "pi pi-file-edit",
-                    command: () => { handleView("users") }
+                    command: () => { /* placeholder - implement /admin/news when available */ }
                 },
                 {
                     label: "Usuarios",
                     icon: "pi pi-users",
-                    command: () => { handleView("users-admin") }
+                    command: () => { AdminRouter(routes.admin.users) }
                 },
                 {
                     label: "Roles",
                     icon: "pi pi-shield",
-                    command: () => { handleView("rols-admin") }
+                    command: () => { AdminRouter(routes.admin.roles) }
                 },
                 {
                     label: "Correo",
                     icon: "pi pi-envelope",
-                    command: () => { AdminRouter("admin-users") }
+                    command: () => { AdminRouter(routes.admin.email) }
                 },
                 {
                     label: "Estructura",
                     icon: "pi pi-sitemap",
-                    command: () => { handleView("structure-admin") }
+                    command: () => { AdminRouter(routes.admin.structure) }
                 },
             ]
+        },{
+            separator:true
         },
         {
             label: "Secretaría",
@@ -51,33 +50,39 @@ export const AsideNav: React.FC<AsideNavProps> = ({ handleView }) => {
                 {
                     label: "Trámites",
                     icon: "pi pi-file-edit",
-                    command: () => { AdminRouter("/") }
+                    command: () => { AdminRouter(routes.admin.secretary.procedures) }
                 },
                 {
                     label: "Personal",
                     icon: "pi pi-users",
+                    command: () => { AdminRouter(routes.admin.secretary.personal) }
+                },
+                {
+                    label: "Configuracion",
+                    icon: "bx bx-cog",
+                    command: () => { AdminRouter(routes.admin.secretary.config) }
                 },
             ]
+        },{
+            separator:true
         },
         {
             label: "Internos",
             items: [
                 {
-                    label: "Alimentación",
+                    label: "Trámites",
                     icon: "bx bx-restaurant",
-                    command: () => { AdminRouter("/") }
+                    command: () => { AdminRouter(routes.admin.internal.procedures) }
                 },
                 {
-                    label: "Hospedaje",
-                    icon: "bx bx-hotel",
+                    label: "Personal",
+                    icon: "pi pi-users",
+                    command: () => { AdminRouter(routes.admin.internal.personal) }
                 },
                 {
-                    label: "Transporte",
-                    icon: "bx bxs-truck",
-                },
-                {
-                    label: "Mantenimiento",
-                    icon: "bx bxs-wrench",
+                    label: "Configuracion",
+                    icon: "bx bx-cog",
+                    command: () => { AdminRouter(routes.admin.internal.config) }
                 },
             ]
         }

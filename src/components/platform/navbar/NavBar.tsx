@@ -2,39 +2,95 @@ import { Menubar } from "primereact/menubar";
 import type { MenuItem } from "primereact/menuitem";
 import "./NavBar.css";
 
-import { NavLink, useNavigate } from "react-router";
-import { useState } from "react";
+import { NavLink, useNavigate, useLocation } from "react-router";
+import { useState, useEffect } from "react";
 import { UserChipMenu } from "../userchip/UserChipMenu";
 import { ToggleButton, type ToggleButtonChangeEvent } from "primereact/togglebutton";
+import routes from '../../../routes/paths';
 
 export const NavBar = () => {
-  const [active, setActive] = useState<string>("home")
-  const RouterApp = useNavigate()
+  const [active, setActive] = useState<string>("home");
+  const RouterApp = useNavigate();
+  const location = useLocation();
+
+  // Actualizar el estado active basado en la ruta actual
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === routes.home) {
+      setActive("home");
+    } else if (path === routes.news) {
+      setActive("news");
+    } else if (path === routes.support) {
+      setActive("contact");
+    } else if (path.startsWith("/secretary/") || path.startsWith(routes.internal.root)) {
+      setActive("procedures");
+    } else {
+      setActive("");
+    }
+  }, [location.pathname]);
+
   const items: MenuItem[] = [
     {
       label: "Inicio",
       icon: "bx bx-home bx-sm",
-      command: () => { RouterApp("/") }
+      className: active === "home" ? "active" : "",
+      command: () => { 
+        setActive("home");
+        RouterApp(routes.home);
+      }
     },
     {
       label: "Noticias",
       icon: "bx bx-news bx-sm",
-      command: () => { RouterApp("/news") }
+      className: active === "news" ? "active" : "",
+      command: () => { 
+        setActive("news");
+        RouterApp(routes.news);
+      }
     },
     {
       label: "Trámites",
       icon: "bx bx-edit bx-sm",
-      items: [
-        {
-          label: "Internos",
-          icon: "bx bx-plus bx-sm",
-          items: [
-            { label: "Alimentacion", icon: "bx bx-restaurant bx-sm" },
-            { label: "Hospedaje", icon: "bx bxs-hotel bx-sm" },
-            { label: "Transporte", icon: "bx bxs-bus bx-sm" },
-            { label: "Mantenimiento", icon: "bx bxs-wrench bx-sm" },
-          ],
-        },
+      className: active === "procedures" ? "active" : "",
+            items: [
+            {
+              label: "Internos",
+              icon: "bx bx-plus bx-sm",
+              items: [
+                { 
+                  label: "Alimentacion", 
+                  icon: "bx bx-restaurant bx-sm",
+                  command: () => { 
+                    setActive("procedures");
+                    RouterApp(routes.internal.procedures_feeding);
+                  }
+                },
+                { 
+                  label: "Hospedaje", 
+                  icon: "bx bxs-hotel bx-sm",
+                  command: () => { 
+                    setActive("procedures");
+                    RouterApp(routes.internal.procedures_accommodation);
+                  }
+                },
+                { 
+                  label: "Transporte", 
+                  icon: "bx bxs-bus bx-sm",
+                  command: () => { 
+                    setActive("procedures");
+                    RouterApp(routes.internal.procedures_transport);
+                  }
+                },
+                { 
+                  label: "Mantenimiento", 
+                  icon: "bx bxs-wrench bx-sm",
+                  command: () => { 
+                    setActive("procedures");
+                    RouterApp(routes.internal.procedures_maintenance);
+                  }
+                },
+              ],
+            },
         {
           label: "Secretaría Docente",
           icon: "bx bx-book bx-sm",
@@ -43,31 +99,62 @@ export const NavBar = () => {
               label: "Pregrado",
               icon: "bx bxs-graduation bx-sm",
               items: [
-                { label: "Nacional", icon: "bx bx-globe bx-sm", command: () => { RouterApp("/secretary/undernat") } },
-                { label: "Internacional", icon: "bx bx-send bx-sm", command: () => { RouterApp("/secretary/underinter") } }
+                { 
+                  label: "Nacional", 
+                  icon: "bx bx-globe bx-sm", 
+                  command: () => { 
+                    setActive("procedures");
+                    RouterApp(routes.secretary.undernat);
+                  } 
+                },
+                { 
+                  label: "Internacional", 
+                  icon: "bx bx-send bx-sm", 
+                  command: () => { 
+                    setActive("procedures");
+                    RouterApp(routes.secretary.underinter);
+                  } 
+                }
               ]
             },
             {
               label: "Postgrado",
               icon: "bx bx-briefcase bx-sm",
               items: [
-                { label: "Nacional", icon: "bx bx-globe bx-sm", command: () => { RouterApp("/secretary/postnat") } },
-                { label: "Internacional", icon: "bx bx-send bx-sm", command: () => { RouterApp("/secretary/postinter") } }
+                { 
+                  label: "Nacional", 
+                  icon: "bx bx-globe bx-sm", 
+                  command: () => { 
+                    setActive("procedures");
+                    RouterApp(routes.secretary.postnat);
+                  } 
+                },
+                { 
+                  label: "Internacional", 
+                  icon: "bx bx-send bx-sm", 
+                  command: () => { 
+                    setActive("procedures");
+                    RouterApp(routes.secretary.postinter);
+                  } 
+                }
               ]
             },
             {
               label: "Legalización de Título",
               icon: "bx bxs-certification bx-sm",
-              command: () => { RouterApp("/secretary/legaliz") }
+              command: () => { 
+                  setActive("procedures");
+                  RouterApp(routes.secretary.legaliz);
+                }
             }
           ],
         },
         {
-          label: "Laboratorios",
+          label: "Locales",
           icon: "bx bx-desktop bx-sm",
           items: [
             {
-              label: "Aulas especializadas",
+              label: "Aulas Especializadas",
               icon: "bx bx-building bx-sm"
             },
             {
@@ -82,7 +169,11 @@ export const NavBar = () => {
     {
       label: "Contactenos",
       icon: "bx bx-support bx-sm",
-      command: () => { RouterApp("/support") }
+      className: active === "contact" ? "active" : "",
+      command: () => { 
+        setActive("contact");
+        RouterApp(routes.support);
+      }
     },
   ];
   const [checked, setChecked] = useState<boolean>(false);
@@ -107,11 +198,11 @@ export const NavBar = () => {
 
           {
             !checked ? <>
-              <NavLink to={"/login"}>
+              <NavLink to={routes.login}>
                 <p className="text-sm font-bold">Inicia sesion</p>
               </NavLink>
               <p>o</p>
-              <NavLink to={"/register"}>
+              <NavLink to={routes.register}>
                 <p className="text-sm text-primary font-bold m-0">
                   Regístrate
                 </p>

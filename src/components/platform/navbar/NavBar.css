@@ -3,30 +3,68 @@
   border: 0;
   font-size: 14px;
 }
-/*
-#Container element.
-*/
 
 /*
-List element.
-*/
-.p-menuitem {
-}
-
-/*
-Menuitem element.
+Menuitem text styles.
 */
 .menu-navbar .p-menuitem-text {
   color: var(--color-primary);
 }
+
 /*
-Label of a menuitem.
+Menuitem icon styles.
 */
 .menu-navbar .p-menuitem-icon {
   color: var(--color-secondary);
 }
+
 /*
-Icon of a menuitem.
+Active menuitem styles - Solo para elementos de nivel superior
 */
-.menu-navbar .p-submenu-icon {
+.menu-navbar > .p-menubar-root-list > .p-menuitem.active > .p-menuitem-link {
+  background-color: var(--color-primary);
+  border-radius: 6px;
+}
+
+.menu-navbar > .p-menubar-root-list > .p-menuitem.active > .p-menuitem-link .p-menuitem-text {
+  color: white;
+  font-weight: 600;
+}
+
+.menu-navbar > .p-menubar-root-list > .p-menuitem.active > .p-menuitem-link .p-menuitem-icon {
+  color: white;
+}
+
+/*
+Hover effects for non-active items - Solo para elementos de nivel superior
+*/
+.menu-navbar > .p-menubar-root-list > .p-menuitem:not(.active) > .p-menuitem-link:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+/*
+Asegurar que los elementos del dropdown mantengan sus estilos normales
+*/
+.menu-navbar .p-submenu-list .p-menuitem-link {
+  background-color: white !important;
+  border-radius: 0 !important;
+}
+
+.menu-navbar .p-submenu-list .p-menuitem-text {
+  color: var(--color-primary) !important;
+  font-weight: normal !important;
+}
+
+.menu-navbar .p-submenu-list .p-menuitem-icon {
+  color: var(--color-secondary) !important;
+}
+
+/*
+Hover effects para elementos del dropdown
+*/
+.menu-navbar .p-submenu-list .p-menuitem-link:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.05) !important;
+  transition: background-color 0.2s ease;
 }

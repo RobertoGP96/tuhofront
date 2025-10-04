@@ -4,6 +4,7 @@ import { Menu } from "primereact/menu"
 import type { MenuItem } from "primereact/menuitem"
 import { useRef } from "react"
 import { useNavigate } from "react-router"
+import routes from '../../../routes/paths';
 
 
 type user = {
@@ -23,7 +24,7 @@ export const UserChipMenu = ({ user }: { user: user }) => {
         {
             label: 'Perfil',
             icon: 'pi pi-fw pi-user',
-            command: () => userRouter("/porfile")
+            command: () => userRouter(routes.profile)
         },
         {
             label: 'Notificaciones',
@@ -33,7 +34,7 @@ export const UserChipMenu = ({ user }: { user: user }) => {
         {
             label: 'Mis Trámites',
             icon: 'pi pi-fw pi-file',
-            command: () => userRouter("/procedures")
+            command: () => userRouter(routes.procedures)
         },
         {
             label: 'Salir',
@@ -43,7 +44,7 @@ export const UserChipMenu = ({ user }: { user: user }) => {
         {
             label: 'Administrar',
             icon: 'pi pi-cog',
-            command: () => userRouter("/admin")
+            command: () => userRouter(routes.admin.root)
         },
     ];
     return <div className="flex justify-center items-center gap-2 rounded-full max-h-[60px] border-4 border-secondary/65 bg-primary-100 px-1 py-1">

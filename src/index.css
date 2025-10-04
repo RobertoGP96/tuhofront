@@ -1,11 +1,18 @@
 @import "tailwindcss";
 
-@theme {
+:root {
+  /* Colores de tema globales que puedes ajustar para adaptar PrimeReact */
   --color-primary: #23305b;
   --color-secondary: #96bd22;
   --color-accent: #2d3e75;
   --color-background: #f3f4f6;
-  --color-btn:rgb(191, 187, 187);
+  --color-btn: rgb(191, 187, 187);
+
+  /* Mapeo de variables para PrimeReact y componentes comunes */
+  --p-primary-color: var(--color-primary);
+  --p-primary-color-text: #ffffff;
+  --p-secondary-color: var(--color-secondary);
+  --p-surface-background: var(--color-background);
 }
 
 
@@ -50,4 +57,44 @@ html, body {
   width: 100%;
   height: 100%;
   overflow-x: hidden; /* Evita el desbordamiento horizontal */
+}
+
+/* === PrimeReact overrides using CSS variables ===
+   These are minimal overrides. For thorough theming consider using
+   a custom theme from PrimeReact Theme Designer or SCSS variables.
+*/
+
+/* Primary buttons */
+.p-button.p-button-primary {
+  background-color: var(--p-primary-color) !important;
+  border-color: var(--p-primary-color) !important;
+  color: var(--p-primary-color-text) !important;
+}
+
+/* Secondary (neutral) buttons example */
+.p-button.p-button-secondary {
+  background-color: var(--p-secondary-color) !important;
+  border-color: var(--p-secondary-color) !important;
+  color: var(--p-primary-color-text) !important;
+}
+
+/* Input and surface backgrounds */
+.p-inputtext, .p-dropdown, .p-inputnumber, .p-inputmask {
+  background-color: transparent;
+  border-color: rgba(0,0,0,0.12);
+}
+
+.p-surface {
+  background-color: var(--p-surface-background) !important;
+}
+
+/* Badge example */
+.p-badge {
+  background-color: var(--p-primary-color) !important;
+  color: var(--p-primary-color-text) !important;
+}
+
+/* Small helper: use your --color-accent for highlights */
+.accent {
+  color: var(--color-accent);
 }
