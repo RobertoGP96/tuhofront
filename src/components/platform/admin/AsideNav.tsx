@@ -1,7 +1,7 @@
 import { Avatar } from "primereact/avatar"
 import { Menu } from "primereact/menu"
 import type { MenuItem } from "primereact/menuitem"
-import { useNavigate } from "react-router"
+import { useNavigate } from "react-router-dom"
 import routes from '../../../routes/paths';
 import "./AsideNav.css"
 export const AsideNav: React.FC = () => {

@@ -3,7 +3,7 @@ import { Badge } from "primereact/badge"
 import { Menu } from "primereact/menu"
 import type { MenuItem } from "primereact/menuitem"
 import { useRef } from "react"
-import { useNavigate } from "react-router"
+import { useNavigate } from "react-router-dom"
 import routes from '../../../routes/paths';
 
 
@@ -34,7 +34,7 @@ export const UserChipMenu = ({ user }: { user: user }) => {
         {
             label: 'Mis Trámites',
             icon: 'pi pi-fw pi-file',
-            command: () => userRouter(routes.procedures)
+            command: () => userRouter(routes.procedures.root)
         },
         {
             label: 'Salir',

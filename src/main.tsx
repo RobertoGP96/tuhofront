@@ -12,11 +12,20 @@ import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 
 import { PrimeReactProvider } from 'primereact/api';
-import { BrowserRouter, Routes, Route } from 'react-router'
+import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from './context/auth'
 
-const queryClient = new QueryClient()
+// Configuración del QueryClient con mejores defaults
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 5 * 60 * 1000, // 5 minutos
+      gcTime: 10 * 60 * 1000, // 10 minutos (antes cacheTime)
+    },
+  },
+})
 
 const root = document.getElementById('root')!;
 
@@ -26,9 +35,7 @@ createRoot(root).render(
       <AuthProvider>
         <PrimeReactProvider>
           <BrowserRouter>
-            <Routes>
-              <Route path="/*" element={<App />} />
-            </Routes>
+            <App />
           </BrowserRouter>
         </PrimeReactProvider>
       </AuthProvider>

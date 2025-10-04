@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 
-import { getAllUserProcedures } from "../../services/internal/internal.procedures.api";
-import UserSidebar from "../../components/internal/UserSidebar";
-import FeedingComponent from "../../components/internal/FeedingComponent";
-import AccommodationComponent from "../../components/internal/AccommodationComponent";
-import TransportComponent from "../../components/internal/TransportComponent";
-import MaintanceComponent from "../../components/internal/MaintanceComponent";
+import { getAllUserProcedures } from "../../../services/internal/internal.procedures.api";
+import UserSidebar from "../../../components/internal/UserSidebar";
+import FeedingComponent from "../../../components/internal/FeedingComponent";
+import AccommodationComponent from "../../../components/internal/AccommodationComponent";
+import TransportComponent from "../../../components/internal/TransportComponent";
+import MaintanceComponent from "../../../components/internal/MaintanceComponent";
 
 // Extended procedure with additional API fields
 interface ApiProcedure {

@@ -1,10 +1,10 @@
 
 import React, { useState } from "react";
-import type { NoteState } from "../../../types/internal/general";
-import type { MaintanceProcedure } from "../../../types/internal/mantenice";
-import MaintanceComponent from "../../../components/internal/MaintanceComponent";
-import useDepartment from "../../../hooks/general/use-department";
-import useArea from "../../../hooks/general/use-area";
+import type { NoteState } from "../../../../types/internal/general";
+import type { MaintanceProcedure } from "../../../../types/internal/mantenice";
+import MaintanceComponent from "../../../../components/internal/MaintanceComponent";
+import useDepartment from "../../../../hooks/general/use-department";
+import useArea from "../../../../hooks/general/use-area";
 
 export const Maintence: React.FC = () => {
 

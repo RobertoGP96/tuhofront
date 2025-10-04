@@ -20,7 +20,7 @@ export const FormContainer = styled.div`
 `;
 
 export const Title = styled.h1`
-  color: var(--primary);
+  color: var(--color-primary);
   font-size: 2rem;
   font-weight: 700;
   text-align: center;
@@ -28,7 +28,7 @@ export const Title = styled.h1`
 `;
 
 export const Text = styled.p`
-  color: var(--primary);
+  color: var(--color-primary);
   font-size: 1.2rem;
   font-weight: 700;
   text-align: center;
@@ -49,7 +49,7 @@ export const FieldContainer = styled.div`
     display: block;
     font-weight: 600;
     margin-bottom: 5px;
-    color: var(--primary);
+    color: var(--color-primary);
   }
 
   input,
@@ -63,7 +63,7 @@ export const FieldContainer = styled.div`
     outline: none;
 
     &:focus {
-      border-color: var(--primary);
+      border-color: var(--color-primary);
       box-shadow: 0 0 5px rgba(0, 82, 150, 0.5);
     }
   }
@@ -85,7 +85,7 @@ export const FieldContainer = styled.div`
 `;
 
 export const SubmitButton = styled.button`
-  background-color: var(--primary-accent);
+  background-color: var(--color-primary);
   color: #ffffff;
   border: none;
   padding: 15px 20px;
@@ -100,7 +100,7 @@ export const SubmitButton = styled.button`
 `;
 
 export const AddGuestButton = styled.button`
-  background-color: var(--primary-accent);
+  background-color: var(--color-accent);
   color: #ffffff;
   border: none;
   padding: 10px 15px;
@@ -135,10 +135,10 @@ export const Tab = styled.button<TabProps>`
   padding: 10px;
   cursor: pointer;
   border: none;
-  color: ${(props) => (props.$active ? "var(--white)" : "var(--primary)")};
+  color: ${(props) => (props.$active ? "var(--white)" : "var(--color-primary)")};
   background: none;
   font-weight: bold;
-  background-color: ${(props) => (props.$active ? "var(--primary)" : "var(--white)")};
+  background-color: ${(props) => (props.$active ? "var(--color-primary)" : "var(--white)")};
   border-top-right-radius: 20px;
   border-top-left-radius: 20px;
   width: 100%;
@@ -154,7 +154,7 @@ export const Tab = styled.button<TabProps>`
 export const ProcedureList = styled.div`
   flex: 1;
   overflow-y: auto;
-  background: var(--primary);
+  background: var(--color-primary);
   padding: 10px;
 `;
 
@@ -167,14 +167,14 @@ export const ProcedureItem = styled.div<ProcedureItemProps>`
   cursor: pointer;
   border-bottom: 1px solid #eee;
   background-color: ${(props) => (props.$selected ? "var(--white)" : "transparent")};
-  color: ${(props) => (props.$selected ? "var(--primary)" : "var(--white)")};
+  color: ${(props) => (props.$selected ? "var(--color-primary)" : "var(--white)")};
   display: flex;
   align-items: center;
   transition: all .3s ease-out;
 
   &:hover {
     background-color: var(--white);
-    color: var(--primary);
+    color: var(--color-primary);
   }
 `;
 
@@ -281,7 +281,7 @@ export const DialogContainer = styled.div`
 `;
 
 export const DialogTitle = styled.h2`
-  color: var(--primary);
+  color: var(--color-primary);
   font-size: 1.5rem;
   margin-bottom: 10px;
 `;
@@ -298,7 +298,7 @@ export const DialogTextArea = styled.textarea`
   margin-bottom: 20px;
 
   &:focus {
-    border-color: var(--primary);
+    border-color: var(--color-primary);
     box-shadow: 0 0 5px rgba(0, 82, 150, 0.5);
   }
 `;
@@ -314,7 +314,7 @@ interface DialogButtonProps {
 }
 
 export const DialogButton = styled.button<DialogButtonProps>`
-  background-color: ${(props) => (props.$primary ? "var(--primary)" : "#ddd")};
+  background-color: ${(props) => (props.$primary ? "var(--color-primary)" : "#ddd")};
   color: ${(props) => (props.$primary ? "#ffffff" : "#333")};
   border: none;
   padding: 10px 20px;
@@ -341,7 +341,7 @@ export const NotesContainer = styled.div`
 
 // Título de las notas
 export const NotesTitle = styled.h3`
-  color: var(--primary);
+  color: var(--color-primary);
   font-size: 1.2rem;
   font-weight: 700;
   margin-bottom: 15px;
@@ -368,7 +368,7 @@ export const NoteItem = styled.li`
 // Texto del estado en la nota
 export const NoteState = styled.span`
   font-weight: bold;
-  color: var(--primary);
+  color: var(--color-primary);
 `;
 
 // Texto de la descripción en la nota
@@ -385,7 +385,7 @@ export const ConfigSection = styled.div`
 
 // Título de la sección
 export const ConfigTitle = styled.h2`
-  color: var(--primary);
+  color: var(--color-primary);
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 20px;
@@ -412,7 +412,7 @@ export const ConfigItem = styled.li`
 `;
 
 export const PrintButton = styled.a`
-  background-color: var(--primary);
+  background-color: var(--color-primary);
   color: #ffffff;
   text-decoration: none;
   border: none;

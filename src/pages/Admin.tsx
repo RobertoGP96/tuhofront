@@ -1,5 +1,5 @@
 import { AsideNav } from "../components/platform/admin/AsideNav"
-import { Outlet } from "react-router"
+import { Outlet } from "react-router-dom"
 
 export const Admin: React.FC = () => {
     return (

@@ -1,10 +1,10 @@
 
 import React, { useState } from "react";
-import type { NoteState } from "../../../types/internal/general";
-import type { TransportProcedure } from "../../../types/internal/transport";
-import TransportComponent from "../../../components/internal/TransportComponent";
-import useDepartment from "../../../hooks/general/use-department";
-import useArea from "../../../hooks/general/use-area";
+import type { NoteState } from "../../../../types/internal/general";
+import type { TransportProcedure } from "../../../../types/internal/transport";
+import TransportComponent from "../../../../components/internal/TransportComponent";
+import useDepartment from "../../../../hooks/general/use-department";
+import useArea from "../../../../hooks/general/use-area";
 
 export const Transport: React.FC = () => {
 

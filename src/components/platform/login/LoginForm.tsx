@@ -5,7 +5,7 @@ import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 
 import "./Login.css"
-import { NavLink } from "react-router";
+import { NavLink } from "react-router-dom";
 import routes from '../../../routes/paths';
 
 export const LoginForm = () => {

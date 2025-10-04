@@ -3,8 +3,8 @@ import styled from "styled-components";
 import { FiX, FiSearch } from "react-icons/fi";
 import { FaTrash } from "react-icons/fa";
 
-import { getProcedureStats } from "../../services/internal/internal.procedures.api";
-import { deleteFeedingProcedure, deleteAccommodationProcedure, deleteTransportProcedure, deleteMaintanceProcedure } from "../../services/internal/internal.procedures.api";
+import { getProcedureStats } from "../../../services/internal/internal.procedures.api";
+import { deleteFeedingProcedure, deleteAccommodationProcedure, deleteTransportProcedure, deleteMaintanceProcedure } from "../../../services/internal/internal.procedures.api";
 import { useParams } from "react-router-dom";
 import {
   getAllFeedingProcedures,
@@ -14,19 +14,19 @@ import {
   getAllAreas,
   getAllDepartments,
   patchProcedureState,
-} from "../../services/internal/internal.procedures.api";
+} from "../../../services/internal/internal.procedures.api";
 import { toast } from "react-hot-toast";
-import StateChangeDialog from "../../components/internal/StateChangeDialog";
-import MeterGroup from "../../components/internal/MeterGroup";
+import StateChangeDialog from "../../../components/internal/StateChangeDialog";
+import MeterGroup from "../../../components/internal/MeterGroup";
 
 // Import types
-import type { ProcedureStats, Area, Department, Note } from "../../types/internal/general";
+import type { ProcedureStats, Area, Department, Note } from "../../../types/internal/general";
 
 // Import components
-import FeedingComponent from "../../components/internal/FeedingComponent";
-import AccommodationComponent from "../../components/internal/AccommodationComponent";
-import TransportComponent from "../../components/internal/TransportComponent";
-import MaintanceComponent from "../../components/internal/MaintanceComponent";
+import FeedingComponent from "../../../components/internal/FeedingComponent";
+import AccommodationComponent from "../../../components/internal/AccommodationComponent";
+import TransportComponent from "../../../components/internal/TransportComponent";
+import MaintanceComponent from "../../../components/internal/MaintanceComponent";
 
 // Extended procedure with additional API fields
 interface ApiProcedure {
@@ -108,7 +108,7 @@ const StyledTable = styled.table`
 `;
 
 const Th = styled.th`
-  background: var(--primary);
+  background: var(--color-primary);
   color: #fff;
   text-align: center;
   padding: 12px 8px;
@@ -124,7 +124,7 @@ const Td = styled.td`
 const StateSelect = styled.select`
   padding: 6px 10px;
   border-radius: 4px;
-  border: 1px solid var(--primary);
+  border: 1px solid var(--color-primary);
   background: #f7faff;
   color: #222;
   font-weight: bold;
@@ -138,7 +138,7 @@ const IconButton = styled.button`
   border: none;
   cursor: pointer;
   font-size: 20px;
-  color: var(--primary);
+  color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -183,7 +183,7 @@ const CloseIcon = styled(FiX)`
   top: 18px;
   right: 18px;
   font-size: 28px;
-  color: var(--primary);
+  color: var(--color-primary);
   cursor: pointer;
   z-index: 10;
 `;

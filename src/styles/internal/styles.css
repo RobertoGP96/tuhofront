@@ -1,20 +1,6 @@
 :root {
-  --primary: #222E58;
   --primary-hover: #0b122c;
   --blue: #005296;
   --blue-light: #007bff;
   --white: #fff;
-}
-
-html {
-  box-sizing: border-box;
-}
-
-*, *:before, *:after {
-  box-sizing: inherit;
-}
-
-img {
-  max-width: 100%;
-  height: 200px;
 }

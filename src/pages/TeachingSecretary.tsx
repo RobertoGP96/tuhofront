@@ -1,6 +1,6 @@
 
 import React, { type JSX } from "react";
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
 
 import { UnderInter } from "../components/teaching_secretary/undergraduate/International";
 import { UnderNat } from "../components/teaching_secretary/undergraduate/National";

@@ -2,7 +2,7 @@ import { Menubar } from "primereact/menubar";
 import type { MenuItem } from "primereact/menuitem";
 import "./NavBar.css";
 
-import { NavLink, useNavigate, useLocation } from "react-router";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { UserChipMenu } from "../userchip/UserChipMenu";
 import { ToggleButton, type ToggleButtonChangeEvent } from "primereact/togglebutton";
@@ -22,7 +22,7 @@ export const NavBar = () => {
       setActive("news");
     } else if (path === routes.support) {
       setActive("contact");
-    } else if (path.startsWith("/secretary/") || path.startsWith(routes.internal.root)) {
+    } else if (path.startsWith("/secretary/") || path.startsWith(routes.procedures.internal.root)) {
       setActive("procedures");
     } else {
       setActive("");
@@ -62,7 +62,7 @@ export const NavBar = () => {
                   icon: "bx bx-restaurant bx-sm",
                   command: () => { 
                     setActive("procedures");
-                    RouterApp(routes.internal.procedures_feeding);
+                    RouterApp(`${routes.procedures.internal.root}/procedures/feeding`);
                   }
                 },
                 { 
@@ -70,7 +70,7 @@ export const NavBar = () => {
                   icon: "bx bxs-hotel bx-sm",
                   command: () => { 
                     setActive("procedures");
-                    RouterApp(routes.internal.procedures_accommodation);
+                    RouterApp(`${routes.procedures.internal.root}/procedures/accommodation`);
                   }
                 },
                 { 
@@ -78,7 +78,7 @@ export const NavBar = () => {
                   icon: "bx bxs-bus bx-sm",
                   command: () => { 
                     setActive("procedures");
-                    RouterApp(routes.internal.procedures_transport);
+                    RouterApp(`${routes.procedures.internal.root}/procedures/transport`);
                   }
                 },
                 { 
@@ -86,7 +86,7 @@ export const NavBar = () => {
                   icon: "bx bxs-wrench bx-sm",
                   command: () => { 
                     setActive("procedures");
-                    RouterApp(routes.internal.procedures_maintenance);
+                    RouterApp(`${routes.procedures.internal.root}/procedures/maintenance`);
                   }
                 },
               ],
@@ -104,7 +104,7 @@ export const NavBar = () => {
                   icon: "bx bx-globe bx-sm", 
                   command: () => { 
                     setActive("procedures");
-                    RouterApp(routes.secretary.undernat);
+                    RouterApp(routes.procedures.secretary.undernat);
                   } 
                 },
                 { 
@@ -112,7 +112,7 @@ export const NavBar = () => {
                   icon: "bx bx-send bx-sm", 
                   command: () => { 
                     setActive("procedures");
-                    RouterApp(routes.secretary.underinter);
+                    RouterApp(routes.procedures.secretary.underinter);
                   } 
                 }
               ]
@@ -126,7 +126,7 @@ export const NavBar = () => {
                   icon: "bx bx-globe bx-sm", 
                   command: () => { 
                     setActive("procedures");
-                    RouterApp(routes.secretary.postnat);
+                    RouterApp(routes.procedures.secretary.postnat);
                   } 
                 },
                 { 
@@ -134,7 +134,7 @@ export const NavBar = () => {
                   icon: "bx bx-send bx-sm", 
                   command: () => { 
                     setActive("procedures");
-                    RouterApp(routes.secretary.postinter);
+                    RouterApp(routes.procedures.secretary.postinter);
                   } 
                 }
               ]
@@ -144,7 +144,7 @@ export const NavBar = () => {
               icon: "bx bxs-certification bx-sm",
               command: () => { 
                   setActive("procedures");
-                  RouterApp(routes.secretary.legaliz);
+                  RouterApp(routes.procedures.secretary.legaliz);
                 }
             }
           ],

@@ -1,9 +1,9 @@
 
 import React, { useState } from "react";
-import type { NoteState } from "../../../types/internal/general";
-import AccommodationComponent from "../../../components/internal/AccommodationComponent";
-import type { AccommodationProcedure } from "../../../types/internal/accomodation";
-import { useAccommodationProcedures } from "../../../hooks/internal";
+import type { NoteState } from "../../../../types/internal/general";
+import AccommodationComponent from "../../../../components/internal/AccommodationComponent";
+import type { AccommodationProcedure } from "../../../../types/internal/accomodation";
+import { useAccommodationProcedures } from "../../../../hooks/internal";
 
 export const Accomodation: React.FC = () => {
 

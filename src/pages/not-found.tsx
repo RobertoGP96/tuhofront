@@ -13,11 +13,11 @@ const NotFound: React.FC = () => {
             <path d="M14.5 9.5L9.5 14.5" stroke="#007BFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
 
-          <h1 className="text-3xl font-bold text-gray-800 mb-4">404 — Página no encontrada</h1>
+          <h1 className="text-3xl font-bold text-blu-950 mb-4">404 — Página no encontrada</h1>
           <p className="text-gray-600 mb-6">Lo sentimos, no hemos podido encontrar la página que buscas.</p>
 
           <div style={{ maxWidth: 480, margin: '18px auto' }}>
-            <p className="text-blue-600 text-center">
+            <p className="text-blue-950 text-center">
               Puede que la ruta esté mal escrita o que la página haya sido movida.
             </p>
           </div>
