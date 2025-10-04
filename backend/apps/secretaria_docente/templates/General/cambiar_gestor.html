@@ -1,0 +1,66 @@
+{% extends "navbar_administracion.html" %}
+{% load static %}
+
+<!-- Conatiner CSS -->
+{% block css %}
+<link rel="stylesheet" href=" {% static 'css/Cambiar_Gestor.css' %}">
+{% endblock %}
+<!-- End Conatiner CSS -->
+
+{% block content %}
+<div class="container-form">
+    <div class="form-rol">
+        <div class="contact-info">
+            <h3 class="title">Cambiar Gestor de Trámite</h3>
+            <p class="text">
+                Tienes la capacidad de asignar diferentes roles a 
+                los usuarios para adaptarse a sus necesidades y responsabilidades.
+                Recuerda que cada rol tiene sus propias características y permisos, por lo que 
+                es importante seleccionar el que mejor se ajuste a tus requerimientos.
+            </p>
+        </div>
+        <div class="contact-form">
+            <span class="circle one"></span>
+            <span class="circle two"></span>
+            <form action="."  method="POST">
+                {% csrf_token %}
+                <h3 class="title">Cambiar</h3>  
+                {% if response %}
+                {% if response == 'correcto' %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert"
+                style="height:40px; position: fixed; right: 20px; top: 50px; display: flex; align-items: center; padding-right: 0rem;">
+                {{ message }}
+                <button style="font-size: 10px; border-bottom: none; position: relative; box-shadow: none;" type="button"
+                    class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </button>
+                </div>
+                {% endif %}
+                {% endif %}
+                <div class="input-container select-rol">
+                    <input type="hidden" name="role">
+                    <div class="input selector">
+                    </div>
+                    <label for="">Rol de Usuario</label>
+                    <span>Rol de Usuario</span>
+                </div>
+                  <div class="select-options" name="role">
+                    {% for group_name in group_names%}
+                    <div aria-valuetext="{{group_name}}" value="{{group_name}}" class="element">{{group_name}}</div>
+                    {% endfor %}
+                  </div>
+                  <div class="btn">
+                    <a href="{% url 'Gestores' %}" class="btn2">Cancelar</a>
+                    <input type="submit" value="Aceptar" class="btn2">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<!-- Conatiner JS -->
+{% block js %}
+<script src="{% static 'js/seleccion rol.js' %}"></script>
+
+{% endblock %}
+<!-- End Conatiner JS -->

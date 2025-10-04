@@ -1,0 +1,606 @@
+{% extends "Base.html" %}
+{% load static %}
+
+  {% block css %}
+    <link rel="stylesheet" href="{% static 'css/TramitesSD copy.css' %}">
+  {% endblock %}
+
+
+  {% block content %}
+    <div class="content" >
+      <div class="col">
+        <div class="container-form">
+          <div class="form">
+            <div class="container-fluid py-4">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card">
+                    <div class="card-header pb-0">
+                      <div class="title">
+                        <h3 class="title-text p-3">Solicitud de Tr&aacute;mite</h3>
+                      </div>
+                    </div>
+                    <form  id="formu" method="POST">
+                      {% csrf_token %}
+                      <div class="card-body">
+                        <h4 class="textt text-sm">Datos Generales</h4>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Nombre</label>
+                              <input type="text" name="nombre" id="name" class="form-control" required value="{{ tramite.nombre }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="example-text-input" class="form-control-label">Apellidos</label>
+                              <input type="text" name="apellidos" id="lastName" class="form-control" required value="{{ tramite.apellidos }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="example-text-input" class="form-control-label">Carnet de Identidad</label>
+                              <input type="text" name="ci" id="ci" data-validate-length-range="11,11"  class="form-control" required="required" value="{{ tramite.ci }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="example-text-input" class="form-control-label">Correo Electr&oacute;nico</label>
+                              <input type="email" name="email" id="email" class="form-control" required  value="{{ tramite.email }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="example-text-input" class="form-control-label">N&uacute;mero de M&oacute;vil</label>
+                              <input type="tel" name="telefono" id="tel" class="form-control" required  value="{{ tramite.telefono }}" required disabled >
+                            </div>
+                          </div>
+                        </div>
+                        <hr class="horizontal dark">
+                        <h4 class="textt text-sm">Datos de la Solicitud</h4>
+                        <div class="row">
+                          {% if Pregrado_Nacional %}
+                          <div class="col-md-6 col-lg-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Tipo de Estudio</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.tipo_estudio }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Uso</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.uso }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Tipo de Tr&aacute;mite</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.tipo_pren }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Organismo</label>
+                              <input type="text"  name="organismo" id="organismo" class="form-control" value="{{ tramite.organismo }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Motivo</label>
+                              <input type="text"  name="motivo" id="motivo" class="form-control" value="{{ tramite.motivo }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Funcionario</label>
+                              <input type="text"  name="funcionario" id="funcionario" class="form-control" value="{{ tramite.funcionario }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Carrera</label>
+                              <input type="text"  name="carrera" id="carrera" class="form-control" value="{{ tramite.carrera }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Año</label>
+                              <input type="text"  name="year" id="year" class="form-control" value="{{ tramite.year }}" required disabled>
+                            </div>
+                          </div>
+
+                          {% elif Pregrado_Nacional_Legalizacion %}
+                          <div class="col-md-6 col-lg-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Tipo de Estudio</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.tipo_estudio }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Uso</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.uso }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Tipo de Tr&aacute;mite</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.legalizacion }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Organismo</label>
+                              <input type="text"  name="organismo" id="organismo" class="form-control" value="{{ tramite.organismo }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Motivo</label>
+                              <input type="text"  name="motivo" id="motivo" class="form-control" value="{{ tramite.motivo }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Funcionario</label>
+                              <input type="text"  name="funcionario" id="funcionario" class="form-control" value="{{ tramite.funcionario }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Carrera</label>
+                              <input type="text"  name="carrera" id="carrera" class="form-control" value="{{ tramite.carrera }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Año</label>
+                              <input type="text"  name="year" id="year" class="form-control" value="{{ tramite.year }}" required disabled>
+                            </div>
+                          </div>
+
+
+
+
+
+                          {% elif Pregrado_Internacional %}
+                          <div class="col-md-6 col-lg-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Tipo de Estudio</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.tipo_estudio }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Uso</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.uso_i }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Tipo de Tr&aacute;mite</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.tipo_prei }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Intereses</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.intereses }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Organismo</label>
+                              <input type="text"  name="organismo" id="organismo" class="form-control" value="{{ tramite.organismo }}" required disabled>
+                            </div>
+                          </div>
+                          <div id="prueba" style="display:none;" class="col-md-6 group3 text-white">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Organismo</label>
+                              <input type="text"  name="carrera" id="carrera" class="form-control" value="{{ tramite.organismo_op }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Motivo</label>
+                              <input type="text"  name="motivo" id="motivo" class="form-control" value="{{ tramite.motivo }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Funcionario</label>
+                              <input type="text"  name="funcionario" id="funcionario" class="form-control" value="{{ tramite.funcionario }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Carrera</label>
+                              <input type="text"  name="carrera" id="carrera" class="form-control" value="{{ tramite.carrera }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Año</label>
+                              <input type="text"  name="year" id="year" class="form-control" value="{{ tramite.year }}" required disabled>
+                            </div>
+                          </div>
+
+
+                          {% elif Pregrado_Internacional_Legalizacion %}
+                          <div class="col-md-6 col-lg-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Tipo de Estudio</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.tipo_estudio }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Uso</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.uso_i }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Tipo de Tr&aacute;mite</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.tipo_prei }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Intereses</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.intereses }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Organismo</label>
+                              <input type="text"  name="organismo" id="organismo" class="form-control" value="{{ tramite.organismo }}" required disabled>
+                            </div>
+                          </div>
+                          <div id="prueba" style="display:none;" class="col-md-6 group3 text-white">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Organismo</label>
+                              <input type="text"  name="carrera" id="carrera" class="form-control" value="{{ tramite.organismo_op }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Motivo</label>
+                              <input type="text"  name="motivo" id="motivo" class="form-control" value="{{ tramite.motivo }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Funcionario</label>
+                              <input type="text"  name="funcionario" id="funcionario" class="form-control" value="{{ tramite.funcionario }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Carrera</label>
+                              <input type="text"  name="carrera" id="carrera" class="form-control" value="{{ tramite.carrera }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Año</label>
+                              <input type="text"  name="year" id="year" class="form-control" value="{{ tramite.year }}" required disabled>
+                            </div>
+                          </div>
+
+                          {% elif Posgrado_Nacional %}
+                          <div class="col-md-6 col-lg-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Tipo de Estudio</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.tipo_est }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Uso</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.uso }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Tipo de Tr&aacute;mite</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.tipo_posn }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Organismo</label>
+                              <input type="text"  name="organismo" id="organismo" class="form-control" value="{{ tramite.organismo }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Motivo</label>
+                              <input type="text"  name="motivo" id="motivo" class="form-control" value="{{ tramite.motivo }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Funcionario</label>
+                              <input type="text"  name="funcionario" id="funcionario" class="form-control" value="{{ tramite.funcionario }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Año</label>
+                              <input type="text"  name="year" id="year" class="form-control" value="{{ tramite.year }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Programa Academico</label>
+                              <input type="text"  name="carrera" id="carrera" class="form-control" value="{{ tramite.programa_academico }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Nombre del Programa</label>
+                              <input type="text"  name="carrera" id="carrera" class="form-control" value="{{ tramite.nombre_programa }}" required disabled>
+                            </div>
+                          </div>
+                        </div>
+
+
+
+                        {% elif Posgrado_Nacional_Legalizacion %}
+                          <div class="col-md-6 col-lg-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Tipo de Estudio</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.tipo_est }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Uso</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.uso }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Tipo de Tr&aacute;mite</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.legalizacion }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Organismo</label>
+                              <input type="text"  name="organismo" id="organismo" class="form-control" value="{{ tramite.organismo }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Motivo</label>
+                              <input type="text"  name="motivo" id="motivo" class="form-control" value="{{ tramite.motivo }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Funcionario</label>
+                              <input type="text"  name="funcionario" id="funcionario" class="form-control" value="{{ tramite.funcionario }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Año</label>
+                              <input type="text"  name="year" id="year" class="form-control" value="{{ tramite.year }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Programa Academico</label>
+                              <input type="text"  name="carrera" id="carrera" class="form-control" value="{{ tramite.programa_academico }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Nombre del Programa</label>
+                              <input type="text"  name="carrera" id="carrera" class="form-control" value="{{ tramite.nombre_programa }}" required disabled>
+                            </div>
+                          </div>
+                        </div>
+
+                          {% elif Posgrado_Internacional %}
+                          <div class="col-md-6 col-lg-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Tipo de Estudio</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.tipo_est }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Uso</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.uso_i }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Tipo de Tr&aacute;mite</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.tipo_posi }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Intereses</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.intereses }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Organismo</label>
+                              <input type="text"  name="organismo" id="organismo" class="form-control" value="{{ tramite.organismo }}" required disabled>
+                            </div>
+                          </div>
+                          <div id="prueba" style="display:none;" class="col-md-6 group3 text-white">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Organismo</label>
+                              <input type="text"  name="carrera" id="carrera" class="form-control" value="{{ tramite.organismo_op }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Motivo</label>
+                              <input type="text"  name="motivo" id="motivo" class="form-control" value="{{ tramite.motivo }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Funcionario</label>
+                              <input type="text"  name="funcionario" id="funcionario" class="form-control" value="{{ tramite.funcionario }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Año</label>
+                              <input type="text"  name="year" id="year" class="form-control" value="{{ tramite.year }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Programa Academico</label>
+                              <input type="text"  name="carrera" id="carrera" class="form-control" value="{{ tramite.programa }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Nombre del Programa</label>
+                              <input type="text"  name="carrera" id="carrera" class="form-control" value="{{ tramite.nombre_programa }}" required disabled>
+                            </div>
+                          </div>
+                        </div>
+
+
+                        {% elif Posgrado_Internacional_Legalizacion %}
+                          <div class="col-md-6 col-lg-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Tipo de Estudio</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.tipo_est }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Uso</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.uso_i }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Tipo de Tr&aacute;mite</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.legalizacion }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group select">
+                              <label for="text-input" class="form-control-label">Intereses</label>
+                              <input type="text"  name="tipo" id="tipo" class="form-control" value="{{ tramite.intereses }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Organismo</label>
+                              <input type="text"  name="organismo" id="organismo" class="form-control" value="{{ tramite.organismo }}" required disabled>
+                            </div>
+                          </div>
+                          <div id="prueba" style="display:none;" class="col-md-6 group3 text-white">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Organismo</label>
+                              <input type="text"  name="carrera" id="carrera" class="form-control" value="{{ tramite.organismo_op }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Motivo</label>
+                              <input type="text"  name="motivo" id="motivo" class="form-control" value="{{ tramite.motivo }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Funcionario</label>
+                              <input type="text"  name="funcionario" id="funcionario" class="form-control" value="{{ tramite.funcionario }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Año</label>
+                              <input type="text"  name="year" id="year" class="form-control" value="{{ tramite.year }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Programa Academico</label>
+                              <input type="text"  name="carrera" id="carrera" class="form-control" value="{{ tramite.programa }}" required disabled>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="text-input" class="form-control-label">Nombre del Programa</label>
+                              <input type="text"  name="carrera" id="carrera" class="form-control" value="{{ tramite.nombre_programa }}" required disabled>
+                            </div>
+                          </div>
+                        </div>
+
+
+                      
+                      {% endif %}
+                      <hr class="horizontal dark">
+                      <h4 class="textt text-sm">Registro de T&iacute;tulos de la Secretar&iacute;a</h4>
+                      <div class="row">
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="text-input" class="form-control-label">Tomo</label>
+                            <input type="text"  name="tomo" id="tomo" class="form-control" value="{{ tramite.tomo }}" required disabled>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="text-input" class="form-control-label">Folio</label>
+                            <input type="text"  name="folio" id="folio" class="form-control" value="{{ tramite.folio }}" required disabled>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="text-input" class="form-control-label">N&uacute;mero</label>
+                            <input type="text"  name="numero" id="numero" class="form-control" value="{{ tramite.numero }}" required disabled>
+                          </div>
+                        </div>
+
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="text-input" class="form-control-label">Fecha de Creacion</label>
+                            <input type="text"  name="fecha" id="fecha" class="form-control" value="{{ tramite.fecha }}" required disabled>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="text-input" class="form-control-label">Estado del Tramite</label>
+                            <input type="text"  name="estado" id="estado" class="form-control" value="{{ tramite.estado }}" required disabled>
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-group">
+                            <label for="text-input" class="form-control-label">N&uacute;mero de Seguimiento</label>
+                            <input type="text"  name="estado" id="estado" class="form-control" value="{{ tramite.numero_seguimiento }}" required disabled>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="boot d-flex justify-content-center ">
+                        <a href="{% url 'MisTramites' %}" class="btn1 m-2 btn btn-primary btn-sm text-decoration-none">Atr&aacute;s</a>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>    
+      </div>
+    </div>
+  {% endblock %}
+  
+
+</body>
+</html>

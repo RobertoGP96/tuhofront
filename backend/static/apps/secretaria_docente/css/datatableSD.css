@@ -1,0 +1,69 @@
+
+.title-t{
+    padding-top: 3px;
+    color: var(--blue_osc);
+}
+.content-inside{
+    flex: 1;
+    max-width: 100vw;
+    width: 100%;
+}
+.form-select{
+    box-shadow: none !important;
+}
+.tabla{
+    padding: 25px;
+    border-radius: 8px; /* Redondeado de bordes */
+}
+.card{
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    margin-bottom: 1rem;
+    background-color: #f7f9ff34 ;
+    text-align: center;
+}
+
+.card-a{
+    border: solid;
+    border-radius: 5px;
+    border-color: #ffffff;
+    
+}
+
+.card-header{
+    background: none  ;
+}
+
+.encabezado{
+    background: #93ba22;
+}
+
+.card-body{
+    box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+    margin-bottom: 1rem;
+}
+
+tbody{
+    text-align: -webkit-auto;
+}
+.ico{
+    padding: 5px;
+    padding-right: 5px;
+    color:#007bff;
+}
+
+
+.tableau th,.tableau td {
+    padding: 10px;
+    vertical-align: middle;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.ico {
+    cursor: pointer;
+    color: #007bff; /* Color de los íconos */
+}
+
+.ico:hover {
+    color: #043468; /* Oscurecer el ícono al pasar el mouse */
+}

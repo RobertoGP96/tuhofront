@@ -1,0 +1,63 @@
+{% extends "Base Admin.html" %}
+{% load static %}
+
+<!-- Conatiner CSS -->
+{% block css %}
+<link rel="stylesheet" href=" {% static 'css/Crear Noticia.css' %}">
+{% endblock %}
+<!-- End Conatiner CSS -->
+
+{% block content %}
+<div id="error-container">
+
+</div>
+<div class="container-form">
+    <div class="form">
+        <div class="contact-info">
+            <h3 class="title">Noticia </h3>
+            <p class="text">
+                Si tienes información relevante, interesante o impactante que qieras compartir con el mundo ¡Esta es tu
+                oportunidad! Envianos tus noticias y ayuda
+                a mantener nuestra sociedad informada y actualizada.
+            </p>
+        </div>
+        <div class="contact-form">
+            <span class="circle one"></span>
+            <span class="circle two"></span>
+            <form action="." method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <h3 class="title">Editar Noticia</h3>
+                <div class="input-container focus">
+                    <input type="text" name="titulo" class="input" value="{{ noticias.titulo }}" id="inputTitulo">
+                    <label for="">Título</label>
+                    <span>Título</span>
+                </div>
+                <div class="input-container focus">
+                    <input type="file" name="file" class="input" value="{{ noticias.imagen_cabecera }}" id="inputImagen">
+                    <label for="">Imagen</label>
+                    <span>Imagen</span>
+                </div>
+                <div class="input-container focus">
+                    <input type="text" name="resumen" class="input" value="{{ noticias.resumen }}" id="inputResumen">
+                    <label for="">Título</label>
+                    <span>Título</span>
+                </div>
+                <div class="input-container textarea focus">
+                    <textarea name="cuerpo" class="input" value="{{ noticias.cuerpo }}" id="inputText"></textarea>
+                    <label for="">Contenido</label>
+                    <span>Contenido</span>
+                </div>
+                <input type="submit" value="Aceptar" class="btn1" id="boton">
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<!-- Conatiner JS -->
+{% block js %}
+<script>
+    const textarea = document.querySelector("textarea").value = "{{ noticias.cuerpo }}"
+</script>
+<!-- End Conatiner JS -->
+{% endblock %}

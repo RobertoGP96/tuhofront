@@ -1,0 +1,121 @@
+{% extends "navbar_administracion.html" %}
+{% load static %}
+
+
+<!-- Conatiner CSS -->
+{% block css %}
+<link rel="stylesheet" href=" {% static 'css/Sitio Administrativo.css' %}">
+<link rel="stylesheet" href=" {% static 'libs/Datatable/CSS/dataTables.bootstrap5.css' %}">
+<link rel="stylesheet" href=" {% static 'libs/Datatable/CSS/buttons.bootstrap5.css' %}">
+<link rel="stylesheet" href=" {% static 'libs/Datatable/CSS/responsive.bootstrap5.css' %}">
+<link rel="stylesheet" href=" {% static 'css/Datatable.css' %}">
+{% endblock %}
+<!-- End Conatiner CSS -->
+
+
+{% block content %}
+<main class="content-inside px-3 py-2 mx-2">
+    <section id="tablaUsuarios">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    Usuarios
+                </h5>
+            </div>
+            <div class="p-2">
+            <table id="Usuarios" class="display table table-striped table-hover table-primary" style="width:100%">
+                <thead class="encabezado">
+                    <tr>
+                        <th scope="col" style="color: white; text-align: start;">No.</th>
+                        <th scope="col" style="color: white; text-align: start;">Usuario</th>
+                        <th scope="col" style="color: white; text-align: start;">Teléfono</th>
+                        <th scope="col" style="color: white; text-align: start;">Email</th>
+                        <th scope="col" style="color: white; text-align: start;">Última Conexión</th>
+                        <th scope="col" style="color: white; text-align: start;">Cambiar Rol</th>
+                        <th scope="col" style="color: white; text-align: start;">Opciones</th>
+
+                    </tr>
+                </thead>
+                {% for usuario in usuarios %}
+                <tr>
+                    <td style="text-align: start;">{{ forloop.counter }}</td>
+                    <td style="text-align: start;">{{ usuario.username }}</td>
+                    <td style="text-align: start;">
+                        {% if usuario.telefono %}
+                        {{ usuario.telefono }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+                    <td style="text-align: start;">
+                        {% if usuario.email %}
+                        <a class="iconos" href="mailto:{{ usuario.email }}">{{ usuario.email }}</a>
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+                    <td style="text-align: start;">
+                        {% if usuario.last_login %}
+                        {{ usuario.last_login }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+                    <td style="text-align: start;">
+                        <a class="iconos"  href="{% url 'Cambiar_Gestor' usuario.id %}">{{ usuario.groups.all.0 }}</a>
+                    </td>
+                    <td style="text-align: center; font-size: 1.2rem;">
+                        <a class="iconos p-2" href="{% url 'Informacion_Usuario' usuario.id %}"><i class="bx bx-info-circle"></i></a>
+                        <a class="iconos p-2" data-bs-toggle="modal" data-bs-target="#Usuario{{ usuario.id }}"><i class="bx bx-trash"></i></a>
+                    </td>
+                </tr>
+                <!-- Modal -->
+                <div class="modal fade" id="Usuario{{ usuario.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel" style="color:black"><i class="bi bi-exclamation-triangle"
+                            style="color:black"></i> Advertencia</h5>
+                        <button type="button" class="btn-close cerrar" data-bs-dismiss="modal" aria-label="Close" style="box-shadow: none"></button>
+                        </div>
+                        <div class="modal-body" style="color:black">
+                        ¿Desea eliminar este usuario?
+                        </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
+                        <a href="{% url 'EliminarUsuario' usuario.id %}" class="btn btn-primary">Aceptar</a>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        </div>
+    </section>
+</main>
+{% endblock %}
+
+<!-- Conatiner JS -->
+{% block js%}
+<script src="{% static 'libs/Datatable/JS/jquery-3.7.1.js' %}"></script>
+<script src="{% static 'libs/Datatable/JS/dataTables.js' %}"></script>
+<script src="{% static 'libs/Datatable/JS/dataTables.bootstrap5.js' %}"></script>
+<!--Botones DataTables-->
+<script src="{% static 'libs/Datatable/JS/dataTables.buttons.js' %}"></script>
+<script src="{% static 'libs/Datatable/JS/buttons.bootstrap5.js' %}"></script>
+<script src="{% static 'libs/Datatable/JS/jszip.min.js' %}"></script>
+<script src="{% static 'libs/Datatable/JS/pdfmake.min.js' %}"></script>
+<script src="{% static 'libs/Datatable/JS/vfs_fonts.js' %}"></script>
+<script src="{% static 'libs/Datatable/JS/buttons.html5.min.js' %}"></script>
+<script src="{% static 'libs/Datatable/JS/buttons.print.min.js' %}"></script>
+<script src="{% static 'libs/Datatable/JS/bottons.colVis.min.js' %}"></script>
+<!--DataTables responsivo-->
+<script src="{% static 'libs/Datatable/JS/dataTables.responsive.js' %}"></script>
+<script src="{% static 'libs/Datatable/JS/responsive.bootstrap5.js' %}"></script>
+<!--Inicializar DataTables-->
+<script src="{% static 'libs/Datatable/JS/Usuarios.js' %}"></script>
+
+{% endblock %}
+<!-- End Conatiner JS -->

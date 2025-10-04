@@ -1,0 +1,205 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'libs/Bootstrap/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/Base.css' %}">
+  <link rel="stylesheet" href="{% static 'libs/boxicons-2.1.4/css/boxicons.css' %}">
+  <link rel="stylesheet" href="{% static 'libs/Bootstrap/icon/bootstrap-icons.min.css' %}">
+  <link rel="icon" type="image/png" sizes="50x50" href="{% static 'img/Id UHo-03-white.png' %}">
+
+  <!-- Conatiner CSS -->
+  {% block css %}
+  {% endblock %}
+  <!-- End Conatiner CSS -->
+
+  <title>Trámites Universidad de Holguín</title>
+
+
+</head>
+
+<body>
+  <!-- Sidebar -->
+  <div class="container-fluid p-0 d-flex h-100">
+    <div id="bdSidebar"
+      class="d-flex flex-column flex-shrink-0 p-3  pt-0 pb-0 text-white offcanvas-md offcanvas-start responsivo"
+      style="width: 250px">
+      <a href="{% url "Inicio" %}" class="navbar-brand">
+        <img src="{% static 'img/Id UHo-03-white.png' %}" width="200" height="80px" alt="">
+      </a>
+      <hr>
+      {% if "Administración" in grupos %}
+      <ul class="mynav nav nav-pills flex-column mb-auto">
+        <li class="nav-item mb-1" aria-label="">
+          <a href="#" class="usuario" >
+            <i class="bi bi-person-circle mx-1" style="font-size:1.1rem;"></i>
+             Bienvenido, <strong>{{ user.username }}</strong>
+          </a>
+        </li>
+        <li class="nav-item mb-1">
+          <a href="{% url 'Administracion' %}" class="active">
+            <i class="bx bxs-widget"></i>
+            Inicio
+          </a>
+        </li>
+        
+        <li class="nav-item mb-1" aria-label="Noticias">
+          <a href="{% url 'Noticias' %}" class="">
+            <i class="bx bx-news"></i>
+            Noticias
+          </a>
+        </li>
+        <li class="nav-item mb-1" aria-label="Notificaciones">
+          <a href="{% url 'BandejaAdmin' %}" class="">
+            <i class="bx bx-bell"></i>
+            Notificaciones
+            <span class="notification-badge">{{notificaciones_count}}</span>
+          </a>
+        </li>
+        <li class="nav-item mb-1" aria-label="Tramites">
+          <a href="{% url 'TramitesAdmin' %}" class="">
+            <i class="bx bx-file"></i>
+            Trámites
+          </a>
+        </li>
+        <li class="nav-item mb-1" aria-label="Usuarios">
+          <a href="{% url 'Usuarios' %}" class="">
+            <i class="bx bx-user"></i>
+            Usuarios
+          </a>
+        </li>
+        <li class="nav-item mb-1" aria-label="Grupos">
+          <a href="{% url 'Grupos' %}" class="">
+            <i class="bi bi-people mx-1" style="font-size:1.1rem;"></i>
+            Roles de Usuario
+          </a>
+        </li>
+        <li class="nav-item mb-1" aria-label="Configuracion">
+          <a href="{% url "Configuracion" %}" class="">
+            <i class="bi bi-gear mx-1" style="font-size:1.1rem;"></i>
+            Configuración
+          </a>
+        </li>
+        <li class="nav-item mb-1" aria-label="InstalarModulosPDF">
+          <a href="{% url 'InstalarModulosPDF' %}" class="">
+            <i class="bi bi-question-circle mx-1" style="font-size:1.1rem;"></i>
+            Instalación de Módulos
+          </a>
+        </li>
+      </ul>
+      <hr class="mb-0">
+      <div>
+        <ul class="mynav nav nav-pills flex-column mb-auto ">
+          <li class="nav-item mb-1 " aria-label="CerrarSesion">
+            <a class="" data-bs-toggle="modal" data-bs-target="#exampleModal">
+              <i class="bx bx-log-out"></i>
+              Cerrar Sesión
+            </a>
+          </li>
+        </ul>
+      </div>
+      {% endif %}
+      {% if "Administrador Trámites" in grupos %}
+      <ul class="mynav nav nav-pills flex-column mb-auto">
+        <li class="nav-item mb-1" aria-label="">
+          <a href="#" class="usuario" >
+            <i class="bi bi-person-circle mx-1" style="font-size:1.1rem;"></i>
+             Bienvenido, <strong>{{ user.username }}</strong>
+          </a>
+        </li>
+        <li class="nav-item mb-1">
+          <a href="{% url 'Administracion' %}" class="active">
+            <i class="bx bxs-widget"></i>
+            Inicio
+          </a>
+        </li>
+        
+        <li class="nav-item mb-1" aria-label="Notificaciones">
+          <a href="{% url 'BandejaAdmin' %}" class="">
+            <i class="bx bx-bell"></i>
+            Notificaciones
+            <span class="notification-badge">{{notificaciones_count}}</span>
+          </a>
+        </li>
+        <li class="nav-item mb-1" aria-label="Tramites">
+          <a href="{% url 'TramitesAdmin' %}" class="">
+            <i class="bx bx-file"></i>
+            Trámites
+          </a>
+        </li>
+      </ul>
+      <hr class="mb-0">
+      <div>
+        <ul class="mynav nav nav-pills flex-column mb-auto ">
+          <li class="nav-item mb-1 " aria-label="CerrarSesion">
+            <a class="" data-bs-toggle="modal" data-bs-target="#exampleModal">
+              <i class="bx bx-log-out"></i>
+              Cerrar Sesión
+            </a>
+          </li>
+        </ul>
+      </div>
+      {% endif %}
+
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel"><i class="bi bi-exclamation-triangle"></i> Advertencia</h5>
+            <button type="button" class="btn-close cerrar" data-bs-dismiss="modal" aria-label="Close" style="box-shadow: none"></button>
+          </div>
+          <div class="modal-body">
+            ¿Desea cerrar esta sesión?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
+            <a href="{% url 'CerrarSesion' %}" class="btn btn-primary">Aceptar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="contenedor">
+      <div class="p-2 d-md-none d-flex text-white responsivo">
+        <a href="#" class="text-white" data-bs-toggle="offcanvas" data-bs-target="#bdSidebar">
+          <i class="bx bx-menu"></i>
+        </a>
+        <span class="ms-3">Trámites Universidad de Holguín</span>
+      </div>
+      <!-- End Sidebar -->
+
+      <div class="main-container">
+        <div class="row content">
+          <div class="col">
+            <!-- Container -->
+            {% block content %}
+            {% endblock %}
+            <!-- End Container -->
+          </div>
+
+          <!-- Footer -->
+          <p class="text-center pb-2 footer">Trámites Universidad de Holguín &copy; 2024.
+          </p>
+          <!-- End Footer -->
+          
+        </div>
+      </div>
+
+    </div>
+  </div>
+  </div>
+
+  <!-- Container JS -->
+  {% block js %}
+  {% endblock %}
+  <script src=" {% static 'libs/Bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src=" {% static 'js/script.js' %}"></script>
+  <script src=" {% static 'js/Modals.js' %}"></script>
+  <!-- End Container JS -->

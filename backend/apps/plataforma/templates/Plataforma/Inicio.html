@@ -1,0 +1,217 @@
+{% extends "Base.html" %}
+{% load static %}
+
+<!-- Conatiner CSS -->
+{% block css %}
+<link rel="stylesheet" href=" {% static 'css/Inicio.css' %}">
+{% endblock %}
+<!-- End Conatiner CSS -->
+
+{% block content %}
+
+<section>
+  <div class="container mb-3 mt-3">
+    <div class="row mb-1 mt-1">
+      <div class="offset-lg-3 col-lg-6 text-center">
+        <h3 class="" style="color: #005296; font-weight: 600;">Plataforma de trámites y servicios de la Universidad de Holguín</h3>
+      </div>
+    </div>
+    <div class="row d-flex align-items-center justify-content-center ">
+      <div class="col-lg-4 col-md-4 d-flex align-items-center justify-content-center ">
+        <div class="start-img mb-2  ">
+          <img src="{% static 'img/Id UHo-01.png' %}" alt="" class="img-fluid imagen">
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-6 centrar-texto">
+        <p style="padding-left: 15px;">La plataforma de trámites y servicios de la Universidad de Holguín es una 
+          herramienta virtual que tiene como objetivo principal brindar una experiencia ágil y eficiente 
+          a los estudiantes, docentes y personal administrativo de la institución. A continuación, 
+          detallaremos quiénes son, cuáles son sus objetivos, su misión y visión, así como los beneficios que ofrece:
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container mb-3">
+    <div class="row mb-1 mt-1">
+      <div class="offset-lg-3 col-lg-6 text-center mb-1">
+        <h3 class="" style="color: #005296; font-weight: 600;">¿Quiénes somos?</h3>
+      </div>
+    </div>
+    <div class="row d-flex align-items-center justify-content-center ">
+      <div class="col-lg-4 col-md-4 d-flex align-items-center justify-content-center ">
+        <div class="start-img mb-2  ">
+          <img src="{% static 'img/somos.png' %}" alt="" class="img-fluid imagen">
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-6 centrar-texto">
+        <p style="padding-left: 15px;">La plataforma de trámites y servicios de la Universidad de Holguín es un sistema en línea diseñado para facilitar la 
+          gestión administrativa y académica de la comunidad universitaria. Su implementación busca optimizar los procesos internos 
+          y mejorar la comunicación entre los diferentes actores involucrados en la vida universitaria.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container mb-3">
+    <div class="row mb-2 mt-2">
+      <div class="text-center">
+        <h3 class="" style="color: #005296;font-weight: 600;">Objetivos</h3>
+      </div>
+    </div>
+    <div class="row d-flex align-items-center justify-content-center ">
+      <div class="col-lg-4 col-md-4 d-flex align-items-center justify-content-center ">
+        <div class="start-img mb-2  ">
+          <img src="{% static 'img/objetivo.png' %}" alt="" class="img-fluid imagen">
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-6 centrar-texto">
+        <ul>
+          <li>
+            <p>Agilizar los trámites administrativos relacionados con la inscripción, matrícula, solicitud de documentos, entre otros.</p>
+          </li>
+          <li>
+            <p>Facilitar el acceso a información relevante sobre cursos, programas académicos, eventos y noticias de la universidad.</p>
+          </li>
+          <li>
+            <p>Mejorar la comunicación entre estudiantes, docentes y personal administrativo a través de canales virtuales.</p>
+          </li>
+          <li>
+            <p>Promover la digitalización de los servicios universitarios para garantizar una experiencia más cómoda y eficiente.</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container mb-3">
+    <div class="row mb-2 mt-2">
+      <div class="text-center">
+        <h3 class="" style="color: #005296;font-weight: 600;">Misión y Visión</h3>
+      </div>
+    </div>
+    <div class="row d-flex align-items-center justify-content-center ">
+      <div class="col-lg-4 col-md-4 d-flex align-items-center justify-content-center ">
+        <div class="start-img mb-2  ">
+          <img src="{% static 'img/misionVision.png' %}" alt="" class="img-fluid imagen">
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-6 centrar-texto">
+        <ul>
+          <li>
+            <p><strong>Misión:</strong>
+              Nuestra misión es proporcionar una plataforma tecnológica intuitiva y segura que permita a la comunidad universitaria realizar sus trámites y acceder a servicios de manera rápida y sencilla, contribuyendo así al desarrollo académico y profesional de nuestros usuarios.
+              </p>
+          </li>
+          <li>
+            <p><strong>Visión:</strong>
+              Nos proyectamos como una plataforma líder en innovación tecnológica dentro del ámbito universitario, siendo reconocidos por nuestra eficiencia, transparencia y compromiso con la excelencia en la prestación de servicios.
+              </p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container mb-3">
+    <div class="row mb-2 mt-2">
+      <div class="offset-lg-3 col-lg-6 text-center">
+        <h3 class="" style="color: #005296;font-weight: 600;">Beneficios</h3>
+      </div>
+    </div>
+    <div class="row d-flex align-items-center justify-content-center ">
+      <div class="col-lg-4 col-md-4 d-flex align-items-center justify-content-center ">
+        <div class="start-img mb-2  ">
+          <img src="{% static 'img/beneficios.png' %}" alt="" class="img-fluid imagen">
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-6 centrar-texto">
+        <ul>
+          <li>
+            <p>Ahorro de tiempo al realizar trámites de forma remota, sin necesidad de desplazarse físicamente.</p>
+          </li>
+          <li>
+            <p>Acceso inmediato a información relevante sobre la universidad, eventos académicos y oportunidades de desarrollo.</p>
+          </li>
+          <li>
+            <p>Mejora en la comunicación y coordinación entre los diversos estamentos de la institución.</p>
+          </li>
+          <li>
+            <p>Seguridad en el manejo de datos personales y confidenciales a través de protocolos de protección de la información.</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="acordion">
+  <div class="container">
+    <div class="row mb-3 mt-3">
+      <div class="offset-lg-3 col-lg-6 text-center">
+        <h3 class="" style="color: #005296;font-weight: 600;">Preguntas frecuentes</h3>
+      </div>
+    </div>
+    <div class="row alig-item-center">
+      <div class="offset-lg-2 col-lg-8 mb-5">
+        <div class="accordion row-acordion accordion-flush bg-primary shadow" id="accordionFlushExample">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="flush-headingOne">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                ¿La plataforma está disponible las 24 horas del día?
+              </button>
+            </h2>
+            <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne"
+              data-bs-parent="#accordionFlushExample">
+              <div class="accordion-body">
+                <p>Sí, nuestra plataforma de trámites y servicios está disponible las 24 horas del día, los 7 días de la
+                  semana. Los usuarios pueden acceder a ella en cualquier momento para realizar sus trámites de forma
+                  conveniente y oportuna.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="flush-headingTwo">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                ¿Qué trámites puedo realizar a través de la plataforma?
+              </button>
+            </h2>
+            <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo"
+              data-bs-parent="#accordionFlushExample">
+              <div class="accordion-body">
+                <p>La plataforma de trámites y servicios de la Universidad de Holguín permite realizar una variedad de
+                  trámites académicos y administrativos como certificaciones, consulta de clalificaciones, solicitud de
+                  documentos, entre otros.</p>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="flush-headingThree">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+                ¿Qué debo hacer si olvidé mi contraseña?
+              </button>
+            </h2>
+            <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree"
+              data-bs-parent="#accordionFlushExample">
+              <div class="accordion-body">En caso de olvidar la contraseña, los usuarios pueden utilizar la opción de
+                recuperar contraseña que se encuentra en la página de Inicio de sesión de la plataforma.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

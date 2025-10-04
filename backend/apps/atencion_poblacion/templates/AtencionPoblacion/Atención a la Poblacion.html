@@ -1,0 +1,259 @@
+{% extends "Base.html" %}
+{% load static %}
+
+<!-- Conatiner CSS -->
+{% block css %}
+<link rel="stylesheet" href=" {% static 'css/FormularioSelect.css' %}">
+{% endblock %}
+<!-- End Conatiner CSS -->
+
+{% block content %}
+{% if messages %}
+            {% for message in messages  %}
+            <div style="position: absolute; right: 20px; top: 40px; display: flex; align-items: center; padding-right: 0rem;  z-index: 2000"
+            class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button style="font-size: 10px; border-bottom: none; position: relative; box-shadow: none;" type="button"
+                class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </button>
+            </div>
+            {% endfor %}
+        {% endif %}
+<div class="container-form">
+  <div class="form">
+    <div class="contact-info">
+      <h3 class="title">Atención a la población </h3>
+      <p class="text">
+        En nuestro centro de atención a la población, nos esforzamos por brindar un servicio de calidad y cercanía a
+        todos los ususarios.
+        Nos comprometemos a escuchar sus necesidades, preocupaciones y para poder ofrecerles la mejor atención posible.
+      </p>
+      <div class="info">
+        <div class="information">
+          <i class="bx bx-map-alt" class="icon"></i>
+          <p>Avenida XX Aniversario s/n Piedra Blanca, Holguín, Cuba</p>
+        </div>
+        <div class="information">
+          <i class="bx bx-envelope" class="icon"></i>
+          <p>tramitesuho@gmail.com</p>
+        </div>
+        <div class="information">
+          <i class="bx bx-phone" class="icon"></i>
+          <p>+53 55568719</p>
+        </div>
+      </div>
+    </div>
+    <div class="contact-form">
+      <span class="circle one"></span>
+      <span class="circle two"></span>
+      <form action="." method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h3 class="title">Contactanos</h3>
+        <div id="error-container">
+
+        </div>
+        {% if response %}
+        {% if response == 'correcto' %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert"
+          style="height:40px; position: fixed; right: 20px; top: 50px; display: flex; align-items: center; padding-right: 0rem;  z-index: 2000">
+          {{ message }}
+          <button style="font-size: 10px; border-bottom: none; position: relative; box-shadow: none;" type="button"
+            class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </button>
+        </div>
+        {% endif %}
+        {% endif %}
+        <div class="row">
+          <div class="col-lg-6 col-md-12 col-sm-12">
+        <div class="input-container {% if form.nombre.value %}focus{% endif %}" >
+          {{ form.nombre }}
+          <label for="">Nombre*</label>
+          <span>Nombre*</span>
+        </div>
+        </div>
+        <div class="col-lg-6 col-md-12 col-sm-12">
+        <div class="input-container {% if form.apellidos.value %}focus{% endif %}">
+          {{ form.apellidos }}
+          <label for="">Apellidos*</label>
+          <span>Apellidos*</span>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-12 col-sm-12">
+        <div class="input-container {% if form.email.value %}focus{% endif %}">
+          {{ form.email }}
+          <label for="">Email*</label>
+          <span>Email*</span>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-12 col-sm-12">
+        <div class="input-container {% if form.ci.value %}focus{% endif %}">
+          {{ form.ci }}
+          <label for="">Carnet Identidad*</label>
+          <span>Carnet Identidad*</span>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-12 col-sm-12">
+        <div class="input-container {% if form.telefono.value %}focus{% endif %}">
+          {{ form.telefono }}
+          <label for="">Teléfono*</label>
+          <span>Teléfono*</span>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-12 col-sm-12">
+        <div class="input-container {% if form.direccion.value %}focus{% endif %}">
+          {{ form.direccion }}
+          <label for="">Dirección*</label>
+          <span>Dirección*</span>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-12 col-sm-12">
+        <div class="input-container select-municipio {% if form.municipality.value %}focus{% endif %}">
+          <input type="hidden" name="municipality" value="{{form.municipality.value}}" id="municipality-select" required>
+          <div class="input selector" id="municipality-select-widget" >
+            {% if form.municipality.value %}
+            {{form.municipality.value}}
+            {% endif %}
+          </div>
+          <label for="">Municipio*</label>
+          <span>Municipio*</span>
+        </div>
+        <div class="select-options">
+          <div aria-valuetext="Antilla" class="element">Antilla</div>
+          <div aria-valuetext="Banes" class="element">Banes</div>
+          <div aria-valuetext="Báguano" class="element">Báguano</div>
+          <div aria-valuetext="Cacocum" class="element">Cacocum</div>
+          <div aria-valuetext="Calixto García" class="element">Calixto García</div>
+          <div aria-valuetext="Cueto" class="element">Cueto</div>
+          <div aria-valuetext="Frank País" class="element">Frank País</div>
+          <div aria-valuetext="Gibara" class="element">Gibara</div>
+          <div aria-valuetext="Holguín" class="element">Holguín</div>
+          <div aria-valuetext="Mayarí" class="element">Mayarí</div>
+          <div aria-valuetext="Moa" class="element">Moa</div>
+          <div aria-valuetext="Rafael Freyre" class="element">Rafael Freyre</div>
+          <div aria-valuetext="Sagua de Tánamo" class="element">Sagua de Tánamo</div>
+          <div aria-valuetext="Urbano Noris" class="element">Urbano Noris</div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-12 col-sm-12">
+        <div class="input-container select-consulta {% if form.consulta.value %}focus{% endif %}">
+          <input type="hidden" name="consulta" value="{{form.consulta.value}}" id="consulta-select" required>
+          <div class="input selector" id="consulta-select-widget" >
+            {% if form.consulta.value %}
+              {{form.consulta.value}}
+            {% endif %}
+          </div>
+          <label for="">Tipo de consulta*</label>
+          <span>Tipo de consulta*</span>
+        </div>
+        <div class="select-options-consulta">
+          <div aria-valuetext="Duda" class="element">Duda</div>
+          <div aria-valuetext="Queja" class="element">Queja</div>
+          <div aria-valuetext="Solicitid de Información" class="element">Solicitud de Información</div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-12 col-sm-12">
+        <div class="input-container {% if form.asunto.value %}focus{% endif %}">
+          {{ form.asunto }}
+          <label for="">Asunto*</label>
+          <span>Asunto*</span>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-12 col-sm-12">
+        <div class="input-container focus">
+          {{ form.adjunto }}
+          <label for="">Archivo adjunto</label>
+          <span>Archivo adjunto</span>
+        </div>
+      </div>
+        <div class="input-container textarea {% if form.mensaje.value %}focus{% endif %}">
+          {{ form.mensaje }}
+          <label for="">Mensaje*</label>
+          <span>Mensaje*</span>
+        </div>
+        <input type="submit" value="Enviar" id="boton" class="btn1">
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+<!-- Conatiner JS -->
+{% block js %}
+<script>
+ /*
+* Seccion de Select
+*/
+const selectInput = document.querySelector(".select-municipio")
+//const selectElements = document.querySelectorAll(".select-options .element")
+const selectElements = document.querySelector(".select-options")
+{% if form.municipality.value %}
+ let selection = true
+ {% else %}
+ let selection = false
+ {% endif %}
+
+selectInput.addEventListener("click", () => {
+    selectInput.classList.toggle("focused")
+    if (!selection){
+        selectInput.classList.toggle("focus")
+        if ( Array.from(selectInput.classList).indexOf("focus") != -1 ){
+            selectInput.children[1].innerText = "Selecciona un Municipio"
+        } else {
+            selectInput.children[1].innerText = ""
+        }
+    }
+})
+
+selectElements.addEventListener("click", (e) => {
+    if (e.target.className === "element"){
+        let trueField = selectInput.children[0]
+        let fakeField = selectInput.children[1]
+        trueField.value = e.target.ariaValueText
+        fakeField.innerText = e.target.innerText
+        selection = true
+        selectInput.classList.toggle("focused")
+    }
+})
+</script>
+<script>
+  /*
+ * Seccion de Select
+ */
+ const selectInputConsulta = document.querySelector(".select-consulta")
+ //const selectElements = document.querySelectorAll(".select-options .element")
+ const selectElementsConsulta = document.querySelector(".select-options-consulta")
+ {% if form.consulta.value %}
+ let selectionConsulta = true
+ {% else %}
+ let selectionConsulta = false
+ {% endif %}
+
+ 
+ selectInputConsulta.addEventListener("click", () => {
+     selectInputConsulta.classList.toggle("focused")
+     if (!selectionConsulta){
+         selectInputConsulta.classList.toggle("focus")
+         if ( Array.from(selectInputConsulta.classList).indexOf("focus") != -1 ){
+             selectInputConsulta.children[1].innerText = "Selecciona un tipo de consulta"
+         } else {
+             selectInputConsulta.children[1].innerText = ""
+         }
+     }
+ })
+ 
+ selectElementsConsulta.addEventListener("click", (e) => {
+     if (e.target.className === "element"){
+         let trueField = selectInputConsulta.children[0]
+         let fakeField = selectInputConsulta.children[1]
+         trueField.value = e.target.ariaValueText
+         fakeField.innerText = e.target.innerText
+         selectionConsulta = true
+         selectInputConsulta.classList.toggle("focused")
+     }
+ })
+ </script>
+<script src="{% static 'js/FormularioSelect.js' %}"></script>
+<script src="{% static 'js/Trim AtencionP.js' %}"></script>
+{% endblock %}
+<!-- End Conatiner JS -->

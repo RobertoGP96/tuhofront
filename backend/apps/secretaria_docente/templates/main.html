@@ -1,0 +1,151 @@
+{% extends "navbar.html" %}
+{% load static %}
+
+    {% block css %}
+    <link rel="stylesheet" href="{% static 'css/Inicio_Secretaria.css' %}">
+    {% endblock %}
+
+
+{% block content %}
+
+  <body class="index-page bg-gray-200">
+    <header class="header-2">
+      <div class=" ini page-header min-vh-75 relative">
+        <span class="mask bg-gradient-primary opacity-4"></span>
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-7 text-center mx-auto">
+              <h1 class="uho text-white pt-3 mt-n5">Secretar&iacute;a Docente</h1>
+              <p class="infouho lead text-white mt-3">Universidad de Holgu&iacute;n</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="card card-body blur shadow-blur mx-3 mx-md-4 mt-n6">
+      <section class="pt-2 pb-2" id="count-stats">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-9 mx-auto py-3">
+              <div class="row">
+                <div class="col-md-4 position-relative">
+                  <div class="p-3 text-center">
+                    <h1 class="text-gradient text-primary">
+                      <span id="state1" countto="70">{{cantidad_tramites}}</span>+</h1>
+                    <h5 class="mt-3">Tr&aacute;mites Totales</h5>
+                    <p class="text-sm font-weight-normal">Cantidad de tr&aacute;mites realizados</p>
+                  </div>
+                  <hr class="vertical dark">
+                </div>
+                <div class="col-md-4 position-relative">
+                  <div class="p-3 text-center">
+                    <h1 class="text-gradient text-primary"> <span id="state2" countto="15">{{usuarios_count}}</span>+</h1>
+                    <h5 class="mt-3">Usuarios</h5>
+                    <p class="text-sm font-weight-normal">Cantidad de usuarios</p>
+                  </div>
+                  <hr class="vertical dark">
+                </div>
+                <div class="col-md-4 position-relative">
+                  <div class="p-3 text-center">
+                    <h1 class="text-gradient text-primary" id="state3" countto="4">{{completado}}</h1>
+                    <h5 class="mt-3">Tr&aacute;mites Completados</h5>
+                    <p class="text-sm font-weight-normal">Tr&aacute;mites finalizados</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div class="card card-body shadow-blur mx-3 mx-md-4 mt-n6">
+      <section class="pt-2 pb-2" id="count-stats">
+        <div class="container mt-sm-2">
+          <div class=" imagen-object page-header py-6 py-md-5 my-sm-3 mb-3 border-radius-xl" style="height: 400px;" loading="lazy">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-12 ms-lg-12 contennt">
+                  <h4 class="uho-uho text-white">UHo</h4>
+                  <br>
+                  <h2>
+                    <div class="gradientText">
+                      <div class="job" data-job1 ="Universidad de Holguín"  data-job2 ="Espacio para crecer"></div>
+                    </div>
+                  </h2>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <section class="my-2 py-2">
+          <div class="container">
+            <div class="row align-items-center">
+              <div class="row justify-content-start">
+                <div class="col-md-6">
+                  <div class="info">
+                    <div class="mission-container">
+                        <span class="circle-blue"></span>
+                        <h5 class="font-weight-bolder mt-3" style="font-weight: bold;">Misi&oacute;n</h5>
+                    </div>
+                    <p class="pe-2" ="pe-2" style="text-align: justify; max-width: 600px; margin-left: auto; margin-right: auto;">
+                      La Secretar&iacute;a Docente de la Universidad de Holgu&iacute;n tiene como misi&oacute;n 
+                      proporcionar una gesti&oacute;n acad&eacute;mica eficiente y de alta calidad. 
+                      Nos dedicamos a apoyar el desarrollo integral de nuestros estudiantes 
+                      y a fortalecer nuestro cuerpo docente, garantizando que la universidad ofrezca 
+                      una educaci&oacute;n superior de excelencia que impulse el progreso social y cultural 
+                      de nuestra regi&oacute;n.
+                    </p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="info">
+                    <div class="mission-container">
+                      <span class="circle-blue"></span>
+                      <h5 class="font-weight-bolder mt-3" style="font-weight: bold;">Visi&oacute;n</h5>
+                    </div>
+                    <p class="pe-2" ="pe-2" style="text-align: justify; max-width: 600px; margin-left: auto; margin-right: auto;">
+                      Nuestra visi&oacute;n es ser un referente en la gesti&oacute;n acad&eacute;mica dentro 
+                      del sistema de educaci&oacute;n
+                      superior cubano. Nos destacamos por nuestra innovaci&oacute;n, eficiencia y compromiso con la calidad,
+                      aspirando a crear un entorno acad&eacute;mico din&aacute;mico que fomente el aprendizaje continuo y 
+                      la excelencia educativa. Queremos preparar a nuestros estudiantes para enfrentar con &eacute;xito los 
+                      desaf&iacute;os del futuro.
+                    </p>
+                  </div>
+                </div>
+                <div class="col-md-6 mt-3">
+                  <div class="mission-container">
+                    <span class="circle-blue"></span>
+                    <h5 class="font-weight-bolder mt-3" style="font-weight: bold;">Historia</h5>
+                  </div>
+                  <p class="pe-2" ="pe-2" style="text-align: justify; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    Desde su fundaci&oacute;n, la Universidad de Holgu&iacute;n ha sido un pilar fundamental en el desarrollo 
+                    de la regi&oacute;n oriental. La Secretar&iacute;a Docente ha desempeñado un papel crucial en 
+                    esta trayectoria, evolucionando constantemente para adaptarse a los cambios y necesidades 
+                    del entorno acad&eacute;mico. Nuestra historia es un testimonio de dedicaci&oacute;n y mejora continua, 
+                    siempre con el objetivo de alcanzar la excelencia educativa.
+                  </p>
+                </div>
+                <div class="col-md-6 mt-3">
+                  <div class="info">
+                    <div class="mission-container">
+                      <span class="circle-blue"></span>
+                      <h5 class="font-weight-bolder mt-3" style="font-weight: bold;">Nuestro Equipo</h5>
+                    </div>
+                    <p class="pe-2" ="pe-2" style="text-align: justify; max-width: 600px; margin-left: auto; margin-right: auto;">
+                      Nuestro equipo, altamente capacitado y apasionado por la educaci&oacute;n, trabaja con dedicaci&oacute;n 
+                      para asegurar el éxito acad&eacute;mico de nuestros estudiantes, manteniendo altos est&aacute;ndares y 
+                      fomentando un entorno de aprendizaje colaborativo y enriquecedor, comprometidos con el 
+                      desarrollo integral de nuestra comunidad universitaria.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </div>
+  </body>
+
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "Base Admin.html" %}
+{% load static %}
+
+<!-- Conatiner CSS -->
+{% block css %}
+<link rel="stylesheet" href=" {% static 'css/Crear Noticia.css' %}">
+{% endblock %}
+<!-- End Conatiner CSS -->
+
+{% block content %}
+<div id="error-container">
+
+</div>
+<div class="container-form">
+    <div class="form">
+        <div class="contact-info">
+            <h3 class="title">Noticia </h3>
+            <p class="text">
+                Si tienes información relevante, interesante o impactante que qieras compartir con el mundo ¡Esta es tu
+                oportunidad! Envianos tus noticias y ayuda
+                a mantener nuestra sociedad informada y actualizada.
+            </p>
+        </div>
+        <div class="contact-form">
+            <span class="circle one"></span>
+            <span class="circle two"></span>
+            <form action="." method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <h3 class="title">Nueva Noticia</h3>
+                <div class="input-container {% if form.titulo.value %}focus{% endif %}">
+                    {{ form.titulo }}
+                    <label for="">Título*</label>
+                    <span>Título</span>
+                </div>
+                <div class="input-container focus">
+                    {{ form.imagen_cabecera }}
+                    <label for="">Imagen</label>
+                    <span>Imagen</span>
+                </div>
+                <div class="input-container {% if form.resumen.value %}focus{% endif %}">
+                    {{ form.resumen }}
+                    <label for="">Resumen*</label>
+                    <span>Resumen</span>
+                </div>
+                <div class="input-container textarea {% if form.cuerpo.value %}focus{% endif %}">
+                    {{ form.cuerpo }}
+                    <label for="">Contenido*</label>
+                    <span>Contenido</span>
+                </div>
+                <input type="submit" value="Aceptar" class="btn1" id="boton">
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<!-- Conatiner JS -->
+{% block js %}
+<script src="{% static 'Plataforma/js/FormularioSelect.js' %}"></script>
+<script src="{% static 'Plataforma/js/Crear Noticia.js' %}"></script>
+{% endblock %}
+<!-- End Conatiner JS -->

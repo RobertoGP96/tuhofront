@@ -1,0 +1,414 @@
+{% extends "Base Admin.html" %}
+{% load static %}
+
+<!-- Conatiner CSS -->
+{% block css %}
+<link rel="stylesheet" href=" {% static 'css/Sitio Administrativo.css' %}">
+<link rel="stylesheet" href=" {% static 'libs/Datatable/CSS/dataTables.bootstrap5.css' %}">
+<link rel="stylesheet" href=" {% static 'libs/Datatable/CSS/buttons.bootstrap5.css' %}">
+<link rel="stylesheet" href=" {% static 'libs/Datatable/CSS/responsive.bootstrap5.css' %}">
+<link rel="stylesheet" href=" {% static 'css/datatable.css' %}">
+<link src="{% static 'libs/Highcharts/css/highcharts.js' %}">
+{% endblock %}
+<!-- End Conatiner CSS -->
+
+{% block content %}
+<div class="main">
+  <main class="content-inside px-3 py-2">
+    <div class="container-fluid">
+      <div class="container-fluid">
+        <!-- Small boxes (Stat box) -->
+        <div class="row d-flex justify-content-center">
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-box-one">
+              <div class="inner">
+                
+                <h3>{{ tramites_count }}</h3>
+    
+                <p>Total de Trámites</p>
+              </div>
+              <div class="icon">
+                <i class=" bx bx-file"></i>
+              </div>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-box-one">
+              <div class="inner">
+                <h3>{{ completado }}</h3>
+
+                <p>Trámites Completados</p>
+              </div>
+              <div class="icon">
+                <i class="bx bx-bar-chart"></i>
+              </div>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-box-one">
+              <div class="inner">
+                
+                <h3>{{ usuarios_count }}</h3>
+                
+                <p>Cantidad de Usuarios</p>
+              </div>
+              <div class="icon">
+                <i class="bx bx-user-plus"></i>
+              </div>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-box-one">
+              <div class="inner">
+                <h3>{{ en_espera }}</h3>
+
+                <p>En espera</p>
+              </div>
+              <div class="icon">
+                <i class="bx bxs-pie-chart-alt-2"></i>
+              </div>
+            </div>
+          </div>
+
+          <!--Table Element-->
+          <section id="tablaTramites">
+            <div class="card">
+              <div class="card-header ">
+                <h5 class="card-title ">
+                  Trámites
+                </h5>
+              </div>
+              <div class="p-2">
+              <table id="Tramites" class="display table table-striped table-hover table-primary" style="width:100%;">
+                <thead class="encabezado">
+                  <tr>
+                    <th scope="col" style="color: white; text-align: start;">#</th>
+                    <th scope="col" style="color: white; text-align: start;">Nombre</th>
+                    <th scope="col" style="color: white; text-align: start;">Apellidos</th>
+                    <th scope="col" style="color: white; text-align: start;">Carnet</th>
+                    <th scope="col" style="color: white; text-align: start;">Fecha</th>
+                    <th scope="col" style="color: white; text-align: start;">Tipo de Trámite</th>
+                    <th scope="col" style="color: white; text-align: start;">Estado Trámite</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for i in Tramites %}
+                    <tr>
+                        <td style="text-align: start;">{{ forloop.counter }}</td>
+                        <td style="text-align: start;">{{ i.nombre }} </td>
+                        <td style="text-align: start;">{{ i.apellidos }}</td>
+                        <td style="text-align: start;">{{ i.ci }}</td>
+                        <td style="text-align: center;">{{ i.on_create|date:"d-m-Y" }}</td>
+                        <td style="text-align: start;">{{i.nombre_tramite}}</td>
+                        <td style="text-align: center;">{{ i.estado }}</td>
+                    </tr>
+                  {% endfor %}
+                  
+                </tbody>
+              </table>
+            </div>
+          </div>
+          </section>
+
+          <section id="tablaUsuarios">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-title">
+                  Usuarios
+                </h5>
+              </div>
+              <div class="p-2">
+              <table id="Usuarios" class="display table table-striped table-hover table-primary" style="width:100%">
+                <thead class="encabezado">
+                  <tr>
+                    <th scope="col" style="color: white; text-align: start;">#</th>
+                    <th scope="col" style="color: white; text-align: start;">Usuario</th>
+                    <th scope="col" style="color: white; text-align: start;">Teléfono</th>
+                    <th scope="col" style="color: white; text-align: start;">Email</th>
+                    <th scope="col" style="color: white; text-align: start;">Última Conexión</th>
+                    <th scope="col" style="color: white; text-align: start;">Rol</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for usuario in usuarios %}
+                  <tr>
+                    <td style="text-align: start;">{{ forloop.counter }}</td>
+                    <td style="text-align: start;">{{ usuario.username }}</td>
+                    <td style="text-align: start;">
+                      {% if usuario.telefono %}
+                      {{ usuario.telefono }}
+                      {% else %}
+                      N/A
+                      {% endif %}
+                    </td>
+                    <td style="text-align: start;">
+                      {% if usuario.email %}
+                      <a class="iconos" href="mailto:{{ usuario.email }}">{{ usuario.email }}</a>
+                      {% else %}
+                      N/A
+                      {% endif %}
+                    </td>
+                    <td style="text-align: start;">
+                      {% if usuario.last_login %}
+                      {{ usuario.last_login }}
+                      {% else %}
+                      N/A
+                      {% endif %}
+                    </td>
+                    <td style="text-align: start;">{{ usuario.groups.all.0 }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+        </div>
+        </section>
+
+        <section class="mb-1 row row-gap-1 ">
+          <section class="col-md-6 col-sm-12" id="">
+            <div class="card">
+              <div class="p-2">
+              <div id="myChartBar">
+              </div>
+            </div>
+          </div>
+          </section>
+
+          <section class="col-md-6 col-sm-12" id="">
+            <div class="card">
+              <div class="p-2">
+              <div id="myChartPie">
+              </div>
+            </div>
+          </div>
+         </section>
+        </section>
+        
+      </div>
+  </main>
+</div>
+ 
+  {% endblock %}
+
+  <!-- Conatiner JS -->
+  {% block js%}
+  <script src="{% static 'libs/Datatable/JS/jquery-3.7.1.js' %}"></script>
+  <script src="{% static 'libs/Datatable/JS/dataTables.js' %}"></script>
+  <script src="{% static 'libs/Datatable/JS/dataTables.bootstrap5.js' %}"></script>
+  <!--Botones DataTables-->
+  <script src="{% static 'libs/Datatable/JS/dataTables.buttons.js' %}"></script>
+  <script src="{% static 'libs/Datatable/JS/buttons.bootstrap5.js' %}"></script>
+  <script src="{% static 'libs/Datatable/JS/jszip.min.js' %}"></script>
+  <script src="{% static 'libs/Datatable/JS/pdfmake.min.js' %}"></script>
+  <script src="{% static 'libs/Datatable/JS/vfs_fonts.js' %}"></script>
+  <script src="{% static 'libs/Datatable/JS/buttons.html5.min.js' %}"></script>
+  <script src="{% static 'libs/Datatable/JS/buttons.print.min.js' %}"></script>
+  <script src="{% static 'libs/Datatable/JS/bottons.colVis.min.js' %}"></script>
+  <!--DataTables responsivo-->
+  <script src="{% static 'libs/Datatable/JS/dataTables.responsive.js' %}"></script>
+  <script src="{% static 'libs/Datatable/JS/responsive.bootstrap5.js' %}"></script>
+  <!--Inicializar DataTables-->
+  <script src="{% static 'libs/Datatable/JS/Administracion.js' %}"></script>
+  <!--Inicializar Charts-->
+  <script src="{% static 'libs/Highcharts/code/highcharts.js' %}"></script>
+  <script src="{% static 'libs/Highcharts/code/modules/accessibility.js' %}"></script>
+  <script src="{% static 'libs/Highcharts/code/modules/exporting.js' %}"></script>
+  <script src="{% static 'libs/Highcharts/code/modules/offline-exporting.js' %}"></script>
+  <script src="{% static 'libs/Highcharts/code/modules/export-data.js' %}"></script>
+  <script src="{% static 'libs/Highcharts/newChart.js' %}"></script>
+  <script>
+
+    let tramitesByEstadosData = [
+    {% if tramites_by_state.En_espera %} 
+    {
+      name:'En espera',
+      y: {{tramites_by_state.En_espera}},
+    },
+    {% endif %}
+    {% if tramites_by_state.Aceptado %} 
+    {
+      name:'Aceptado',
+      y:{{tramites_by_state.Aceptado}}
+    },
+    {% endif %}
+    {% if tramites_by_state.Procesando %}
+    {
+      name:'Procesando',
+      y:{{tramites_by_state.Procesando}}
+    },
+    {% endif %}
+    {% if tramites_by_state.Listo_para_recoger %}
+    {
+      name:'Listo para recoger',
+      y:{{tramites_by_state.Listo_para_recoger}}
+    },
+    {% endif %}
+    {% if tramites_by_state.Entregado %}
+    {
+      name:'Entregado',
+      y:{{tramites_by_state.Entregado}}
+    },
+    {% endif %}
+    {% if tramites_by_state.Completado %}
+    {
+      name:'Completado',
+      y:{{tramites_by_state.Completado}}
+    }
+    {% endif %}
+    ]
+    let listaMeses = ['Enero','Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+    let tramitesByMonthData = [
+    {% for k,v in tramites_by_month.items %}
+    {
+      name:listaMeses[{{k}}-1],
+      color:'#0d6efd',
+      y:{{v}}
+    },
+    {% endfor %} 
+    ]
+
+    Highcharts.chart('myChartBar',{
+      chart:{
+        type:'column'
+      },
+      title:{
+        text:'Cantidad de Trámites'
+      },
+      exporting:{
+        buttons:{
+          contextButton:{
+            enabled:true,
+            menuItems:[{
+              name:'Descargar imagen PNG',
+              textKey:'downloadPNG',
+              onclick: function(){
+                this.exportChartLocal();
+              }
+            },{
+              name:'Descargar imagen JPEG',
+              textKey:'downloadJPEG',
+              onclick: function(){
+                this.exportChartLocal({
+                  type:'image/jpeg'
+                });
+            }
+          },{
+            name:'Descargar documento PDF',
+            textKey:'downloadPDF',
+            onclick: function(){
+              this.exportChartLocal({
+                type:'application/pdf'
+              });
+          }
+            }]
+          }
+        }
+      },
+    
+      xAxis:{
+        categories: ['Enero','Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+      },
+      tooltip:{
+        pointFormat:'Cantidad:<b>{point.y}</b>'
+      },
+      series:[{
+        name: "Trámites Mensuales",
+        data: tramitesByMonthData/* lista de datos */,
+          responsive:{
+            rules:[{
+              condition:{
+                maxWidth:500
+              },
+              chartOptions:{
+                legend:{
+                  enabled:false
+                }
+              }
+            }]
+          }
+      }]
+    })
+
+    Highcharts.chart('myChartPie',{
+      chart:{
+        type:'pie'
+      },
+      title:{
+        text:'Estado de los Trámites'
+      },
+      exporting:{
+        buttons:{
+          contextButton:{
+            enabled:true,
+            menuItems:[{
+              name:'Descargar imagen PNG',
+              textKey:'downloadPNG',
+              onclick: function(){
+                this.exportChartLocal();
+              }
+            },{
+              name:'Descargar imagen JPEG',
+              textKey:'downloadJPEG',
+              onclick: function(){
+                this.exportChartLocal({
+                  type:'image/jpeg'
+                });
+            }
+          },{
+            name:'Descargar documento PDF',
+            textKey:'downloadPDF',
+            onclick: function(){
+              this.exportChartLocal({
+                type:'application/pdf'
+              });
+          }
+            }]
+          }
+        }
+      },
+    
+      xAxis:{
+        categories: ['En espera','Aceptado','Procesando','Listo para recoger', 'Entregado', 'Completado']
+      },
+      tooltip:{
+        pointFormat:'Cantidad:<b>{point.y}</b>'
+      },
+      plotOptions:{
+        allowPointSelect:true,
+        cursor:'pointer',
+        dataLabels:{
+          eneabled:true,
+          format:'{series.name}:<b>{point.percentage: .2f}</b>%'
+        }
+      },
+      series: [{
+        name:'Estado de los trámites',
+        colorByPoint:true,
+        data:tramitesByEstadosData,
+          responsive:{
+            rules:[{
+              condition:{
+                maxWidth:500
+              },
+              chartOptions:{
+                legend:{
+                  layout:'horizontal',
+                  align:'center',
+                  verticalAlign:'bottom'
+                }
+              }
+            }]
+          }
+      }]
+    })
+    
+  </script>
+  {% endblock %}
+  <!-- End Conatiner JS -->

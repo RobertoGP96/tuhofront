@@ -1,0 +1,77 @@
+{% extends "navbar_administracion.html" %}
+{% load static %}
+
+<!-- Conatiner CSS -->
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/TramitesSD copy.css' %}">
+{% endblock %}
+<!-- End Conatiner JS -->
+
+{% block content %}
+<div class="parenttt-container">
+    <div class="content justify-content-center" >
+        <div class="col">
+          <div class="container-form">
+            <div class="form">
+              <div class="container-fluid py-4">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="card">
+                      <div class="card-header pb-0">
+                        <div class="title">
+                          <h3 class="title-text p-3">Información de Usuario</h3>
+                        </div>
+                      </div>
+                        <form  id="formu" method="POST">
+                            {% csrf_token %}
+                            <div class="card-body">
+                              <h4 class="textt text-sm">Datos Generales</h4>
+                              <div class="row">
+                                <div class="col-md-6">
+                                  <div class="form-group">
+                                    <label for="text-input" class="form-control-label">Nombre</label>
+                                    <input type="text" name="nombre" id="name" class="form-control" required value="{{ form.first_name.value }}" required disabled>
+                                  </div>
+                                </div>
+                                <div class="col-md-6">
+                                  <div class="form-group">
+                                    <label for="example-text-input" class="form-control-label">Apellidos</label>
+                                    <input type="text" name="apellidos" id="lastName" class="form-control" required value="{{ form.last_name.value }}" required disabled>
+                                  </div>
+                                </div>
+                                <div class="col-md-4">
+                                  <div class="form-group">
+                                    <label for="example-text-input" class="form-control-label">Carnet de Identidad</label>
+                                    <input type="text" name="ci" id="ci" data-validate-length-range="11,11"  class="form-control" required="required" value="{{ form.carnet.value }}" required disabled>
+                                  </div>
+                                </div>
+                                <div class="col-md-4">
+                                  <div class="form-group">
+                                    <label for="example-text-input" class="form-control-label">Correo Electr&oacute;nico</label>
+                                    <input type="email" name="email" id="email" class="form-control" required  value="{{ form.email.value }}" required disabled>
+                                  </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                      <label for="example-text-input" class="form-control-label">Número de Móvil</label>
+                                      <input type="email" name="email" id="email" class="form-control" required  value="{{ form.telefono.value }}" required disabled>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="boot d-flex justify-content-center ">
+                                <a href="{% url 'Gestores' %}" class="btn1 m-2 btn btn-primary btn-sm text-decoration-none">Atr&aacute;s</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<!-- Conatiner JS -->
+{% block js %}
+
+{% endblock %}
+<!-- End Conatiner JS -->

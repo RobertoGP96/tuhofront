@@ -1,0 +1,78 @@
+{% extends "Base Admin.html" %}
+{% load static %}
+
+<!-- Conatiner CSS -->
+{% block css %}
+<link rel="stylesheet" href=" {% static 'css/Crear Noticia.css' %}">
+{% endblock %}
+<!-- End Conatiner JS -->
+
+{% block content %}
+<div class="container-form">
+    <div class="form">
+        
+        <div class="contact-form">
+            <form action="." method="POST">
+                {% csrf_token %}
+                <div id="error-container">
+
+                </div>
+                <h3 class="title text-center">Información de Usuario</h3>
+                <div class="row">
+                <div class="col-lg-6 col-md-12 col-sm-12 pb-2 pt-1">
+                <div class="input-container {% if form.first_name.value %}focus{% endif %}">
+                    {{form.first_name}}
+                    <label for="">Nombre</label>
+                    <span>Nombre</span>
+                </div>
+                </div>
+                <div class="col-lg-6 col-md-12 col-sm-12 pb-2 pt-1">
+                    <div class="input-container {% if form.last_name.value %}focus{% endif %}">
+                        {{form.last_name}}
+                        <label for="">Apellidos</label>
+                        <span>Apellidos</span>
+                    </div>
+                    </div>
+                        <div class="col-lg-4 col-md-12 col-sm-12 pb-2 pt-1">
+                        <div class="input-container {% if form.carnet.value %}focus{% endif %}">
+                            {{form.carnet}}
+                            <label for="">Carnet de Identidad</label>
+                            <span>Carnet de Identidad</span>
+                        </div>
+                        </div>
+                            <div class="col-lg-4 col-md-12 col-sm-12 pb-2 pt-1">
+                            <div class="input-container {% if form.telefono.value %}focus{% endif %}">
+                                {{form.telefono}}
+                                <label for="">Teléfono</label>
+                                <span>Telefóno</span>
+                            </div>
+                            </div>
+                            <div class="col-lg-4 col-md-12 col-sm-12 pb-2 pt-1">
+                                <div class="input-container {% if form.email.value %}focus{% endif %}">
+                                    {{form.email}}
+                                    <label for="">Email</label>
+                                    <span>Email</span>
+                                </div>
+                                </div>
+                <div class="input-container textarea {% if form.direccion.value %}focus{% endif %}" >
+                    {{form.direccion}}
+                    <label for="">Dirección</label>
+                    <span>Dirección</span>
+                </div>
+                <div class="btn"> 
+                <a href= "{% url "Usuarios" %}" class="btn2">Volver</a>
+                <input type="submit" value="Aceptar" class="btn2" id="boton">
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<!-- Conatiner JS -->
+{% block js %}
+<script src="{% static 'js/Trim InfoPersonal.js' %}"></script>
+<script src="{% static 'js/FormularioSelect.js' %}"></script>
+{% endblock %}
+<!-- End Conatiner JS -->

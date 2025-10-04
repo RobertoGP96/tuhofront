@@ -1,0 +1,330 @@
+{% extends "navbar_administracion.html" %}
+{% load static %}
+
+<!-- Conatiner CSS -->
+{% block css %}
+<link rel="stylesheet" href=" {% static 'css/Sitio Administrativo.css' %}">
+<link rel="stylesheet" href=" {% static 'libs/Datatable/CSS/dataTables.bootstrap5.css' %}">
+<link rel="stylesheet" href=" {% static 'libs/Datatable/CSS/buttons.bootstrap5.css' %}">
+<link rel="stylesheet" href=" {% static 'libs/Datatable/CSS/responsive.bootstrap5.css' %}">
+<link rel="stylesheet" href=" {% static 'css/datatableSD.css' %}">
+{% endblock %}
+<!-- End Conatiner CSS -->
+
+{% block content %}
+<div class="main">
+  <main class="content-inside px-3 py-2">
+    <div class="container-fluid">
+      <div class="container-fluid">
+        <!-- Small boxes (Stat box) -->
+        <div class="row d-flex justify-content-center">
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-box-one">
+              <div class="inner">
+                <h3>{{cantidad_tramites}}</h3>
+                <p>Total de Trámites</p>
+              </div>
+              <div class="icon">
+                <i class=" bx bx-file"></i>
+              </div>
+              <a href="#graficaBarTrámites" class="small-box-footer">Más información <i
+                  class="bi bi-arrow-right-circle"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-box-one">
+              <div class="inner">
+                <h3>{{completado}}</h3>
+                <p>Trámites Completados</p>
+              </div>
+              <div class="icon">
+                <i class="bx bx-bar-chart"></i>
+              </div>
+              <a href="{% url 'Tramites_Completados' %}" class="small-box-footer">Más información <i
+                  class="bi bi-arrow-right-circle"></i></a>
+            </div>
+          </div>
+        
+          <div class="col-lg-3 col-6">
+           <div class="small-box bg-box-one">
+              <div class="inner">
+                
+                <h3>{{ usuarios_count }}</h3>
+                
+                <p>Usuarios</p>
+              </div>
+              <div class="icon">
+                <i class="bx bx-user-plus"></i>
+              </div>
+              <a href="{% url 'Usuarios_Sd' %}" class="small-box-footer">Más información <i
+                  class="bi bi-arrow-right-circle"></i></a>
+            </div>
+          </div>
+         
+          <div class="col-lg-3 col-6">
+           
+            <div class="small-box bg-box-one">
+              <div class="inner">
+                <h3>{{espera}}</h3>
+
+                <p>Trámites en Espera</p>
+              </div>
+              <div class="icon">
+                <i class="bx bxs-pie-chart-alt-2"></i>
+              </div>
+              <a href="{% url 'Tramites_Espera' %}" class="small-box-footer">Más información <i
+                  class="bi bi-arrow-right-circle"></i></a>
+            </div>
+          </div>
+
+          <!--Table Element-->
+          <section class="tabla" id="TramitesList">
+            <div class="card card-a p-3 h-100">
+              <div class="card-header">
+                <h5 class="card-title title-t" style=" text-align: center;">
+                  <i class="bi bi-file-earmark-text-fill"></i>
+                    Mis Tr&aacute;mites
+                </h5>
+              </div>
+              
+              <table id="Tramites" class="display table table-striped table-hover table-primary" style="width:100%; height: 100%;">
+                <thead class="encabezado">
+                  <tr>
+                    <th scope="col" style="color: white; text-align: center;">No</th>
+                    <th scope="col" style="color: white; text-align: center;">Nombre</th>
+                    <th scope="col" style="color: white; text-align: center;">Apellidos</th>
+                    <th scope="col" style="color: white; text-align: center;">Estudio</th>
+                    <th scope="col" style="color: white; text-align: center;">Uso</th>
+                    <th scope="col" style="color: white; text-align: center;">Tr&aacute;mite</th>
+                    <th scope="col" style="color: white; text-align: center;">C&oacute;digo</th>
+                    <th scope="col" style="color: white; text-align: center;">Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for t in tramite_t %}
+                    <tr>
+                      <td style=" text-align: center;">{{forloop.counter}}</td>
+                      <td style=" text-align: start;">{{t.nombre}}</td>
+                      <td style=" text-align: start;">{{t.apellidos}}</td>
+                      <td style=" text-align: start;">
+                        {% if t.tipo_estudio %}
+                          {{t.tipo_estudio}}
+                        {% elif t.tipo_est %}
+                          {{t.tipo_est}}
+                        {% endif %}
+                      </td>
+                      <td style="text-align: start;">
+                        {% if t.uso %}
+                            {{ t.uso }}
+                        {% else %}
+                          {{ t.uso_i }}
+                        
+                            {# Opcional: manejar el caso en que ninguno de los dos campos esté establecido, aunque mencionaste que siempre habrá uno de ellos con un valor #}
+                        {% endif %}
+                      </td>
+                      <td style=" text-align: start;">
+                        {% if t.tipo_pren and t.tipo_prei and t.tipo_posn and t.tipo_posi %}
+                          {{ t.tipo_pren }} {{ t.tipo_prei }} {{ t.tipo_posn }} {{ t.tipo_posi }}
+                        {% elif not t.tipo_pren and not t.tipo_prei and not t.tipo_posn and not t.tipo_posi %}
+                          {{ t.legalizacion }}
+                        {% else %}
+                          {{ t.tipo_pren }} {{ t.tipo_prei }} {{ t.tipo_posn }} {{ t.tipo_posi }}
+                        {% endif %}
+                      </td>
+                      <td style=" text-align: start;">{{t.numero_seguimiento}}</td>
+                      <td style=" text-align: start; text-decoration: none; pointer-events: none;"><a class="cambiar-estado " style=" text-decoration: none; color:black;"   href="{% url "Cambiar_Estado" t.id %}">{{ t.estado }}</a></td>
+                    </tr>    
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <div class="option bgs">
+              <div class="bg-active" id="bg-active"></div>
+            </div>
+          </section>
+            <section class="mb-2 row row-gap-1">
+              <section class="col-md-6 col-sm-12" id="graficaBarTrámites">
+                <div class="card">
+                  <div class="p-2">
+                    <div id="tramites">
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section class="col-md-6 col-sm-12" id="graficaPieTrámites">
+                <div class="card">
+                   <div class="p-2">
+                    <div id="estados">
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+
+        </section>
+      </div>
+  </main>
+</div>
+{% endblock %}
+
+  <!-- Conatiner JS -->
+  {% block js%}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="{% static 'libs/Datatable/JS/jquery-3.7.1.js' %}"></script>
+  <script src="{% static 'libs/Datatable/JS/dataTables.js' %}"></script>  
+  <script src="{% static 'libs/Datatable/JS/dataTables.bootstrap5.js' %}"></script>
+  <!--Botones DataTables-->  
+  <script src="{% static 'libs/Datatable/JS/dataTables.buttons.js' %}"></script>  
+  <script src="{% static 'libs/Datatable/JS/buttons.bootstrap5.js' %}"></script>  
+  <script src="{% static 'libs/Datatable/JS/jszip.min.js' %}"></script>  
+  <script src="{% static 'libs/Datatable/JS/pdfmake.min.js' %}"></script>  
+  <script src="{% static 'libs/Datatable/JS/vfs_fonts.js' %}"></script>  
+  <script src="{% static 'libs/Datatable/JS/buttons.html5.min.js' %}"></script>  
+  <script src="{% static 'libs/Datatable/JS/buttons.print.min.js' %}"></script>  
+  <script src="{% static 'libs/Datatable/JS/bottons.colVis.min.js' %}"></script>  
+  <!--DataTables responsivo-->
+  <script src="{% static 'libs/Datatable/JS/dataTables.responsive.js' %}"></script>  
+  <script src="{% static 'libs/Datatable/JS/responsive.bootstrap5.js' %}"></script> 
+  <!--Inicializar DataTables-->
+  <script src="{% static 'libs/Datatable/JS/tramiteslist.js' %}"></script>
+
+  <!--Inicializar Charts-->
+  <script src="{% static 'libs/Highcharts/code/highcharts.js' %}"></script>
+  <script src="{% static 'libs/Highcharts/code/modules/accessibility.js' %}"></script>
+  <script src="{% static 'libs/Highcharts/code/modules/exporting.js' %}"></script>
+  <script src="{% static 'libs/Highcharts/code/modules/offline-exporting.js' %}"></script>
+  <script src="{% static 'libs/Highcharts/code/modules/export-data.js' %}"></script>
+  <script src="{% static '/libs/Highcharts/graficos.js' %}"></script>
+
+  <script>
+    $(document).ready(function() {
+        // Grafica Tramites por Tipo de estudio y uso
+        var dataGrafica = JSON.parse('{{ data_grafica|safe }}');
+
+        // Preparar los datos para Highcharts
+        var seriesData = dataGrafica.map(function(item) {
+            return {
+                name: item.categoria,
+                y: item.cantidad,
+                drilldown: item.categoria
+            };
+        });
+
+        // Crear la gráfica con los datos obtenidos
+        Highcharts.chart('tramites', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                align: 'left',
+                text: 'Cantidad de Trámites'
+            },
+            subtitle: {
+                align: 'left',
+                text: 'Click the columns to view versions. Source: <a href="http://statcounter.com" target="_blank">statcounter.com</a>'
+            },
+            accessibility: {
+                announceNewData: {
+                    enabled: true
+                }
+            },
+            xAxis: {
+                type: 'category',
+                categories: dataGrafica.map(function(item) { return item.categoria; })  // Usar las categorías de los datos
+            },
+            yAxis: {
+                title: {
+                    text: 'Total de trámites realizados'
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            plotOptions: {
+                series: {
+                    borderWidth: 0,
+                    dataLabels: {
+                        enabled: true,
+                        format: '{point.y:.1f}%'
+                    }
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                pointFormat: '<span style="color:{point.color}">{point.name}</span>: ' +
+                    '<b>{point.y:.2f}%</b> del total<br/>'
+            },
+            series: [{
+                name: 'Clasificación según el tipo de estudio',
+                colorByPoint: true,
+                data: seriesData
+            }],
+            drilldown: {
+                breadcrumbs: {
+                    position: {
+                        align: 'right'
+                    }
+                },
+                series: [
+                    // Aquí puedes agregar tus series de drilldown si es necesario
+                ]
+            }
+        });
+
+       //Grafica estados
+       var dataGráficaEstados = JSON.parse('{{ data_grafica_estados|safe }}');
+
+       // Preparar los datos para Highcharts
+       var seriesData = dataGráficaEstados.map(function(item) {
+           return {
+               name: item.nombre, 
+               y: item.valor, 
+           };
+       });
+      // Configuración de la gráfica de estados
+      Highcharts.chart('estados', {
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title: {
+            text: 'Estados de los trámites',
+            align: 'left'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        accessibility: {
+            point: {
+                valueSuffix: '%'
+            }
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: false
+                },
+                showInLegend: true
+            }
+        },
+        series: [{
+            name: 'Total',
+            colorByPoint: true,
+            data: seriesData 
+        }]
+      });
+
+});
+
+    $(document).ready(function() {
+    });
+    </script>
+  {% endblock %}
+  <!-- End Conatiner JS -->
