@@ -1,0 +1,6921 @@
+openapi: 3.0.3
+info:
+  title: TUho API
+  version: 1.0.0
+  description: "\n    API para la aplicación TUho - Sistema Integral de Gestión Universitaria\n\
+    \    \n    Esta API proporciona endpoints para:\n    - Gestión de usuarios y autenticación\n\
+    \    - Notificaciones del sistema\n    - Atención a la población\n    - Noticias\
+    \ y anuncios\n    - Trámites de secretaría docente\n    - Procedimientos administrativos\
+    \ internos\n    - Gestión de huéspedes y servicios\n    \n    ## Autenticación\n\
+    \    La API utiliza JWT (JSON Web Tokens) para la autenticación. Para acceder\
+    \ a los endpoints protegidos:\n    1. Obtén un token de acceso mediante el endpoint\
+    \ `/api/v1/auth/login/`\n    2. Incluye el token en el header Authorization: `Bearer\
+    \ <token>`\n    \n    ## Permisos\n    - **Administradores**: Acceso completo\
+    \ a todos los recursos\n    - **Staff**: Pueden gestionar la mayoría de recursos\
+    \ pero con algunas restricciones\n    - **Usuarios**: Acceso limitado, principalmente\
+    \ a sus propios datos\n    \n    ## Paginación\n    Los endpoints que retornan\
+    \ listas están paginados con 20 elementos por página por defecto.\n    "
+  contact:
+    name: Equipo de Desarrollo TUho
+    email: secretariadocenteuho@gmail.com
+  license:
+    name: Uso Interno - Universidad de Holguín
+paths:
+  /api/v1/usuarios/:
+    get:
+      operationId: api_v1_usuarios_list
+      description: Obtiene una lista paginada de todos los usuarios del sistema. Solo
+        disponible para administradores.
+      summary: Listar usuarios
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - Usuarios
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUsuarioList'
+          description: ''
+    post:
+      operationId: api_v1_usuarios_create
+      description: Crea un nuevo usuario en el sistema. Solo disponible para administradores.
+      summary: Crear usuario
+      tags:
+      - Usuarios
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+          description: ''
+  /api/v1/usuarios/{id}/:
+    put:
+      operationId: api_v1_usuarios_update
+      description: Actualiza completamente un usuario existente.
+      summary: Actualizar usuario
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this usuario.
+        required: true
+      tags:
+      - Usuarios
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+          description: ''
+    get:
+      operationId: api_v1_usuarios_retrieve
+      description: Obtiene los detalles de un usuario específico por su ID.
+      summary: Obtener usuario
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this usuario.
+        required: true
+      tags:
+      - Usuarios
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+          description: ''
+    patch:
+      operationId: api_v1_usuarios_partial_update
+      description: Actualiza parcialmente un usuario existente.
+      summary: Actualizar parcialmente usuario
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this usuario.
+        required: true
+      tags:
+      - Usuarios
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUsuarioRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUsuarioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUsuarioRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+          description: ''
+    delete:
+      operationId: api_v1_usuarios_destroy
+      description: Elimina un usuario del sistema. Solo disponible para administradores.
+      summary: Eliminar usuario
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this usuario.
+        required: true
+      tags:
+      - Usuarios
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/notificaciones/:
+    get:
+      operationId: api_v1_notificaciones_list
+      description: Obtiene una lista paginada de notificaciones. Los usuarios pueden
+        ver solo sus notificaciones, el staff puede ver todas.
+      summary: Listar notificaciones
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - Notificaciones
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNotificacionList'
+          description: ''
+    post:
+      operationId: api_v1_notificaciones_create
+      description: Crea una nueva notificación en el sistema. Solo disponible para
+        el staff.
+      summary: Crear notificación
+      tags:
+      - Notificaciones
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificacionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NotificacionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NotificacionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notificacion'
+          description: ''
+  /api/v1/notificaciones/{id}/:
+    put:
+      operationId: api_v1_notificaciones_update
+      description: Actualiza completamente una notificación existente.
+      summary: Actualizar notificación
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Notificación.
+        required: true
+      tags:
+      - Notificaciones
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificacionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NotificacionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NotificacionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notificacion'
+          description: ''
+    get:
+      operationId: api_v1_notificaciones_retrieve
+      description: Obtiene los detalles de una notificación específica.
+      summary: Obtener notificación
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Notificación.
+        required: true
+      tags:
+      - Notificaciones
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notificacion'
+          description: ''
+    patch:
+      operationId: api_v1_notificaciones_partial_update
+      description: Actualiza parcialmente una notificación, típicamente para marcarla
+        como leída.
+      summary: Marcar como leída
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Notificación.
+        required: true
+      tags:
+      - Notificaciones
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedNotificacionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedNotificacionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedNotificacionRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notificacion'
+          description: ''
+    delete:
+      operationId: api_v1_notificaciones_destroy
+      description: Elimina una notificación del sistema.
+      summary: Eliminar notificación
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Notificación.
+        required: true
+      tags:
+      - Notificaciones
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/atencion_poblacion/:
+    get:
+      operationId: api_v1_atencion_poblacion_list
+      description: Obtiene las solicitudes de atención a la población. Los usuarios
+        ven solo las suyas, el staff ve todas.
+      summary: Listar solicitudes de atención
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - Atención a la Población
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAtencionPoblacionList'
+          description: ''
+    post:
+      operationId: api_v1_atencion_poblacion_create
+      description: Crea una nueva solicitud de atención a la población.
+      summary: Crear solicitud de atención
+      tags:
+      - Atención a la Población
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AtencionPoblacionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AtencionPoblacionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AtencionPoblacionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtencionPoblacion'
+          description: ''
+  /api/v1/atencion_poblacion/{id}/:
+    put:
+      operationId: api_v1_atencion_poblacion_update
+      description: Actualiza completamente una solicitud de atención.
+      summary: Actualizar solicitud
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this atención a la población.
+        required: true
+      tags:
+      - Atención a la Población
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AtencionPoblacionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AtencionPoblacionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AtencionPoblacionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtencionPoblacion'
+          description: ''
+    get:
+      operationId: api_v1_atencion_poblacion_retrieve
+      description: Obtiene los detalles de una solicitud específica.
+      summary: Obtener solicitud de atención
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this atención a la población.
+        required: true
+      tags:
+      - Atención a la Población
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtencionPoblacion'
+          description: ''
+    patch:
+      operationId: api_v1_atencion_poblacion_partial_update
+      description: Actualiza parcialmente una solicitud, típicamente para cambiar
+        su estado.
+      summary: Actualizar estado de solicitud
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this atención a la población.
+        required: true
+      tags:
+      - Atención a la Población
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAtencionPoblacionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAtencionPoblacionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAtencionPoblacionRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtencionPoblacion'
+          description: ''
+    delete:
+      operationId: api_v1_atencion_poblacion_destroy
+      description: Elimina una solicitud de atención del sistema.
+      summary: Eliminar solicitud
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this atención a la población.
+        required: true
+      tags:
+      - Atención a la Población
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/noticias/:
+    get:
+      operationId: api_v1_noticias_list
+      description: Obtiene una lista de noticias ordenadas por fecha de creación (más
+        recientes primero).
+      summary: Listar noticias
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - Plataforma - Noticias
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNoticiaList'
+          description: ''
+    post:
+      operationId: api_v1_noticias_create
+      description: Crea una nueva noticia en el sistema. Solo disponible para el staff.
+      summary: Crear noticia
+      tags:
+      - Plataforma - Noticias
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoticiaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NoticiaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NoticiaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Noticia'
+          description: ''
+  /api/v1/noticias/{id}/:
+    put:
+      operationId: api_v1_noticias_update
+      description: Actualiza completamente una noticia existente.
+      summary: Actualizar noticia
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this noticia.
+        required: true
+      tags:
+      - Plataforma - Noticias
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoticiaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NoticiaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NoticiaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Noticia'
+          description: ''
+    get:
+      operationId: api_v1_noticias_retrieve
+      description: Obtiene los detalles completos de una noticia específica.
+      summary: Obtener noticia
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this noticia.
+        required: true
+      tags:
+      - Plataforma - Noticias
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Noticia'
+          description: ''
+    patch:
+      operationId: api_v1_noticias_partial_update
+      description: Actualiza parcialmente una noticia existente.
+      summary: Actualizar parcialmente noticia
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this noticia.
+        required: true
+      tags:
+      - Plataforma - Noticias
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedNoticiaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedNoticiaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedNoticiaRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Noticia'
+          description: ''
+    delete:
+      operationId: api_v1_noticias_destroy
+      description: Elimina una noticia del sistema.
+      summary: Eliminar noticia
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this noticia.
+        required: true
+      tags:
+      - Plataforma - Noticias
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/emails/:
+    get:
+      operationId: api_v1_emails_list
+      description: Obtiene las configuraciones SMTP para el envío de emails. Solo
+        disponible para administradores.
+      summary: Listar configuraciones de email
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - Plataforma - Email
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEmailList'
+          description: ''
+    post:
+      operationId: api_v1_emails_create
+      description: Crea una nueva configuración SMTP para el sistema.
+      summary: Crear configuración de email
+      tags:
+      - Plataforma - Email
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Email'
+          description: ''
+  /api/v1/emails/{id}/:
+    put:
+      operationId: api_v1_emails_update
+      description: Actualiza completamente una configuración SMTP.
+      summary: Actualizar configuración de email
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this email.
+        required: true
+      tags:
+      - Plataforma - Email
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Email'
+          description: ''
+    get:
+      operationId: api_v1_emails_retrieve
+      description: Obtiene los detalles de una configuración SMTP específica.
+      summary: Obtener configuración de email
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this email.
+        required: true
+      tags:
+      - Plataforma - Email
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Email'
+          description: ''
+    patch:
+      operationId: api_v1_emails_partial_update
+      description: Actualiza parcialmente una configuración SMTP.
+      summary: Actualizar parcialmente configuración
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this email.
+        required: true
+      tags:
+      - Plataforma - Email
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEmailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEmailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEmailRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Email'
+          description: ''
+    delete:
+      operationId: api_v1_emails_destroy
+      description: Elimina una configuración SMTP del sistema.
+      summary: Eliminar configuración de email
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this email.
+        required: true
+      tags:
+      - Plataforma - Email
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/estados-tramites/:
+    get:
+      operationId: api_v1_estados_tramites_list
+      description: Obtiene todos los estados disponibles para los trámites del sistema.
+      summary: Listar estados de trámites
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - Plataforma - Estados
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEstadosTramitesList'
+          description: ''
+    post:
+      operationId: api_v1_estados_tramites_create
+      description: Crea un nuevo estado para los trámites. Solo disponible para el
+        staff.
+      summary: Crear estado de trámite
+      tags:
+      - Plataforma - Estados
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EstadosTramitesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EstadosTramitesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EstadosTramitesRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstadosTramites'
+          description: ''
+  /api/v1/estados-tramites/{id}/:
+    put:
+      operationId: api_v1_estados_tramites_update
+      description: Actualiza completamente un estado de trámite.
+      summary: Actualizar estado de trámite
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this estados tramites.
+        required: true
+      tags:
+      - Plataforma - Estados
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EstadosTramitesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EstadosTramitesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EstadosTramitesRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstadosTramites'
+          description: ''
+    get:
+      operationId: api_v1_estados_tramites_retrieve
+      description: Obtiene los detalles de un estado específico.
+      summary: Obtener estado de trámite
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this estados tramites.
+        required: true
+      tags:
+      - Plataforma - Estados
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstadosTramites'
+          description: ''
+    patch:
+      operationId: api_v1_estados_tramites_partial_update
+      description: Actualiza parcialmente un estado de trámite.
+      summary: Actualizar parcialmente estado
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this estados tramites.
+        required: true
+      tags:
+      - Plataforma - Estados
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEstadosTramitesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEstadosTramitesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEstadosTramitesRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstadosTramites'
+          description: ''
+    delete:
+      operationId: api_v1_estados_tramites_destroy
+      description: Elimina un estado de trámite del sistema.
+      summary: Eliminar estado de trámite
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this estados tramites.
+        required: true
+      tags:
+      - Plataforma - Estados
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/tramites-secretaria/:
+    get:
+      operationId: api_v1_tramites_secretaria_list
+      description: Obtiene los trámites de secretaría docente. Los usuarios ven solo
+        los suyos, el staff ve todos.
+      summary: Listar trámites de secretaría
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - Secretaría Docente
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTramiteList'
+          description: ''
+    post:
+      operationId: api_v1_tramites_secretaria_create
+      description: Crea un nuevo trámite en la secretaría docente.
+      summary: Crear trámite de secretaría
+      tags:
+      - Secretaría Docente
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TramiteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TramiteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TramiteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tramite'
+          description: ''
+  /api/v1/tramites-secretaria/{id}/:
+    put:
+      operationId: api_v1_tramites_secretaria_update
+      description: Actualiza completamente un trámite de secretaría.
+      summary: Actualizar trámite
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this tramite.
+        required: true
+      tags:
+      - Secretaría Docente
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TramiteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TramiteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TramiteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tramite'
+          description: ''
+    get:
+      operationId: api_v1_tramites_secretaria_retrieve
+      description: Obtiene los detalles de un trámite específico.
+      summary: Obtener trámite de secretaría
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this tramite.
+        required: true
+      tags:
+      - Secretaría Docente
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tramite'
+          description: ''
+    patch:
+      operationId: api_v1_tramites_secretaria_partial_update
+      description: Actualiza parcialmente un trámite, típicamente para cambiar su
+        estado.
+      summary: Actualizar estado del trámite
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this tramite.
+        required: true
+      tags:
+      - Secretaría Docente
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTramiteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTramiteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTramiteRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tramite'
+          description: ''
+    delete:
+      operationId: api_v1_tramites_secretaria_destroy
+      description: Elimina un trámite de secretaría del sistema.
+      summary: Eliminar trámite
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this tramite.
+        required: true
+      tags:
+      - Secretaría Docente
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/guests/:
+    get:
+      operationId: api_v1_guests_list
+      description: Obtiene una lista de todos los huéspedes registrados en el sistema.
+      summary: Listar huéspedes
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - Procedimientos Internos - Huéspedes
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGuestList'
+          description: ''
+    post:
+      operationId: api_v1_guests_create
+      description: Registra un nuevo huésped en el sistema.
+      summary: Registrar huésped
+      tags:
+      - Procedimientos Internos - Huéspedes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GuestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GuestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Guest'
+          description: ''
+  /api/v1/guests/{id}/:
+    put:
+      operationId: api_v1_guests_update
+      description: Actualiza completamente la información de un huésped.
+      summary: Actualizar huésped
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this guest.
+        required: true
+      tags:
+      - Procedimientos Internos - Huéspedes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GuestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GuestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Guest'
+          description: ''
+    get:
+      operationId: api_v1_guests_retrieve
+      description: Obtiene los detalles de un huésped específico.
+      summary: Obtener huésped
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this guest.
+        required: true
+      tags:
+      - Procedimientos Internos - Huéspedes
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Guest'
+          description: ''
+    patch:
+      operationId: api_v1_guests_partial_update
+      description: Actualiza parcialmente la información de un huésped.
+      summary: Actualizar parcialmente huésped
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this guest.
+        required: true
+      tags:
+      - Procedimientos Internos - Huéspedes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedGuestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedGuestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedGuestRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Guest'
+          description: ''
+    delete:
+      operationId: api_v1_guests_destroy
+      description: Elimina un huésped del sistema.
+      summary: Eliminar huésped
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this guest.
+        required: true
+      tags:
+      - Procedimientos Internos - Huéspedes
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/feeding-days/:
+    get:
+      operationId: api_v1_feeding_days_list
+      description: Obtiene los días de alimentación configurados en el sistema.
+      summary: Listar días de alimentación
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - Procedimientos Internos - Alimentación
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFeedingDaysList'
+          description: ''
+    post:
+      operationId: api_v1_feeding_days_create
+      description: Crea un nuevo día de alimentación disponible.
+      summary: Crear día de alimentación
+      tags:
+      - Procedimientos Internos - Alimentación
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeedingDaysRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FeedingDaysRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FeedingDaysRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedingDays'
+          description: ''
+  /api/v1/feeding-days/{id}/:
+    put:
+      operationId: api_v1_feeding_days_update
+      description: Actualiza completamente un día de alimentación.
+      summary: Actualizar día de alimentación
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this feeding days.
+        required: true
+      tags:
+      - Procedimientos Internos - Alimentación
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeedingDaysRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FeedingDaysRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FeedingDaysRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedingDays'
+          description: ''
+    get:
+      operationId: api_v1_feeding_days_retrieve
+      description: Obtiene los detalles de un día de alimentación específico.
+      summary: Obtener día de alimentación
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this feeding days.
+        required: true
+      tags:
+      - Procedimientos Internos - Alimentación
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedingDays'
+          description: ''
+    patch:
+      operationId: api_v1_feeding_days_partial_update
+      description: Actualiza parcialmente un día de alimentación.
+      summary: Actualizar parcialmente día
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this feeding days.
+        required: true
+      tags:
+      - Procedimientos Internos - Alimentación
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFeedingDaysRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedFeedingDaysRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedFeedingDaysRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedingDays'
+          description: ''
+    delete:
+      operationId: api_v1_feeding_days_destroy
+      description: Elimina un día de alimentación del sistema.
+      summary: Eliminar día de alimentación
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this feeding days.
+        required: true
+      tags:
+      - Procedimientos Internos - Alimentación
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/internal-departments/:
+    get:
+      operationId: api_v1_internal_departments_list
+      description: Obtiene todos los departamentos internos de la institución.
+      summary: Listar departamentos internos
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - Procedimientos Internos - Estructura
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDepartmentList'
+          description: ''
+    post:
+      operationId: api_v1_internal_departments_create
+      description: Crea un nuevo departamento interno. Solo disponible para el staff.
+      summary: Crear departamento interno
+      tags:
+      - Procedimientos Internos - Estructura
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+          description: ''
+  /api/v1/internal-departments/{id}/:
+    put:
+      operationId: api_v1_internal_departments_update
+      description: Actualiza completamente un departamento interno.
+      summary: Actualizar departamento interno
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this department.
+        required: true
+      tags:
+      - Procedimientos Internos - Estructura
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+          description: ''
+    get:
+      operationId: api_v1_internal_departments_retrieve
+      description: Obtiene los detalles de un departamento interno específico.
+      summary: Obtener departamento interno
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this department.
+        required: true
+      tags:
+      - Procedimientos Internos - Estructura
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+          description: ''
+    patch:
+      operationId: api_v1_internal_departments_partial_update
+      description: Actualiza parcialmente un departamento interno.
+      summary: Actualizar parcialmente departamento
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this department.
+        required: true
+      tags:
+      - Procedimientos Internos - Estructura
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDepartmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedDepartmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedDepartmentRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+          description: ''
+    delete:
+      operationId: api_v1_internal_departments_destroy
+      description: Elimina un departamento interno del sistema.
+      summary: Eliminar departamento interno
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this department.
+        required: true
+      tags:
+      - Procedimientos Internos - Estructura
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/internal-areas/:
+    get:
+      operationId: api_v1_internal_areas_list
+      description: Obtiene todas las áreas internas de la institución.
+      summary: Listar áreas internas
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - Procedimientos Internos - Estructura
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAreaList'
+          description: ''
+    post:
+      operationId: api_v1_internal_areas_create
+      description: Crea una nueva área interna. Solo disponible para el staff.
+      summary: Crear área interna
+      tags:
+      - Procedimientos Internos - Estructura
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AreaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AreaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AreaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Area'
+          description: ''
+  /api/v1/internal-areas/{id}/:
+    put:
+      operationId: api_v1_internal_areas_update
+      description: Actualiza completamente un área interna.
+      summary: Actualizar área interna
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this area.
+        required: true
+      tags:
+      - Procedimientos Internos - Estructura
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AreaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AreaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AreaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Area'
+          description: ''
+    get:
+      operationId: api_v1_internal_areas_retrieve
+      description: Obtiene los detalles de un área interna específica.
+      summary: Obtener área interna
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this area.
+        required: true
+      tags:
+      - Procedimientos Internos - Estructura
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Area'
+          description: ''
+    patch:
+      operationId: api_v1_internal_areas_partial_update
+      description: Actualiza parcialmente un área interna.
+      summary: Actualizar parcialmente área
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this area.
+        required: true
+      tags:
+      - Procedimientos Internos - Estructura
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAreaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAreaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAreaRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Area'
+          description: ''
+    delete:
+      operationId: api_v1_internal_areas_destroy
+      description: Elimina un área interna del sistema.
+      summary: Eliminar área interna
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this area.
+        required: true
+      tags:
+      - Procedimientos Internos - Estructura
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/notes/:
+    get:
+      operationId: api_v1_notes_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNoteList'
+          description: ''
+    post:
+      operationId: api_v1_notes_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NoteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NoteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+          description: ''
+  /api/v1/notes/{id}/:
+    put:
+      operationId: api_v1_notes_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this note.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NoteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NoteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+          description: ''
+    get:
+      operationId: api_v1_notes_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this note.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+          description: ''
+    patch:
+      operationId: api_v1_notes_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this note.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedNoteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedNoteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedNoteRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+          description: ''
+    delete:
+      operationId: api_v1_notes_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this note.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/feeding-procedures/:
+    get:
+      operationId: api_v1_feeding_procedures_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFeedingProcedureList'
+          description: ''
+    post:
+      operationId: api_v1_feeding_procedures_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeedingProcedureRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FeedingProcedureRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FeedingProcedureRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedingProcedure'
+          description: ''
+  /api/v1/feeding-procedures/{id}/:
+    put:
+      operationId: api_v1_feeding_procedures_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this feeding procedure.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeedingProcedureRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FeedingProcedureRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FeedingProcedureRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedingProcedure'
+          description: ''
+    get:
+      operationId: api_v1_feeding_procedures_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this feeding procedure.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedingProcedure'
+          description: ''
+    patch:
+      operationId: api_v1_feeding_procedures_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this feeding procedure.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFeedingProcedureRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedFeedingProcedureRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedFeedingProcedureRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedingProcedure'
+          description: ''
+    delete:
+      operationId: api_v1_feeding_procedures_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this feeding procedure.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/accommodation-procedures/:
+    get:
+      operationId: api_v1_accommodation_procedures_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAccommodationProcedureList'
+          description: ''
+    post:
+      operationId: api_v1_accommodation_procedures_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccommodationProcedureRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AccommodationProcedureRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AccommodationProcedureRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccommodationProcedure'
+          description: ''
+  /api/v1/accommodation-procedures/{id}/:
+    put:
+      operationId: api_v1_accommodation_procedures_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this accommodation procedure.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccommodationProcedureRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AccommodationProcedureRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AccommodationProcedureRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccommodationProcedure'
+          description: ''
+    get:
+      operationId: api_v1_accommodation_procedures_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this accommodation procedure.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccommodationProcedure'
+          description: ''
+    patch:
+      operationId: api_v1_accommodation_procedures_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this accommodation procedure.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAccommodationProcedureRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAccommodationProcedureRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAccommodationProcedureRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccommodationProcedure'
+          description: ''
+    delete:
+      operationId: api_v1_accommodation_procedures_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this accommodation procedure.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/transport-procedure-types/:
+    get:
+      operationId: api_v1_transport_procedure_types_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTransportProcedureTypeList'
+          description: ''
+    post:
+      operationId: api_v1_transport_procedure_types_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransportProcedureTypeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransportProcedureTypeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransportProcedureTypeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransportProcedureType'
+          description: ''
+  /api/v1/transport-procedure-types/{id}/:
+    put:
+      operationId: api_v1_transport_procedure_types_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this transport procedure type.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransportProcedureTypeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransportProcedureTypeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransportProcedureTypeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransportProcedureType'
+          description: ''
+    get:
+      operationId: api_v1_transport_procedure_types_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this transport procedure type.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransportProcedureType'
+          description: ''
+    patch:
+      operationId: api_v1_transport_procedure_types_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this transport procedure type.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTransportProcedureTypeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTransportProcedureTypeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTransportProcedureTypeRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransportProcedureType'
+          description: ''
+    delete:
+      operationId: api_v1_transport_procedure_types_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this transport procedure type.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/transport-procedures/:
+    get:
+      operationId: api_v1_transport_procedures_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTransportProcedureList'
+          description: ''
+    post:
+      operationId: api_v1_transport_procedures_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransportProcedureRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransportProcedureRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransportProcedureRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransportProcedure'
+          description: ''
+  /api/v1/transport-procedures/{id}/:
+    put:
+      operationId: api_v1_transport_procedures_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this transport procedure.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransportProcedureRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransportProcedureRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransportProcedureRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransportProcedure'
+          description: ''
+    get:
+      operationId: api_v1_transport_procedures_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this transport procedure.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransportProcedure'
+          description: ''
+    patch:
+      operationId: api_v1_transport_procedures_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this transport procedure.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTransportProcedureRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTransportProcedureRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTransportProcedureRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransportProcedure'
+          description: ''
+    delete:
+      operationId: api_v1_transport_procedures_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this transport procedure.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/maintance-procedure-types/:
+    get:
+      operationId: api_v1_maintance_procedure_types_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMaintanceProcedureTypeList'
+          description: ''
+    post:
+      operationId: api_v1_maintance_procedure_types_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaintanceProcedureTypeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MaintanceProcedureTypeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MaintanceProcedureTypeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintanceProcedureType'
+          description: ''
+  /api/v1/maintance-procedure-types/{id}/:
+    put:
+      operationId: api_v1_maintance_procedure_types_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this maintance procedure type.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaintanceProcedureTypeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MaintanceProcedureTypeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MaintanceProcedureTypeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintanceProcedureType'
+          description: ''
+    get:
+      operationId: api_v1_maintance_procedure_types_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this maintance procedure type.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintanceProcedureType'
+          description: ''
+    patch:
+      operationId: api_v1_maintance_procedure_types_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this maintance procedure type.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMaintanceProcedureTypeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMaintanceProcedureTypeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMaintanceProcedureTypeRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintanceProcedureType'
+          description: ''
+    delete:
+      operationId: api_v1_maintance_procedure_types_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this maintance procedure type.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/maintance-priorities/:
+    get:
+      operationId: api_v1_maintance_priorities_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMaintancePriorityList'
+          description: ''
+    post:
+      operationId: api_v1_maintance_priorities_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaintancePriorityRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MaintancePriorityRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MaintancePriorityRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintancePriority'
+          description: ''
+  /api/v1/maintance-priorities/{id}/:
+    put:
+      operationId: api_v1_maintance_priorities_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this maintance priority.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaintancePriorityRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MaintancePriorityRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MaintancePriorityRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintancePriority'
+          description: ''
+    get:
+      operationId: api_v1_maintance_priorities_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this maintance priority.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintancePriority'
+          description: ''
+    patch:
+      operationId: api_v1_maintance_priorities_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this maintance priority.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMaintancePriorityRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMaintancePriorityRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMaintancePriorityRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintancePriority'
+          description: ''
+    delete:
+      operationId: api_v1_maintance_priorities_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this maintance priority.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/maintance-procedures/:
+    get:
+      operationId: api_v1_maintance_procedures_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMaintanceProcedureList'
+          description: ''
+    post:
+      operationId: api_v1_maintance_procedures_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaintanceProcedureRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MaintanceProcedureRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MaintanceProcedureRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintanceProcedure'
+          description: ''
+  /api/v1/maintance-procedures/{id}/:
+    put:
+      operationId: api_v1_maintance_procedures_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this maintance procedure.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaintanceProcedureRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MaintanceProcedureRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MaintanceProcedureRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintanceProcedure'
+          description: ''
+    get:
+      operationId: api_v1_maintance_procedures_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this maintance procedure.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintanceProcedure'
+          description: ''
+    patch:
+      operationId: api_v1_maintance_procedures_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this maintance procedure.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMaintanceProcedureRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMaintanceProcedureRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMaintanceProcedureRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintanceProcedure'
+          description: ''
+    delete:
+      operationId: api_v1_maintance_procedures_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this maintance procedure.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/auth/login/:
+    post:
+      operationId: api_v1_auth_login_create
+      description: Autentica un usuario y devuelve tokens JWT para acceso a la API.
+      summary: Iniciar sesión
+      tags:
+      - Autenticación
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Nombre de usuario
+                password:
+                  type: string
+                  description: Contraseña del usuario
+              required:
+              - username
+              - password
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      username:
+                        type: string
+                      email:
+                        type: string
+                      first_name:
+                        type: string
+                      last_name:
+                        type: string
+                      groups:
+                        type: array
+                        items:
+                          type: string
+                  access:
+                    type: string
+                    description: Token de acceso JWT
+                  refresh:
+                    type: string
+                    description: Token de renovación JWT
+                  message:
+                    type: string
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Faltan credenciales
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                description: Credenciales incorrectas o cuenta inactiva
+          description: ''
+  /api/v1/auth/logout/:
+    post:
+      operationId: api_v1_auth_logout_create
+      description: Invalida el token de renovación del usuario para cerrar sesión
+        de forma segura.
+      summary: Cerrar sesión
+      tags:
+      - Autenticación
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh:
+                  type: string
+                  description: Token de renovación JWT
+              required:
+              - refresh
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                description: Sesión cerrada exitosamente
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Token de renovación requerido o inválido
+          description: ''
+  /api/v1/auth/register/:
+    post:
+      operationId: api_v1_auth_register_create
+      description: Crea una nueva cuenta de usuario en el sistema. El usuario será
+        creado en estado inactivo y requerirá activación.
+      summary: Registrar usuario
+      tags:
+      - Autenticación
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Nombre de usuario único
+                email:
+                  type: string
+                  format: email
+                  description: Correo electrónico único
+                password1:
+                  type: string
+                  description: Contraseña
+                password2:
+                  type: string
+                  description: Confirmación de contraseña
+                first_name:
+                  type: string
+                  description: Nombre del usuario
+                last_name:
+                  type: string
+                  description: Apellido del usuario
+              required:
+              - username
+              - email
+              - password1
+              - password2
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                description: Usuario creado exitosamente
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Error en los datos proporcionados (usuario/email ya existe,
+                  contraseñas no coinciden, etc.)
+          description: ''
+  /api/v1/auth/profile/:
+    get:
+      operationId: api_v1_auth_profile_retrieve
+      description: Obtiene la información completa del perfil del usuario autenticado.
+      summary: Obtener perfil de usuario
+      tags:
+      - Autenticación
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                description: No autenticado
+          description: ''
+  /api/v1/auth/verify/{token}/:
+    get:
+      operationId: api_v1_auth_verify_retrieve
+      description: Valida el token de activación de una cuenta de usuario y la activa.
+      summary: Validar token de activación
+      parameters:
+      - in: path
+        name: token
+        schema:
+          type: string
+        description: Token de activación enviado por email
+        required: true
+      tags:
+      - Autenticación
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenValidation'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenValidation'
+          description: ''
+  /api/v1/auth/reset-password/:
+    post:
+      operationId: api_v1_auth_reset_password_create
+      description: Envía un email con instrucciones para restablecer la contraseña.
+      summary: Solicitar restablecimiento de contraseña
+      tags:
+      - Autenticación
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordResetResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordResetResponse'
+          description: ''
+  /api/v1/auth/token/:
+    post:
+      operationId: api_v1_auth_token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /api/v1/auth/token/refresh/:
+    post:
+      operationId: api_v1_auth_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/v1/areas/:
+    get:
+      operationId: api_v1_areas_list
+      description: |-
+        Vista para crear y listar áreas de la API general.
+
+        Proporciona endpoints para gestionar las áreas básicas del sistema.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedApiAreaList'
+          description: ''
+    post:
+      operationId: api_v1_areas_create
+      description: |-
+        Vista para crear y listar áreas de la API general.
+
+        Proporciona endpoints para gestionar las áreas básicas del sistema.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiAreaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ApiAreaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ApiAreaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiArea'
+          description: ''
+  /api/Noticias/:
+    get:
+      operationId: api_Noticias_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNoticiaList'
+          description: ''
+    post:
+      operationId: api_Noticias_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoticiaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NoticiaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NoticiaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Noticia'
+          description: ''
+  /api/Noticias/{id}/:
+    put:
+      operationId: api_Noticias_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this noticia.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoticiaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NoticiaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NoticiaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Noticia'
+          description: ''
+    get:
+      operationId: api_Noticias_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this noticia.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Noticia'
+          description: ''
+    patch:
+      operationId: api_Noticias_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this noticia.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedNoticiaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedNoticiaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedNoticiaRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Noticia'
+          description: ''
+    delete:
+      operationId: api_Noticias_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this noticia.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/Usuarios/:
+    get:
+      operationId: api_Usuarios_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUsuarioList'
+          description: ''
+    post:
+      operationId: api_Usuarios_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+          description: ''
+  /api/Usuarios/{id}/:
+    put:
+      operationId: api_Usuarios_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this usuario.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+          description: ''
+    get:
+      operationId: api_Usuarios_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this usuario.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+          description: ''
+    patch:
+      operationId: api_Usuarios_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this usuario.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUsuarioRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUsuarioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUsuarioRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+          description: ''
+    delete:
+      operationId: api_Usuarios_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this usuario.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/AtencionPoblacion/:
+    get:
+      operationId: api_AtencionPoblacion_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAtencionPoblacionList'
+          description: ''
+    post:
+      operationId: api_AtencionPoblacion_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AtencionPoblacionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AtencionPoblacionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AtencionPoblacionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtencionPoblacion'
+          description: ''
+  /api/AtencionPoblacion/{id}/:
+    put:
+      operationId: api_AtencionPoblacion_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this atención a la población.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AtencionPoblacionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AtencionPoblacionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AtencionPoblacionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtencionPoblacion'
+          description: ''
+    get:
+      operationId: api_AtencionPoblacion_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this atención a la población.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtencionPoblacion'
+          description: ''
+    patch:
+      operationId: api_AtencionPoblacion_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this atención a la población.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAtencionPoblacionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAtencionPoblacionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAtencionPoblacionRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtencionPoblacion'
+          description: ''
+    delete:
+      operationId: api_AtencionPoblacion_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this atención a la población.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /SecretariaDocente/api/Tramite/:
+    get:
+      operationId: SecretariaDocente_api_Tramite_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - SecretariaDocente
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTramiteList'
+          description: ''
+    post:
+      operationId: SecretariaDocente_api_Tramite_create
+      tags:
+      - SecretariaDocente
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TramiteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TramiteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TramiteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tramite'
+          description: ''
+  /SecretariaDocente/api/Tramite/{id}/:
+    put:
+      operationId: SecretariaDocente_api_Tramite_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this tramite.
+        required: true
+      tags:
+      - SecretariaDocente
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TramiteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TramiteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TramiteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tramite'
+          description: ''
+    get:
+      operationId: SecretariaDocente_api_Tramite_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this tramite.
+        required: true
+      tags:
+      - SecretariaDocente
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tramite'
+          description: ''
+    patch:
+      operationId: SecretariaDocente_api_Tramite_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this tramite.
+        required: true
+      tags:
+      - SecretariaDocente
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTramiteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTramiteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTramiteRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tramite'
+          description: ''
+    delete:
+      operationId: SecretariaDocente_api_Tramite_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this tramite.
+        required: true
+      tags:
+      - SecretariaDocente
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    AccommodationProcedure:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        guests:
+          type: array
+          items:
+            $ref: '#/components/schemas/Guest'
+        feeding_days:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeedingDays'
+        username:
+          type: string
+          readOnly: true
+        notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Note'
+        nombre_tramite:
+          type: string
+          maxLength: 250
+        on_create:
+          type: string
+          format: date
+          readOnly: true
+        on_modified:
+          type: string
+          format: date
+          readOnly: true
+        document:
+          type: string
+          format: uri
+          nullable: true
+        state:
+          $ref: '#/components/schemas/StateEnum'
+        accommodation_type:
+          $ref: '#/components/schemas/AccommodationTypeEnum'
+        start_day:
+          type: string
+          format: date
+        end_day:
+          type: string
+          format: date
+        description:
+          type: string
+        user:
+          type: integer
+          nullable: true
+        department:
+          type: integer
+        area:
+          type: integer
+      required:
+      - accommodation_type
+      - area
+      - department
+      - description
+      - end_day
+      - feeding_days
+      - guests
+      - id
+      - nombre_tramite
+      - on_create
+      - on_modified
+      - start_day
+      - username
+    AccommodationProcedureRequest:
+      type: object
+      properties:
+        guests:
+          type: array
+          items:
+            $ref: '#/components/schemas/GuestRequest'
+        feeding_days:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeedingDaysRequest'
+        notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/NoteRequest'
+        nombre_tramite:
+          type: string
+          minLength: 1
+          maxLength: 250
+        document:
+          type: string
+          format: binary
+          nullable: true
+        state:
+          $ref: '#/components/schemas/StateEnum'
+        accommodation_type:
+          $ref: '#/components/schemas/AccommodationTypeEnum'
+        start_day:
+          type: string
+          format: date
+        end_day:
+          type: string
+          format: date
+        description:
+          type: string
+          minLength: 1
+        user:
+          type: integer
+          nullable: true
+        department:
+          type: integer
+        area:
+          type: integer
+      required:
+      - accommodation_type
+      - area
+      - department
+      - description
+      - end_day
+      - feeding_days
+      - guests
+      - nombre_tramite
+      - start_day
+    AccommodationTypeEnum:
+      enum:
+      - A
+      - B
+      type: string
+      description: |-
+        * `A` - Instalaciones Hoteleras
+        * `B` - Hotelito de posgrado de la UHO
+    ApiArea:
+      type: object
+      description: |-
+        Serializer para el modelo Area de la API general.
+
+        Distinguido del AreaSerializer de internal_procedures para evitar
+        conflictos de nombres en la documentación.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+      required:
+      - description
+      - id
+      - name
+    ApiAreaRequest:
+      type: object
+      description: |-
+        Serializer para el modelo Area de la API general.
+
+        Distinguido del AreaSerializer de internal_procedures para evitar
+        conflictos de nombres en la documentación.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          minLength: 1
+      required:
+      - description
+      - name
+    Area:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+      required:
+      - id
+      - name
+    AreaRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+      required:
+      - name
+    AtencionPoblacion:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombre_tramite:
+          type: string
+          maxLength: 250
+        nombre:
+          type: string
+          maxLength: 250
+        apellidos:
+          type: string
+          maxLength: 250
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        ci:
+          type: string
+          maxLength: 11
+        telefono:
+          type: string
+          maxLength: 8
+        direccion:
+          type: string
+          maxLength: 250
+        municipality:
+          $ref: '#/components/schemas/MunicipalityEnum'
+        consulta:
+          $ref: '#/components/schemas/ConsultaEnum'
+        adjunto:
+          type: string
+          format: uri
+          nullable: true
+        asunto:
+          type: string
+          maxLength: 250
+        mensaje:
+          type: string
+        numero_seguimiento:
+          type: string
+          format: uuid
+          readOnly: true
+        estado:
+          $ref: '#/components/schemas/AtencionPoblacionEstadoEnum'
+        usuario:
+          type: integer
+          nullable: true
+      required:
+      - apellidos
+      - asunto
+      - ci
+      - consulta
+      - direccion
+      - email
+      - id
+      - mensaje
+      - municipality
+      - nombre
+      - nombre_tramite
+      - numero_seguimiento
+      - telefono
+    AtencionPoblacionEstadoEnum:
+      enum:
+      - En espera
+      - Aceptado
+      - Procesando
+      - Listo para recoger
+      - Entregado
+      - Completado
+      type: string
+      description: |-
+        * `En espera` - En espera
+        * `Aceptado` - Aceptado
+        * `Procesando` - Procesando
+        * `Listo para recoger` - Listo para recoger
+        * `Entregado` - Entregado
+        * `Completado` - Completado
+    AtencionPoblacionRequest:
+      type: object
+      properties:
+        nombre_tramite:
+          type: string
+          minLength: 1
+          maxLength: 250
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 250
+        apellidos:
+          type: string
+          minLength: 1
+          maxLength: 250
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        ci:
+          type: string
+          minLength: 1
+          maxLength: 11
+        telefono:
+          type: string
+          minLength: 1
+          maxLength: 8
+        direccion:
+          type: string
+          minLength: 1
+          maxLength: 250
+        municipality:
+          $ref: '#/components/schemas/MunicipalityEnum'
+        consulta:
+          $ref: '#/components/schemas/ConsultaEnum'
+        adjunto:
+          type: string
+          format: binary
+          nullable: true
+        asunto:
+          type: string
+          minLength: 1
+          maxLength: 250
+        mensaje:
+          type: string
+          minLength: 1
+        estado:
+          $ref: '#/components/schemas/AtencionPoblacionEstadoEnum'
+        usuario:
+          type: integer
+          nullable: true
+      required:
+      - apellidos
+      - asunto
+      - ci
+      - consulta
+      - direccion
+      - email
+      - mensaje
+      - municipality
+      - nombre
+      - nombre_tramite
+      - telefono
+    ConsultaEnum:
+      enum:
+      - Duda
+      - Queja
+      - Solicitid de Información
+      type: string
+      description: |-
+        * `Duda` - Duda
+        * `Queja` - Queja
+        * `Solicitid de Información` - Solicitid de Información
+    Department:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        area:
+          type: integer
+          nullable: true
+      required:
+      - id
+      - name
+    DepartmentRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        area:
+          type: integer
+          nullable: true
+      required:
+      - name
+    Email:
+      type: object
+      description: |-
+        Serializer para el modelo Email.
+
+        Configura los parámetros de email SMTP para el envío de correos
+        electrónicos del sistema.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        address:
+          type: string
+          format: email
+          maxLength: 254
+        smtp_server:
+          type: string
+          maxLength: 255
+        smtp_port:
+          type: string
+          maxLength: 3
+        smtp_username:
+          type: string
+          maxLength: 255
+      required:
+      - address
+      - id
+      - smtp_port
+      - smtp_server
+      - smtp_username
+    EmailRequest:
+      type: object
+      description: |-
+        Serializer para el modelo Email.
+
+        Configura los parámetros de email SMTP para el envío de correos
+        electrónicos del sistema.
+      properties:
+        address:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        smtp_server:
+          type: string
+          minLength: 1
+          maxLength: 255
+        smtp_port:
+          type: string
+          minLength: 1
+          maxLength: 3
+        smtp_username:
+          type: string
+          minLength: 1
+          maxLength: 255
+        smtp_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 255
+      required:
+      - address
+      - smtp_password
+      - smtp_port
+      - smtp_server
+      - smtp_username
+    EstadosTramites:
+      type: object
+      description: |-
+        Serializer para el modelo EstadosTramites.
+
+        Define los diferentes estados que pueden tener los trámites
+        en el sistema (pendiente, en proceso, completado, etc.).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        tramites_count:
+          type: integer
+          readOnly: true
+        nombre:
+          type: string
+          maxLength: 255
+        is_active:
+          type: boolean
+      required:
+      - id
+      - nombre
+      - tramites_count
+    EstadosTramitesRequest:
+      type: object
+      description: |-
+        Serializer para el modelo EstadosTramites.
+
+        Define los diferentes estados que pueden tener los trámites
+        en el sistema (pendiente, en proceso, completado, etc.).
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 255
+        is_active:
+          type: boolean
+      required:
+      - nombre
+    FeedingDays:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        date:
+          type: string
+          format: date
+        breakfast:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        lunch:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        dinner:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        snack:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+      required:
+      - breakfast
+      - date
+      - dinner
+      - id
+      - lunch
+      - snack
+    FeedingDaysRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        breakfast:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        lunch:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        dinner:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        snack:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+      required:
+      - breakfast
+      - date
+      - dinner
+      - lunch
+      - snack
+    FeedingProcedure:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        feeding_days:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeedingDays'
+        username:
+          type: string
+          readOnly: true
+        notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Note'
+        nombre_tramite:
+          type: string
+          maxLength: 250
+        on_create:
+          type: string
+          format: date
+          readOnly: true
+        on_modified:
+          type: string
+          format: date
+          readOnly: true
+        document:
+          type: string
+          format: uri
+          nullable: true
+        state:
+          $ref: '#/components/schemas/StateEnum'
+        feeding_type:
+          $ref: '#/components/schemas/FeedingTypeEnum'
+        start_day:
+          type: string
+          format: date
+        end_day:
+          type: string
+          format: date
+        description:
+          type: string
+        ammount:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        user:
+          type: integer
+          nullable: true
+        department:
+          type: integer
+        area:
+          type: integer
+      required:
+      - ammount
+      - area
+      - department
+      - description
+      - end_day
+      - feeding_days
+      - feeding_type
+      - id
+      - nombre_tramite
+      - on_create
+      - on_modified
+      - start_day
+      - username
+    FeedingProcedureRequest:
+      type: object
+      properties:
+        feeding_days:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeedingDaysRequest'
+        notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/NoteRequest'
+        nombre_tramite:
+          type: string
+          minLength: 1
+          maxLength: 250
+        document:
+          type: string
+          format: binary
+          nullable: true
+        state:
+          $ref: '#/components/schemas/StateEnum'
+        feeding_type:
+          $ref: '#/components/schemas/FeedingTypeEnum'
+        start_day:
+          type: string
+          format: date
+        end_day:
+          type: string
+          format: date
+        description:
+          type: string
+          minLength: 1
+        ammount:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        user:
+          type: integer
+          nullable: true
+        department:
+          type: integer
+        area:
+          type: integer
+      required:
+      - ammount
+      - area
+      - department
+      - description
+      - end_day
+      - feeding_days
+      - feeding_type
+      - nombre_tramite
+      - start_day
+    FeedingTypeEnum:
+      enum:
+      - A
+      - B
+      type: string
+      description: |-
+        * `A` - Restaurante Especializado
+        * `B` - Hotelito de posgrado de la UHO
+    Guest:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        sex:
+          $ref: '#/components/schemas/SexEnum'
+        identification:
+          type: string
+          maxLength: 11
+      required:
+      - id
+      - identification
+      - name
+      - sex
+    GuestRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        sex:
+          $ref: '#/components/schemas/SexEnum'
+        identification:
+          type: string
+          minLength: 1
+          maxLength: 11
+      required:
+      - identification
+      - name
+      - sex
+    InteresesEnum:
+      enum:
+      - Estatal
+      - Particular
+      type: string
+      description: |-
+        * `Estatal` - Estatal
+        * `Particular` - Particular
+    MaintancePriority:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 20
+      required:
+      - id
+      - name
+    MaintancePriorityRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 20
+      required:
+      - name
+    MaintanceProcedure:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        procedure_type:
+          type: integer
+        priority:
+          type: integer
+        username:
+          type: string
+          readOnly: true
+        notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Note'
+        nombre_tramite:
+          type: string
+          maxLength: 250
+        on_create:
+          type: string
+          format: date
+          readOnly: true
+        on_modified:
+          type: string
+          format: date
+          readOnly: true
+        document:
+          type: string
+          format: uri
+          nullable: true
+        state:
+          $ref: '#/components/schemas/StateEnum'
+        description:
+          type: string
+        picture:
+          type: string
+          format: uri
+          nullable: true
+        user:
+          type: integer
+          nullable: true
+        department:
+          type: integer
+        area:
+          type: integer
+      required:
+      - area
+      - department
+      - description
+      - id
+      - nombre_tramite
+      - on_create
+      - on_modified
+      - priority
+      - procedure_type
+      - username
+    MaintanceProcedureRequest:
+      type: object
+      properties:
+        procedure_type:
+          type: integer
+        priority:
+          type: integer
+        notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/NoteRequest'
+        nombre_tramite:
+          type: string
+          minLength: 1
+          maxLength: 250
+        document:
+          type: string
+          format: binary
+          nullable: true
+        state:
+          $ref: '#/components/schemas/StateEnum'
+        description:
+          type: string
+          minLength: 1
+        picture:
+          type: string
+          format: binary
+          nullable: true
+        user:
+          type: integer
+          nullable: true
+        department:
+          type: integer
+        area:
+          type: integer
+      required:
+      - area
+      - department
+      - description
+      - nombre_tramite
+      - priority
+      - procedure_type
+    MaintanceProcedureType:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 20
+      required:
+      - id
+      - name
+    MaintanceProcedureTypeRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 20
+      required:
+      - name
+    MunicipalityEnum:
+      enum:
+      - Antilla
+      - Banes
+      - Báguano
+      - Cacocum
+      - Calixto García
+      - Cueto
+      - Frank País
+      - Gibara
+      - Holguín
+      - Mayarí
+      - Moa
+      - Rafael Freyre
+      - Sagua de Tánamo
+      - Urbano Noris
+      type: string
+      description: |-
+        * `Antilla` - Antilla
+        * `Banes` - Banes
+        * `Báguano` - Báguano
+        * `Cacocum` - Cacocum
+        * `Calixto García` - Calixto García
+        * `Cueto` - Cueto
+        * `Frank País` - Frank País
+        * `Gibara` - Gibara
+        * `Holguín` - Holguín
+        * `Mayarí` - Mayarí
+        * `Moa` - Moa
+        * `Rafael Freyre` - Rafael Freyre
+        * `Sagua de Tánamo` - Sagua de Tánamo
+        * `Urbano Noris` - Urbano Noris
+    Note:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        state:
+          $ref: '#/components/schemas/StateEnum'
+        description:
+          type: string
+      required:
+      - description
+      - id
+      - state
+    NoteRequest:
+      type: object
+      properties:
+        state:
+          $ref: '#/components/schemas/StateEnum'
+        description:
+          type: string
+          minLength: 1
+      required:
+      - description
+      - state
+    Noticia:
+      type: object
+      description: |-
+        Serializer para el modelo Noticias.
+
+        Maneja las noticias y anuncios del sistema, incluyendo contenido,
+        fechas de publicación y estado de visibilidad.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        resumen:
+          type: string
+          readOnly: true
+        fecha_formateada:
+          type: string
+          readOnly: true
+        titulo:
+          type: string
+          maxLength: 255
+        imagen_cabecera:
+          type: string
+          format: uri
+          nullable: true
+        cuerpo:
+          type: string
+        on_create:
+          type: string
+          format: date
+          readOnly: true
+        on_modified:
+          type: string
+          format: date
+          readOnly: true
+      required:
+      - cuerpo
+      - fecha_formateada
+      - id
+      - on_create
+      - on_modified
+      - resumen
+      - titulo
+    NoticiaRequest:
+      type: object
+      description: |-
+        Serializer para el modelo Noticias.
+
+        Maneja las noticias y anuncios del sistema, incluyendo contenido,
+        fechas de publicación y estado de visibilidad.
+      properties:
+        titulo:
+          type: string
+          minLength: 1
+          maxLength: 255
+        imagen_cabecera:
+          type: string
+          format: binary
+          nullable: true
+        cuerpo:
+          type: string
+          minLength: 1
+      required:
+      - cuerpo
+      - titulo
+    Notificacion:
+      type: object
+      description: |-
+        Serializer para el modelo Notificación.
+
+        Maneja las notificaciones del sistema, incluyendo información del destinatario
+        y estado de lectura.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        para_info:
+          allOf:
+          - $ref: '#/components/schemas/Usuario'
+          readOnly: true
+        tiempo_transcurrido:
+          type: string
+          readOnly: true
+        creado:
+          type: string
+          format: date
+        tipo:
+          type: string
+          maxLength: 255
+        asunto:
+          type: string
+          maxLength: 255
+        cuerpo:
+          type: string
+        visto:
+          type: boolean
+        para:
+          type: integer
+      required:
+      - asunto
+      - creado
+      - cuerpo
+      - id
+      - para
+      - para_info
+      - tiempo_transcurrido
+      - tipo
+    NotificacionRequest:
+      type: object
+      description: |-
+        Serializer para el modelo Notificación.
+
+        Maneja las notificaciones del sistema, incluyendo información del destinatario
+        y estado de lectura.
+      properties:
+        creado:
+          type: string
+          format: date
+        tipo:
+          type: string
+          minLength: 1
+          maxLength: 255
+        asunto:
+          type: string
+          minLength: 1
+          maxLength: 255
+        cuerpo:
+          type: string
+          minLength: 1
+        visto:
+          type: boolean
+        para:
+          type: integer
+      required:
+      - asunto
+      - creado
+      - cuerpo
+      - para
+      - tipo
+    OrganismoOpEnum:
+      enum:
+      - Consultoria Jurídica
+      - Bufete Colectivo Internacional
+      type: string
+      description: |-
+        * `Consultoria Jurídica` - Consultoria Jurídica
+        * `Bufete Colectivo Internacional` - Bufete Colectivo Internacional
+    PaginatedAccommodationProcedureList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccommodationProcedure'
+    PaginatedApiAreaList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApiArea'
+    PaginatedAreaList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Area'
+    PaginatedAtencionPoblacionList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AtencionPoblacion'
+    PaginatedDepartmentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Department'
+    PaginatedEmailList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Email'
+    PaginatedEstadosTramitesList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/EstadosTramites'
+    PaginatedFeedingDaysList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeedingDays'
+    PaginatedFeedingProcedureList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeedingProcedure'
+    PaginatedGuestList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Guest'
+    PaginatedMaintancePriorityList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MaintancePriority'
+    PaginatedMaintanceProcedureList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MaintanceProcedure'
+    PaginatedMaintanceProcedureTypeList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MaintanceProcedureType'
+    PaginatedNoteList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Note'
+    PaginatedNoticiaList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Noticia'
+    PaginatedNotificacionList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notificacion'
+    PaginatedTramiteList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tramite'
+    PaginatedTransportProcedureList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransportProcedure'
+    PaginatedTransportProcedureTypeList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransportProcedureType'
+    PaginatedUsuarioList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Usuario'
+    PasswordResetRequestRequest:
+      type: object
+      description: Serializer para solicitudes de restablecimiento de contraseña.
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          description: Email del usuario para restablecer contraseña
+      required:
+      - email
+    PasswordResetResponse:
+      type: object
+      description: Serializer para respuestas de restablecimiento de contraseña.
+      properties:
+        message:
+          type: string
+          readOnly: true
+      required:
+      - message
+    PatchedAccommodationProcedureRequest:
+      type: object
+      properties:
+        guests:
+          type: array
+          items:
+            $ref: '#/components/schemas/GuestRequest'
+        feeding_days:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeedingDaysRequest'
+        notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/NoteRequest'
+        nombre_tramite:
+          type: string
+          minLength: 1
+          maxLength: 250
+        document:
+          type: string
+          format: binary
+          nullable: true
+        state:
+          $ref: '#/components/schemas/StateEnum'
+        accommodation_type:
+          $ref: '#/components/schemas/AccommodationTypeEnum'
+        start_day:
+          type: string
+          format: date
+        end_day:
+          type: string
+          format: date
+        description:
+          type: string
+          minLength: 1
+        user:
+          type: integer
+          nullable: true
+        department:
+          type: integer
+        area:
+          type: integer
+    PatchedAreaRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+    PatchedAtencionPoblacionRequest:
+      type: object
+      properties:
+        nombre_tramite:
+          type: string
+          minLength: 1
+          maxLength: 250
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 250
+        apellidos:
+          type: string
+          minLength: 1
+          maxLength: 250
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        ci:
+          type: string
+          minLength: 1
+          maxLength: 11
+        telefono:
+          type: string
+          minLength: 1
+          maxLength: 8
+        direccion:
+          type: string
+          minLength: 1
+          maxLength: 250
+        municipality:
+          $ref: '#/components/schemas/MunicipalityEnum'
+        consulta:
+          $ref: '#/components/schemas/ConsultaEnum'
+        adjunto:
+          type: string
+          format: binary
+          nullable: true
+        asunto:
+          type: string
+          minLength: 1
+          maxLength: 250
+        mensaje:
+          type: string
+          minLength: 1
+        estado:
+          $ref: '#/components/schemas/AtencionPoblacionEstadoEnum'
+        usuario:
+          type: integer
+          nullable: true
+    PatchedDepartmentRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        area:
+          type: integer
+          nullable: true
+    PatchedEmailRequest:
+      type: object
+      description: |-
+        Serializer para el modelo Email.
+
+        Configura los parámetros de email SMTP para el envío de correos
+        electrónicos del sistema.
+      properties:
+        address:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        smtp_server:
+          type: string
+          minLength: 1
+          maxLength: 255
+        smtp_port:
+          type: string
+          minLength: 1
+          maxLength: 3
+        smtp_username:
+          type: string
+          minLength: 1
+          maxLength: 255
+        smtp_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 255
+    PatchedEstadosTramitesRequest:
+      type: object
+      description: |-
+        Serializer para el modelo EstadosTramites.
+
+        Define los diferentes estados que pueden tener los trámites
+        en el sistema (pendiente, en proceso, completado, etc.).
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 255
+        is_active:
+          type: boolean
+    PatchedFeedingDaysRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        breakfast:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        lunch:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        dinner:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        snack:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+    PatchedFeedingProcedureRequest:
+      type: object
+      properties:
+        feeding_days:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeedingDaysRequest'
+        notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/NoteRequest'
+        nombre_tramite:
+          type: string
+          minLength: 1
+          maxLength: 250
+        document:
+          type: string
+          format: binary
+          nullable: true
+        state:
+          $ref: '#/components/schemas/StateEnum'
+        feeding_type:
+          $ref: '#/components/schemas/FeedingTypeEnum'
+        start_day:
+          type: string
+          format: date
+        end_day:
+          type: string
+          format: date
+        description:
+          type: string
+          minLength: 1
+        ammount:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        user:
+          type: integer
+          nullable: true
+        department:
+          type: integer
+        area:
+          type: integer
+    PatchedGuestRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        sex:
+          $ref: '#/components/schemas/SexEnum'
+        identification:
+          type: string
+          minLength: 1
+          maxLength: 11
+    PatchedMaintancePriorityRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 20
+    PatchedMaintanceProcedureRequest:
+      type: object
+      properties:
+        procedure_type:
+          type: integer
+        priority:
+          type: integer
+        notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/NoteRequest'
+        nombre_tramite:
+          type: string
+          minLength: 1
+          maxLength: 250
+        document:
+          type: string
+          format: binary
+          nullable: true
+        state:
+          $ref: '#/components/schemas/StateEnum'
+        description:
+          type: string
+          minLength: 1
+        picture:
+          type: string
+          format: binary
+          nullable: true
+        user:
+          type: integer
+          nullable: true
+        department:
+          type: integer
+        area:
+          type: integer
+    PatchedMaintanceProcedureTypeRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 20
+    PatchedNoteRequest:
+      type: object
+      properties:
+        state:
+          $ref: '#/components/schemas/StateEnum'
+        description:
+          type: string
+          minLength: 1
+    PatchedNoticiaRequest:
+      type: object
+      description: |-
+        Serializer para el modelo Noticias.
+
+        Maneja las noticias y anuncios del sistema, incluyendo contenido,
+        fechas de publicación y estado de visibilidad.
+      properties:
+        titulo:
+          type: string
+          minLength: 1
+          maxLength: 255
+        imagen_cabecera:
+          type: string
+          format: binary
+          nullable: true
+        cuerpo:
+          type: string
+          minLength: 1
+    PatchedNotificacionRequest:
+      type: object
+      description: |-
+        Serializer para el modelo Notificación.
+
+        Maneja las notificaciones del sistema, incluyendo información del destinatario
+        y estado de lectura.
+      properties:
+        creado:
+          type: string
+          format: date
+        tipo:
+          type: string
+          minLength: 1
+          maxLength: 255
+        asunto:
+          type: string
+          minLength: 1
+          maxLength: 255
+        cuerpo:
+          type: string
+          minLength: 1
+        visto:
+          type: boolean
+        para:
+          type: integer
+    PatchedTramiteRequest:
+      type: object
+      properties:
+        nombre_tramite:
+          type: string
+          minLength: 1
+          maxLength: 250
+        tipo_estudio:
+          $ref: '#/components/schemas/TipoEstudioEnum'
+        tipo_est:
+          $ref: '#/components/schemas/TipoEstEnum'
+        uso:
+          $ref: '#/components/schemas/UsoEnum'
+        uso_i:
+          $ref: '#/components/schemas/UsoIEnum'
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 150
+        apellidos:
+          type: string
+          minLength: 1
+          maxLength: 150
+        ci:
+          type: string
+          minLength: 1
+          maxLength: 11
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 50
+        telefono:
+          type: string
+          minLength: 1
+          maxLength: 8
+        tomo:
+          type: string
+          minLength: 1
+          maxLength: 4
+        folio:
+          type: string
+          minLength: 1
+          maxLength: 4
+        numero:
+          type: string
+          minLength: 1
+          maxLength: 4
+        estado:
+          $ref: '#/components/schemas/TramiteEstadoEnum'
+        intereses:
+          $ref: '#/components/schemas/InteresesEnum'
+        organismo:
+          type: string
+          nullable: true
+          maxLength: 150
+        organismo_op:
+          $ref: '#/components/schemas/OrganismoOpEnum'
+        motivo:
+          type: string
+          nullable: true
+          maxLength: 250
+        funcionario:
+          type: string
+          minLength: 1
+          maxLength: 50
+        carrera:
+          type: string
+          minLength: 1
+          maxLength: 50
+        year:
+          type: string
+          minLength: 1
+          maxLength: 4
+        programa_academico:
+          $ref: '#/components/schemas/ProgramaAcademicoEnum'
+        nombre_programa:
+          type: string
+          minLength: 1
+          maxLength: 250
+        tipo_pren:
+          $ref: '#/components/schemas/TipoPrenEnum'
+        tipo_prei:
+          $ref: '#/components/schemas/TipoPreiEnum'
+        tipo_posn:
+          $ref: '#/components/schemas/TipoPosnEnum'
+        tipo_posi:
+          $ref: '#/components/schemas/TipoPosiEnum'
+        legalizacion:
+          type: string
+          minLength: 1
+          maxLength: 50
+        archivo:
+          type: string
+          format: binary
+        usuario:
+          type: integer
+          nullable: true
+    PatchedTransportProcedureRequest:
+      type: object
+      properties:
+        procedure_type:
+          type: integer
+        notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/NoteRequest'
+        nombre_tramite:
+          type: string
+          minLength: 1
+          maxLength: 250
+        document:
+          type: string
+          format: binary
+          nullable: true
+        state:
+          $ref: '#/components/schemas/StateEnum'
+        departure_time:
+          type: string
+          format: date-time
+        return_time:
+          type: string
+          format: date-time
+        departure_place:
+          type: string
+          minLength: 1
+          maxLength: 150
+        return_place:
+          type: string
+          minLength: 1
+          maxLength: 150
+        passengers:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        description:
+          type: string
+          minLength: 1
+        plate:
+          type: string
+          nullable: true
+          maxLength: 10
+        round_trip:
+          type: boolean
+        user:
+          type: integer
+          nullable: true
+        department:
+          type: integer
+        area:
+          type: integer
+    PatchedTransportProcedureTypeRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 20
+    PatchedUsuarioRequest:
+      type: object
+      description: |-
+        Serializer para el modelo Usuario.
+
+        Proporciona una representación completa del usuario, excluyendo campos sensibles
+        como la contraseña y campos internos de administración.
+      properties:
+        is_superuser:
+          type: boolean
+          title: Estado de superusuario
+          description: Indica que este usuario tiene todos los permisos sin asignárselos
+            explícitamente.
+        username:
+          type: string
+          minLength: 1
+          title: Nombre de usuario
+          description: 'Requerido. 150 carácteres como máximo. Únicamente letras,
+            dígitos y @/./+/-/_ '
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          title: Nombre
+          maxLength: 150
+        last_name:
+          type: string
+          title: Apellidos
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Dirección de correo electrónico
+          maxLength: 254
+        token_activacion:
+          type: string
+          minLength: 1
+          maxLength: 100
+        carnet:
+          type: string
+          minLength: 1
+          maxLength: 11
+        telefono:
+          type: string
+          minLength: 1
+          maxLength: 8
+        direccion:
+          type: string
+          minLength: 1
+        groups:
+          type: array
+          items:
+            type: integer
+            title: Grupos
+          title: Grupos
+          description: Los grupos a los que pertenece este usuario. Un usuario tendrá
+            todos los permisos asignados a cada uno de sus grupos.
+        user_permissions:
+          type: array
+          items:
+            type: integer
+            title: Permisos de usuario
+          title: Permisos de usuario
+          description: Permisos específicos para este usuario.
+    ProgramaAcademicoEnum:
+      enum:
+      - Especialidad
+      - Maestría
+      - Doctorado
+      type: string
+      description: |-
+        * `Especialidad` - Especialidad
+        * `Maestría` - Maestría
+        * `Doctorado` - Doctorado
+    SexEnum:
+      enum:
+      - M
+      - F
+      type: string
+      description: |-
+        * `M` - MASCULINO
+        * `F` - FEMENINO
+    StateEnum:
+      enum:
+      - PENDIENTE
+      - APROBADO
+      - FINALIZADO
+      - CANCELADO
+      - RECHAZADO
+      type: string
+      description: |-
+        * `PENDIENTE` - Pendiente
+        * `APROBADO` - Aprobado
+        * `FINALIZADO` - Finalizado
+        * `CANCELADO` - Cancelado
+        * `RECHAZADO` - Rechazado
+    TipoEstEnum:
+      enum:
+      - Posgrado
+      type: string
+      description: '* `Posgrado` - Posgrado'
+    TipoEstudioEnum:
+      enum:
+      - Pregrado
+      type: string
+      description: '* `Pregrado` - Pregado'
+    TipoPosiEnum:
+      enum:
+      - Crédito Académico
+      - Certificación de Notas
+      - Certifico de Estudios Terminados
+      - Copia Literal del Título
+      - Plan de Estudio
+      - Plan Temático
+      type: string
+      description: |-
+        * `Crédito Académico` - Crédito Académico
+        * `Certificación de Notas` - Certificación de Notas
+        * `Certifico de Estudios Terminados` - Certifico de Estudios Terminados
+        * `Copia Literal del Título` - Copia Literal del Título
+        * `Plan de Estudio` - Plan de Estudio
+        * `Plan Temático` - Plan Temático
+    TipoPosnEnum:
+      enum:
+      - Crédito Académico
+      - Certificación de Notas
+      - Certifico de Estudios Terminados
+      - Copia Literal del Título
+      type: string
+      description: |-
+        * `Crédito Académico` - Crédito Académico
+        * `Certificación de Notas` - Certificación de Notas
+        * `Certifico de Estudios Terminados` - Certifico de Estudios Terminados
+        * `Copia Literal del Título` - Copia Literal del Título
+    TipoPreiEnum:
+      enum:
+      - Índice Académico
+      - Certificación de Notas
+      - Certifico de Estudios Terminados
+      - Copia Literal del Título
+      - Plan de Estudio
+      - Plan Temático
+      type: string
+      description: |-
+        * `Índice Académico` - Índice Académico
+        * `Certificación de Notas` - Certificación de Notas
+        * `Certifico de Estudios Terminados` - Certifico de Estudios Terminados
+        * `Copia Literal del Título` - Copia Literal del Título
+        * `Plan de Estudio` - Plan de Estudio
+        * `Plan Temático` - Plan Temático
+    TipoPrenEnum:
+      enum:
+      - Índice Académico
+      - Certificación de Notas
+      - Certifico de Estudios Terminados
+      - Copia Literal del Título
+      type: string
+      description: |-
+        * `Índice Académico` - Índice Académico
+        * `Certificación de Notas` - Certificación de Notas
+        * `Certifico de Estudios Terminados` - Certifico de Estudios Terminados
+        * `Copia Literal del Título` - Copia Literal del Título
+    TokenObtainPair:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - refresh
+    TokenObtainPairRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - password
+      - username
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+      required:
+      - refresh
+    TokenValidation:
+      type: object
+      description: Serializer para la validación de tokens de activación.
+      properties:
+        message:
+          type: string
+          readOnly: true
+      required:
+      - message
+    Tramite:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        usuario_info:
+          allOf:
+          - $ref: '#/components/schemas/Usuario'
+          readOnly: true
+        nombre_tramite:
+          type: string
+          maxLength: 250
+        on_create:
+          type: string
+          format: date
+          readOnly: true
+        on_modified:
+          type: string
+          format: date
+          readOnly: true
+        numero_seguimiento:
+          type: string
+          readOnly: true
+        tipo_estudio:
+          $ref: '#/components/schemas/TipoEstudioEnum'
+        tipo_est:
+          $ref: '#/components/schemas/TipoEstEnum'
+        uso:
+          $ref: '#/components/schemas/UsoEnum'
+        uso_i:
+          $ref: '#/components/schemas/UsoIEnum'
+        nombre:
+          type: string
+          maxLength: 150
+        apellidos:
+          type: string
+          maxLength: 150
+        ci:
+          type: string
+          maxLength: 11
+        email:
+          type: string
+          format: email
+          maxLength: 50
+        telefono:
+          type: string
+          maxLength: 8
+        tomo:
+          type: string
+          maxLength: 4
+        folio:
+          type: string
+          maxLength: 4
+        numero:
+          type: string
+          maxLength: 4
+        fecha:
+          type: string
+          format: date
+          readOnly: true
+        estado:
+          $ref: '#/components/schemas/TramiteEstadoEnum'
+        intereses:
+          $ref: '#/components/schemas/InteresesEnum'
+        organismo:
+          type: string
+          nullable: true
+          maxLength: 150
+        organismo_op:
+          $ref: '#/components/schemas/OrganismoOpEnum'
+        motivo:
+          type: string
+          nullable: true
+          maxLength: 250
+        funcionario:
+          type: string
+          maxLength: 50
+        carrera:
+          type: string
+          maxLength: 50
+        year:
+          type: string
+          maxLength: 4
+        programa_academico:
+          $ref: '#/components/schemas/ProgramaAcademicoEnum'
+        nombre_programa:
+          type: string
+          maxLength: 250
+        tipo_pren:
+          $ref: '#/components/schemas/TipoPrenEnum'
+        tipo_prei:
+          $ref: '#/components/schemas/TipoPreiEnum'
+        tipo_posn:
+          $ref: '#/components/schemas/TipoPosnEnum'
+        tipo_posi:
+          $ref: '#/components/schemas/TipoPosiEnum'
+        legalizacion:
+          type: string
+          maxLength: 50
+        archivo:
+          type: string
+          format: uri
+        usuario:
+          type: integer
+          nullable: true
+      required:
+      - apellidos
+      - archivo
+      - carrera
+      - ci
+      - email
+      - fecha
+      - folio
+      - funcionario
+      - id
+      - nombre
+      - nombre_programa
+      - nombre_tramite
+      - numero
+      - numero_seguimiento
+      - on_create
+      - on_modified
+      - programa_academico
+      - telefono
+      - tipo_posi
+      - tipo_posn
+      - tipo_prei
+      - tipo_pren
+      - tomo
+      - usuario_info
+      - year
+    TramiteEstadoEnum:
+      enum:
+      - En Espera
+      - Aceptado
+      - Procesando
+      - Listo para Recoger
+      - Entregado
+      - Completado
+      type: string
+      description: |-
+        * `En Espera` - En Espera
+        * `Aceptado` - Aceptado
+        * `Procesando` - Procesando
+        * `Listo para Recoger` - Listo para Recoger
+        * `Entregado` - Entregado
+        * `Completado` - Completado
+    TramiteRequest:
+      type: object
+      properties:
+        nombre_tramite:
+          type: string
+          minLength: 1
+          maxLength: 250
+        tipo_estudio:
+          $ref: '#/components/schemas/TipoEstudioEnum'
+        tipo_est:
+          $ref: '#/components/schemas/TipoEstEnum'
+        uso:
+          $ref: '#/components/schemas/UsoEnum'
+        uso_i:
+          $ref: '#/components/schemas/UsoIEnum'
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 150
+        apellidos:
+          type: string
+          minLength: 1
+          maxLength: 150
+        ci:
+          type: string
+          minLength: 1
+          maxLength: 11
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 50
+        telefono:
+          type: string
+          minLength: 1
+          maxLength: 8
+        tomo:
+          type: string
+          minLength: 1
+          maxLength: 4
+        folio:
+          type: string
+          minLength: 1
+          maxLength: 4
+        numero:
+          type: string
+          minLength: 1
+          maxLength: 4
+        estado:
+          $ref: '#/components/schemas/TramiteEstadoEnum'
+        intereses:
+          $ref: '#/components/schemas/InteresesEnum'
+        organismo:
+          type: string
+          nullable: true
+          maxLength: 150
+        organismo_op:
+          $ref: '#/components/schemas/OrganismoOpEnum'
+        motivo:
+          type: string
+          nullable: true
+          maxLength: 250
+        funcionario:
+          type: string
+          minLength: 1
+          maxLength: 50
+        carrera:
+          type: string
+          minLength: 1
+          maxLength: 50
+        year:
+          type: string
+          minLength: 1
+          maxLength: 4
+        programa_academico:
+          $ref: '#/components/schemas/ProgramaAcademicoEnum'
+        nombre_programa:
+          type: string
+          minLength: 1
+          maxLength: 250
+        tipo_pren:
+          $ref: '#/components/schemas/TipoPrenEnum'
+        tipo_prei:
+          $ref: '#/components/schemas/TipoPreiEnum'
+        tipo_posn:
+          $ref: '#/components/schemas/TipoPosnEnum'
+        tipo_posi:
+          $ref: '#/components/schemas/TipoPosiEnum'
+        legalizacion:
+          type: string
+          minLength: 1
+          maxLength: 50
+        archivo:
+          type: string
+          format: binary
+        usuario:
+          type: integer
+          nullable: true
+      required:
+      - apellidos
+      - archivo
+      - carrera
+      - ci
+      - email
+      - folio
+      - funcionario
+      - nombre
+      - nombre_programa
+      - nombre_tramite
+      - numero
+      - programa_academico
+      - telefono
+      - tipo_posi
+      - tipo_posn
+      - tipo_prei
+      - tipo_pren
+      - tomo
+      - year
+    TransportProcedure:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        procedure_type:
+          type: integer
+        username:
+          type: string
+          readOnly: true
+        notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Note'
+        nombre_tramite:
+          type: string
+          maxLength: 250
+        on_create:
+          type: string
+          format: date
+          readOnly: true
+        on_modified:
+          type: string
+          format: date
+          readOnly: true
+        document:
+          type: string
+          format: uri
+          nullable: true
+        state:
+          $ref: '#/components/schemas/StateEnum'
+        departure_time:
+          type: string
+          format: date-time
+        return_time:
+          type: string
+          format: date-time
+        departure_place:
+          type: string
+          maxLength: 150
+        return_place:
+          type: string
+          maxLength: 150
+        passengers:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        description:
+          type: string
+        plate:
+          type: string
+          nullable: true
+          maxLength: 10
+        round_trip:
+          type: boolean
+        user:
+          type: integer
+          nullable: true
+        department:
+          type: integer
+        area:
+          type: integer
+      required:
+      - area
+      - department
+      - departure_place
+      - departure_time
+      - description
+      - id
+      - nombre_tramite
+      - on_create
+      - on_modified
+      - passengers
+      - procedure_type
+      - return_place
+      - return_time
+      - username
+    TransportProcedureRequest:
+      type: object
+      properties:
+        procedure_type:
+          type: integer
+        notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/NoteRequest'
+        nombre_tramite:
+          type: string
+          minLength: 1
+          maxLength: 250
+        document:
+          type: string
+          format: binary
+          nullable: true
+        state:
+          $ref: '#/components/schemas/StateEnum'
+        departure_time:
+          type: string
+          format: date-time
+        return_time:
+          type: string
+          format: date-time
+        departure_place:
+          type: string
+          minLength: 1
+          maxLength: 150
+        return_place:
+          type: string
+          minLength: 1
+          maxLength: 150
+        passengers:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        description:
+          type: string
+          minLength: 1
+        plate:
+          type: string
+          nullable: true
+          maxLength: 10
+        round_trip:
+          type: boolean
+        user:
+          type: integer
+          nullable: true
+        department:
+          type: integer
+        area:
+          type: integer
+      required:
+      - area
+      - department
+      - departure_place
+      - departure_time
+      - description
+      - nombre_tramite
+      - passengers
+      - procedure_type
+      - return_place
+      - return_time
+    TransportProcedureType:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 20
+      required:
+      - id
+      - name
+    TransportProcedureTypeRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 20
+      required:
+      - name
+    UserProfileResponse:
+      type: object
+      description: Serializer para la respuesta del perfil de usuario.
+      properties:
+        user:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+      required:
+      - user
+    UsoEnum:
+      enum:
+      - Nacional
+      type: string
+      description: '* `Nacional` - Nacional'
+    UsoIEnum:
+      enum:
+      - Internacional
+      type: string
+      description: '* `Internacional` - Internacional'
+    Usuario:
+      type: object
+      description: |-
+        Serializer para el modelo Usuario.
+
+        Proporciona una representación completa del usuario, excluyendo campos sensibles
+        como la contraseña y campos internos de administración.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        is_superuser:
+          type: boolean
+          title: Estado de superusuario
+          description: Indica que este usuario tiene todos los permisos sin asignárselos
+            explícitamente.
+        username:
+          type: string
+          title: Nombre de usuario
+          description: 'Requerido. 150 carácteres como máximo. Únicamente letras,
+            dígitos y @/./+/-/_ '
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          title: Nombre
+          maxLength: 150
+        last_name:
+          type: string
+          title: Apellidos
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Dirección de correo electrónico
+          maxLength: 254
+        token_activacion:
+          type: string
+          maxLength: 100
+        carnet:
+          type: string
+          maxLength: 11
+        telefono:
+          type: string
+          maxLength: 8
+        direccion:
+          type: string
+        groups:
+          type: array
+          items:
+            type: integer
+            title: Grupos
+          title: Grupos
+          description: Los grupos a los que pertenece este usuario. Un usuario tendrá
+            todos los permisos asignados a cada uno de sus grupos.
+        user_permissions:
+          type: array
+          items:
+            type: integer
+            title: Permisos de usuario
+          title: Permisos de usuario
+          description: Permisos específicos para este usuario.
+      required:
+      - carnet
+      - direccion
+      - full_name
+      - id
+      - telefono
+      - token_activacion
+      - username
+    UsuarioRequest:
+      type: object
+      description: |-
+        Serializer para el modelo Usuario.
+
+        Proporciona una representación completa del usuario, excluyendo campos sensibles
+        como la contraseña y campos internos de administración.
+      properties:
+        is_superuser:
+          type: boolean
+          title: Estado de superusuario
+          description: Indica que este usuario tiene todos los permisos sin asignárselos
+            explícitamente.
+        username:
+          type: string
+          minLength: 1
+          title: Nombre de usuario
+          description: 'Requerido. 150 carácteres como máximo. Únicamente letras,
+            dígitos y @/./+/-/_ '
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          title: Nombre
+          maxLength: 150
+        last_name:
+          type: string
+          title: Apellidos
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Dirección de correo electrónico
+          maxLength: 254
+        token_activacion:
+          type: string
+          minLength: 1
+          maxLength: 100
+        carnet:
+          type: string
+          minLength: 1
+          maxLength: 11
+        telefono:
+          type: string
+          minLength: 1
+          maxLength: 8
+        direccion:
+          type: string
+          minLength: 1
+        groups:
+          type: array
+          items:
+            type: integer
+            title: Grupos
+          title: Grupos
+          description: Los grupos a los que pertenece este usuario. Un usuario tendrá
+            todos los permisos asignados a cada uno de sus grupos.
+        user_permissions:
+          type: array
+          items:
+            type: integer
+            title: Permisos de usuario
+          title: Permisos de usuario
+          description: Permisos específicos para este usuario.
+      required:
+      - carnet
+      - direccion
+      - telefono
+      - token_activacion
+      - username
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+servers:
+- url: http://127.0.0.1:8000
+  description: Servidor de Desarrollo
+tags:
+- name: Autenticación
+  description: Endpoints para login, logout y registro de usuarios
+- name: Usuarios
+  description: Gestión de usuarios del sistema
+- name: Notificaciones
+  description: Sistema de notificaciones para usuarios
+- name: Atención a la Población
+  description: Gestión de solicitudes de atención ciudadana
+- name: Plataforma - Noticias
+  description: Gestión de noticias y anuncios
+- name: Plataforma - Email
+  description: Configuración de parámetros de email
+- name: Plataforma - Estados
+  description: Estados de trámites y procedimientos
+- name: Secretaría Docente
+  description: Trámites académicos y estudiantiles
+- name: Procedimientos Internos - Huéspedes
+  description: Gestión de huéspedes y visitantes
+- name: Procedimientos Internos - Alimentación
+  description: Servicios de alimentación
+- name: Procedimientos Internos - Estructura
+  description: Departamentos y áreas organizacionales

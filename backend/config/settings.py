@@ -123,10 +123,333 @@ CORS_ALLOW_ALL_ORIGINS = DEBUG  # Solo en desarrollo
 
 # Spectacular Settings (API Documentation)
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'TUho API',
-    'DESCRIPTION': 'API para la aplicación TUho',
+    'TITLE': 'TUho API - Sistema Integral Universitario',
+    'DESCRIPTION': '''
+    ## 🎓 API para la aplicación TUho - Sistema Integral de Gestión Universitaria
+    
+    ### 📋 Funcionalidades Principales
+    
+    Esta API proporciona endpoints organizados para:
+    
+    #### 🔐 **Autenticación y Seguridad**
+    - Registro y activación de cuentas
+    - Login/Logout con JWT
+    - Gestión de tokens y sesiones
+    - Recuperación de contraseñas
+    
+    #### 👥 **Gestión de Usuarios**
+    - Administración de usuarios del sistema
+    - Perfiles y información personal
+    - Roles y permisos
+    
+    #### 📢 **Comunicación**
+    - Sistema de notificaciones internas
+    - Publicación de noticias y anuncios
+    - Configuración de correos electrónicos
+    
+    #### 🏛️ **Servicios Ciudadanos**
+    - Atención a la población
+    - Solicitudes y consultas
+    - Seguimiento de trámites
+    
+    #### 🎓 **Servicios Académicos**
+    - Trámites de secretaría docente
+    - Certificados y documentos
+    - Gestión estudiantil
+    
+    #### 🏢 **Procedimientos Internos**
+    - Gestión de huéspedes
+    - Servicios de alimentación
+    - Transporte institucional
+    - Mantenimiento y reparaciones
+    
+    ---
+    
+    ### 🚀 **Guía de Inicio Rápido**
+    
+    #### 1️⃣ **Autenticación**
+    ```bash
+    # Iniciar sesión
+    POST /api/v1/auth/login/
+    {
+        "username": "tu_usuario",
+        "password": "tu_contraseña"
+    }
+    ```
+    
+    #### 2️⃣ **Usar Token**
+    ```
+    Authorization: Bearer <tu_token_jwt>
+    ```
+    
+    #### 3️⃣ **Probar Endpoints**
+    Usa el botón "Authorize" arriba para configurar tu token y probar los endpoints.
+    
+    ---
+    
+    ### 📊 **Códigos de Respuesta**
+    - `200` ✅ Éxito
+    - `201` ✅ Creado
+    - `400` ❌ Error en datos
+    - `401` 🔒 No autorizado
+    - `403` 🚫 Sin permisos
+    - `404` 🔍 No encontrado
+    - `500` 💥 Error servidor
+    
+    ### 📖 **Documentación Adicional**
+    - **ReDoc**: [http://127.0.0.1:8000/api/redoc/](http://127.0.0.1:8000/api/redoc/) - Vista completa
+    - **Schema JSON**: [http://127.0.0.1:8000/api/schema/](http://127.0.0.1:8000/api/schema/) - Esquema OpenAPI
+    ''',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+    'CONTACT': {
+        'name': 'Equipo de Desarrollo TUho',
+        'email': 'secretariadocenteuho@gmail.com',
+        'url': 'https://www.uho.edu.cu'
+    },
+    'LICENSE': {
+        'name': 'Uso Interno - Universidad de Holguín',
+        'url': 'https://www.uho.edu.cu'
+    },
+    'EXTERNAL_DOCS': {
+        'description': 'Documentación completa en ReDoc',
+        'url': 'http://127.0.0.1:8000/api/redoc/'
+    },
+    'SERVERS': [
+        {
+            'url': 'http://127.0.0.1:8000',
+            'description': '🛠️ Servidor de Desarrollo Local'
+        },
+        {
+            'url': 'https://api.tuho.uho.edu.cu',
+            'description': '🌐 Servidor de Producción (Futuro)'
+        }
+    ],
+    'TAGS': [
+        {
+            'name': '🔐 Autenticación',
+            'description': '''
+            **Gestión de acceso y seguridad**
+            
+            Endpoints para:
+            - 🚪 Login/Logout
+            - 📝 Registro de usuarios
+            - 🔄 Renovación de tokens
+            - ✅ Validación de cuentas
+            - 🔑 Recuperación de contraseñas
+            - 👤 Información de perfil
+            '''
+        },
+        {
+            'name': '👥 Usuarios',
+            'description': '''
+            **Administración de usuarios del sistema**
+            
+            Funcionalidades:
+            - 📋 Listado y búsqueda de usuarios
+            - ➕ Creación de nuevos usuarios
+            - ✏️ Edición de información personal
+            - 🗑️ Eliminación de cuentas
+            - 🛡️ Gestión de roles y permisos
+            
+            **⚠️ Acceso restringido a administradores**
+            '''
+        },
+        {
+            'name': '🔔 Notificaciones',
+            'description': '''
+            **Sistema de notificaciones internas**
+            
+            Características:
+            - 📬 Envío de notificaciones personalizadas
+            - 📖 Marcado de leído/no leído
+            - 🎯 Notificaciones dirigidas
+            - ⏰ Historial temporal
+            - 🔍 Filtros y búsqueda
+            '''
+        },
+        {
+            'name': '🏛️ Atención a la Población',
+            'description': '''
+            **Servicios de atención ciudadana**
+            
+            Incluye:
+            - 📝 Solicitudes ciudadanas
+            - 📋 Seguimiento de casos
+            - 💬 Respuestas oficiales
+            - 📊 Estados de tramitación
+            - 🗂️ Historial de solicitudes
+            '''
+        },
+        {
+            'name': '📰 Plataforma - Noticias',
+            'description': '''
+            **Gestión de contenido informativo**
+            
+            Funciones:
+            - 📰 Publicación de noticias
+            - 📅 Programación de contenido
+            - 🖼️ Gestión multimedia
+            - 👁️ Control de visibilidad
+            - 📈 Métricas de visualización
+            '''
+        },
+        {
+            'name': '✉️ Plataforma - Email',
+            'description': '''
+            **Configuración del sistema de correos**
+            
+            Administración de:
+            - ⚙️ Configuración SMTP
+            - 📧 Plantillas de email
+            - 🔐 Credenciales de servidor
+            - 📊 Logs de envío
+            
+            **🔒 Solo administradores**
+            '''
+        },
+        {
+            'name': '📊 Plataforma - Estados',
+            'description': '''
+            **Gestión de estados de trámites**
+            
+            Control de:
+            - 🏷️ Definición de estados
+            - 🔄 Flujos de trabajo
+            - 📈 Seguimiento de progreso
+            - 🎨 Personalización visual
+            '''
+        },
+        {
+            'name': '🎓 Secretaría Docente',
+            'description': '''
+            **Servicios académicos y estudiantiles**
+            
+            Trámites disponibles:
+            - 📜 Certificados académicos
+            - 📋 Constancias de estudio
+            - 🎯 Solicitudes especiales
+            - 📊 Historial académico
+            - ⚡ Trámites urgentes
+            
+            **👨‍🎓 Estudiantes ven solo los suyos**
+            '''
+        },
+        {
+            'name': '🏨 Procedimientos - Huéspedes',
+            'description': '''
+            **Gestión de visitantes y huéspedes**
+            
+            Servicios:
+            - 📝 Registro de huéspedes
+            - 🏠 Asignación de alojamiento
+            - 📅 Control de estadías
+            - 💰 Gestión de pagos
+            - 📊 Reportes de ocupación
+            '''
+        },
+        {
+            'name': '🍽️ Procedimientos - Alimentación',
+            'description': '''
+            **Servicios de comedor y alimentación**
+            
+            Gestión de:
+            - 📅 Días de alimentación
+            - 🍽️ Menús y dietas
+            - 👥 Solicitudes de comida
+            - 💳 Pagos y descuentos
+            - 📈 Estadísticas de consumo
+            '''
+        },
+        {
+            'name': '🏢 Procedimientos - Estructura',
+            'description': '''
+            **Organización interna institucional**
+            
+            Administración de:
+            - 🏛️ Departamentos
+            - 📍 Áreas funcionales
+            - 👥 Asignación de personal
+            - 📊 Jerarquías organizacionales
+            - 📋 Responsabilidades
+            '''
+        },
+        {
+            'name': '🚗 Procedimientos - Transporte',
+            'description': '''
+            **Gestión de transporte institucional**
+            
+            Servicios:
+            - 🚌 Solicitudes de transporte
+            - 📅 Programación de viajes
+            - 🛣️ Rutas y destinos
+            - 👨‍✈️ Asignación de conductores
+            - ⛽ Control de combustible
+            '''
+        },
+        {
+            'name': '🔧 Procedimientos - Mantenimiento',
+            'description': '''
+            **Sistema de mantenimiento y reparaciones**
+            
+            Funcionalidades:
+            - 🔨 Solicitudes de reparación
+            - ⚡ Niveles de prioridad
+            - 👷 Asignación de técnicos
+            - 📊 Seguimiento de trabajos
+            - 💰 Control de costos
+            '''
+        },
+        {
+            'name': '🗂️ Estructura - Áreas',
+            'description': '''
+            **Gestión de áreas básicas del sistema**
+            
+            Administración de:
+            - 📍 Definición de áreas
+            - 📝 Descripciones funcionales
+            - 🔗 Relaciones jerárquicas
+            
+            **🔒 Solo administradores**
+            '''
+        }
+    ],
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SORT_OPERATIONS': False,
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'persistAuthorization': True,
+        'displayOperationId': False,
+        'defaultModelsExpandDepth': 2,
+        'defaultModelExpandDepth': 2,
+        'defaultModelRendering': 'model',
+        'displayRequestDuration': True,
+        'docExpansion': 'none',
+        'filter': True,
+        'showExtensions': True,
+        'showCommonExtensions': True,
+        'tryItOutEnabled': True
+    },
+    'REDOC_UI_SETTINGS': {
+        'nativeScrollbars': False,
+        'theme': {
+            'colors': {
+                'primary': {
+                    'main': '#1976d2'
+                }
+            },
+            'typography': {
+                'fontSize': '14px',
+                'lineHeight': '1.5em',
+                'code': {
+                    'fontSize': '13px'
+                },
+                'headings': {
+                    'fontFamily': 'Montserrat, sans-serif'
+                }
+            }
+        }
+    }
 }
 
 ROOT_URLCONF = 'config.urls'
@@ -211,6 +534,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"  # Directorio donde se recopilan los archivos estáticos
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
