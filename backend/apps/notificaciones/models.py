@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from usuarios.models import Usuario
-from usuarios.base_models import TimeStampedModel, StatusMixin
+from config.base_models import TimeStampedModel, StatusMixin
 
 
 class NotificationManager(models.Manager):
@@ -165,11 +165,11 @@ class Notificacion(TimeStampedModel, StatusMixin):
         constraints = [
             models.CheckConstraint(
                 check=Q(asunto__isnull=False) & ~Q(asunto=''),
-                name='asunto_not_empty'
+                name='notificacion_asunto_not_empty'
             ),
             models.CheckConstraint(
                 check=Q(cuerpo__isnull=False) & ~Q(cuerpo=''),
-                name='cuerpo_not_empty'
+                name='notificacion_cuerpo_not_empty'
             ),
         ]
 

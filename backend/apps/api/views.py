@@ -32,7 +32,7 @@ from .permissions import IsOwnerOrReadOnly, IsOwnerOrStaff, IsStaffOrReadOnly, I
 from .models import Area
 from atencion_poblacion.models import AtencionPoblacion
 from notificaciones.models import Notificacion
-from notificaciones.models import Usuario
+from usuarios.models import Usuario
 from plataforma.models import Noticias, Email, EstadosTramites
 from secretaria_docente.models import Tramite
 from internal_procedures.models import (
@@ -243,7 +243,7 @@ class NoticiasViewSet(viewsets.ModelViewSet):
     permission_classes = [IsStaffOrReadOnly]  # Todos pueden leer, solo staff puede escribir
     
     def get_queryset(self):
-        queryset = Noticias.objects.all().order_by('-on_create')
+        queryset = Noticias.objects.all().order_by('-created_at')
         return queryset
 
 
@@ -582,7 +582,7 @@ class FeedingProcedureViewSet(viewsets.ModelViewSet):
         queryset = FeedingProcedure.objects.all()
         if not self.request.user.is_staff:
             queryset = queryset.filter(user=self.request.user)
-        return queryset.order_by('-on_create')
+        return queryset.order_by('-created_at')
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -597,7 +597,7 @@ class AccommodationProcedureViewSet(viewsets.ModelViewSet):
         queryset = AccommodationProcedure.objects.all()
         if not self.request.user.is_staff:
             queryset = queryset.filter(user=self.request.user)
-        return queryset.order_by('-on_create')
+        return queryset.order_by('-created_at')
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -694,7 +694,7 @@ class TransportProcedureViewSet(viewsets.ModelViewSet):
         queryset = TransportProcedure.objects.all()
         if not self.request.user.is_staff:
             queryset = queryset.filter(user=self.request.user)
-        return queryset.order_by('-on_create')
+        return queryset.order_by('-created_at')
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -836,7 +836,7 @@ class MaintanceProcedureViewSet(viewsets.ModelViewSet):
         queryset = MaintanceProcedure.objects.all()
         if not self.request.user.is_staff:
             queryset = queryset.filter(user=self.request.user)
-        return queryset.order_by('-on_create')
+        return queryset.order_by('-created_at')
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

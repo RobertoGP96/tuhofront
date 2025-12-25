@@ -22,22 +22,8 @@ class NotificacionSerializer(serializers.ModelSerializer):
     def get_tiempo_transcurrido(self, obj):
         """Retorna el tiempo transcurrido desde la creación de la notificación."""
         from django.utils import timezone
-        from datetime import datetime
+        from django.utils.timesince import timesince
         
-        if obj.creado:
-            # Convertir fecha a datetime para calcular diferencia
-            created_datetime = datetime.combine(obj.creado, datetime.min.time())
-            now = timezone.now().replace(tzinfo=None)
-            diff = now - created_datetime
-            
-            if diff.days > 0:
-                return f"Hace {diff.days} días"
-            elif diff.seconds > 3600:
-                hours = diff.seconds // 3600
-                return f"Hace {hours} horas"
-            elif diff.seconds > 60:
-                minutes = diff.seconds // 60
-                return f"Hace {minutes} minutos"
-            else:
-                return "Hace unos momentos"
+        if obj.created_at:
+            return timesince(obj.created_at, timezone.now())
         return "Fecha desconocida"

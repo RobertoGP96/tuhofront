@@ -12,22 +12,39 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-DOMAIN = "127.0.0.1:8000"
+# Cargar variables de entorno desde archivo .env
+env_path = BASE_DIR / '.env'
+if env_path.exists():
+    load_dotenv(env_path)
+else:
+    # Si no existe .env, intentar cargar desde la raíz del proyecto backend
+    load_dotenv(BASE_DIR.parent / '.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@e2&yg!lk#5aj&yvs-&%%-%@=t90rvn)+y@u*6bdebh7a^et))'
+# Obtener SECRET_KEY de variables de entorno, con fallback para desarrollo
+SECRET_KEY = os.getenv(
+    'SECRET_KEY',
+    'django-insecure-@e2&yg!lk#5aj&yvs-&%%-%@=t90rvn)+y@u*6bdebh7a^et))'  # Fallback solo para desarrollo
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG debe ser False en producción
+DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = ["*"]
+# Dominio del sitio
+DOMAIN = os.getenv('DOMAIN', '127.0.0.1:8000')
+
+# Hosts permitidos - separados por comas en .env
+ALLOWED_HOSTS_STR = os.getenv('ALLOWED_HOSTS', '*')
+ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS_STR.split(',') if host.strip()]
 
 import sys
 
@@ -87,8 +104,12 @@ REST_FRAMEWORK = {
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ACCESS_TOKEN_LIFETIME': timedelta(
+        minutes=int(os.getenv('JWT_ACCESS_TOKEN_LIFETIME', '60'))
+    ),
+    'REFRESH_TOKEN_LIFETIME': timedelta(
+        days=int(os.getenv('JWT_REFRESH_TOKEN_LIFETIME', '7'))
+    ),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': False,
@@ -109,16 +130,16 @@ SIMPLE_JWT = {
     'TOKEN_TYPE_CLAIM': 'token_type',
 }
 
-# CORS Settings
+# CORS Settings - Configurable desde variables de entorno
+CORS_ALLOWED_ORIGINS_STR = os.getenv(
+    'CORS_ALLOWED_ORIGINS',
+    'http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173'
+)
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
+    origin.strip() for origin in CORS_ALLOWED_ORIGINS_STR.split(',') if origin.strip()
 ]
 
-CORS_ALLOW_CREDENTIALS = True
-
+CORS_ALLOW_CREDENTIALS = os.getenv('CORS_ALLOW_CREDENTIALS', 'True').lower() == 'true'
 CORS_ALLOW_ALL_ORIGINS = DEBUG  # Solo en desarrollo
 
 # Spectacular Settings (API Documentation)
@@ -548,14 +569,15 @@ LOGIN_URL = 'Login'
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
-# Email Config
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_HOST_USER = "secretariadocenteuho@gmail.com"
-EMAIL_HOST_PASSWORD = "wxeq mujn uogo e lv v"
-EMAIL_PORT = 465
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True
+# Email Config - Usar variables de entorno para credenciales sensibles
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'secretariadocenteuho@gmail.com')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'wxeq mujn uogo e lv v')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '465'))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'False').lower() == 'true'
+EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'True').lower() == 'true'
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
 
 ALLOWED_REDIRECT_URLS = ['mailto://']
 

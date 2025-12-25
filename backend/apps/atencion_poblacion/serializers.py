@@ -4,4 +4,4 @@ from .models import AtencionPoblacion
 class AtencionPoblacionSerializer(serializers.ModelSerializer):
     class Meta:
         model = AtencionPoblacion
-        exclude = ['on_create','on_modified']
+        exclude = ['created_at','updated_at']

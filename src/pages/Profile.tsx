@@ -4,7 +4,7 @@ import { InputText } from "primereact/inputtext";
 import { TabMenu } from "primereact/tabmenu";
 import { useState } from "react";
 
-export const Porfile: React.FC = () => {
+export const Profile: React.FC = () => {
     const items = [
         { label: 'Perfil', icon: 'pi pi-user' },
         { label: 'Mis Trámites', icon: 'pi pi-chart-line' },
@@ -70,4 +70,5 @@ export const Porfile: React.FC = () => {
 
         </div>
     </section>
-}    
+}
+

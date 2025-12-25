@@ -9,7 +9,7 @@ class TramiteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tramite
         fields = '__all__'
-        read_only_fields = ('numero_seguimiento', 'fecha', 'on_create', 'on_modified')
+        read_only_fields = ('numero_seguimiento', 'fecha', 'created_at', 'updated_at')
     
     def create(self, validated_data):
         # Generar número de seguimiento automáticamente

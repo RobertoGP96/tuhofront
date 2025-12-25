@@ -58,7 +58,7 @@ def count_tramites_by_month():
     }
     for i in data.keys():
         tramites_by_month = TramiteGeneral.objects.filter(
-            on_create__month=int(i), 
+            created_at__month=int(i), 
         ).count()
         data[i] = tramites_by_month
     return data

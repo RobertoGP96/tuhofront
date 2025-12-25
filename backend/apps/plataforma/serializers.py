@@ -17,7 +17,7 @@ class NoticiaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Noticias
         fields = '__all__'
-        read_only_fields = ('on_create', 'on_modified')
+        read_only_fields = ('created_at', 'updated_at')
         
     @extend_schema_field(serializers.CharField)
     def get_resumen(self, obj):
@@ -29,8 +29,8 @@ class NoticiaSerializer(serializers.ModelSerializer):
     @extend_schema_field(serializers.CharField)
     def get_fecha_formateada(self, obj):
         """Retorna la fecha de creación en formato legible."""
-        if obj.on_create:
-            return obj.on_create.strftime("%d de %B de %Y")
+        if obj.created_at:
+            return obj.created_at.strftime("%d de %B de %Y")
         return ""
 
 
@@ -60,7 +60,7 @@ class TramiteGeneralSerializer(serializers.ModelSerializer):
     class Meta:
         model = TramiteGeneral
         fields = '__all__'
-        read_only_fields = ('on_create', 'on_modified')
+        read_only_fields = ('created_at', 'updated_at')
 
 
 class EstadosTramitesSerializer(serializers.ModelSerializer):

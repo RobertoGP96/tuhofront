@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from datetime import datetime
 from model_utils.managers import InheritanceManager
-from usuarios.base_models import TimeStampedModel, StatusMixin, UUIDModel, FollowNumberMixin
+from config.base_models import TimeStampedModel, StatusMixin, UUIDModel, FollowNumberMixin
 from .validators import validate_file_extension, validate_document_extension, validate_file_size
 
 
@@ -161,11 +161,11 @@ class Noticias(TimeStampedModel, StatusMixin):
         constraints = [
             models.CheckConstraint(
                 check=Q(titulo__isnull=False) & ~Q(titulo=''),
-                name='titulo_not_empty'
+                name='noticias_titulo_not_empty'
             ),
             models.CheckConstraint(
                 check=Q(cuerpo__isnull=False) & ~Q(cuerpo=''),
-                name='cuerpo_not_empty'
+                name='noticias_cuerpo_not_empty'
             ),
         ]
 
@@ -438,11 +438,6 @@ class TramiteGeneral(TimeStampedModel, StatusMixin, FollowNumberMixin):
     class Meta:
         abstract = True
         ordering = ['-created_at']
-        indexes = [
-            models.Index(fields=['usuario', 'estado_tramite']),
-            models.Index(fields=['numero_seguimiento']),
-            models.Index(fields=['fecha_limite']),
-        ]
 
     def clean(self):
         """Validaciones personalizadas"""
@@ -577,11 +572,11 @@ class EstadosTramites(TimeStampedModel, StatusMixin):
         constraints = [
             models.CheckConstraint(
                 check=Q(nombre__isnull=False) & ~Q(nombre=''),
-                name='estado_nombre_not_empty'
+                name='estados_tramites_nombre_not_empty'
             ),
             models.CheckConstraint(
                 check=Q(codigo__isnull=False) & ~Q(codigo=''),
-                name='estado_codigo_not_empty'
+                name='estados_tramites_codigo_not_empty'
             ),
         ]
 

@@ -54,7 +54,7 @@ def AtencionPoblacionView(request:HttpRequest):
             
             mail_usuario = EmailMessage(
                 atencionP.asunto, 
-                f"Tramite a nombre de: {atencionP.nombre} {atencionP.apellidos}\nEn fecha: {atencionP.on_create}\nTipo: {atencionP.consulta}\nToken: {atencionP.token}",
+                f"Tramite a nombre de: {atencionP.nombre} {atencionP.apellidos}\nEn fecha: {atencionP.created_at}\nTipo: {atencionP.consulta}\nToken: {atencionP.token}",
                 "smtp.gmail.com",
                 [atencionP.email],
                 connection=custom_send_mail(),

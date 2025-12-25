@@ -37,7 +37,7 @@ class AtencionPoblacion(TramiteGeneral):
         self.nombre_tramite = "Atención a la población"
         
     def __str__(self) -> str:
-        return f"{self.nombre} - {self.apellidos} - {self.asunto} - {self.on_create}"
+        return f"{self.nombre} - {self.apellidos} - {self.asunto} - {self.created_at}"
     
     class Meta:
         verbose_name="atención a la población"

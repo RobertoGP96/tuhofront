@@ -12,7 +12,7 @@ export const lazyPages = {
   Register: lazy(() => import('@/pages/Register').then(m => ({ default: m.Register }))),
   
   // Páginas de usuario
-  Profile: lazy(() => import('@/pages/Porfile').then(m => ({ default: m.Porfile }))),
+  Profile: lazy(() => import('@/pages/Profile').then(m => ({ default: m.Profile }))),
   Procedures: lazy(() => import('@/pages/Procedures').then(m => ({ default: m.Procedures }))),
   TeachingSecretary: lazy(() => import('@/pages/TeachingSecretary').then(m => ({ default: m.TeachingSecretary }))),
   
