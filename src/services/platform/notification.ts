@@ -1,13 +1,11 @@
-import { apiClient } from '../api';
+
 import type {
   Notification,
-  NotificationType,
-  NotificationPriority,
+
   CreateNotificationData,
   NotificationFilters,
-  NotificationStats
-} from '../../types/platform/platform';
-import type { ApiResponse, PaginatedResponse } from '../api/client';
+} from '@/types/platform/platform';
+import { apiClient, type PaginatedResponse } from '@/lib/client';
 
 // Endpoints de notificaciones
 const NOTIFICATION_ENDPOINTS = {

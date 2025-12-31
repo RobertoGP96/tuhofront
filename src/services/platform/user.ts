@@ -1,11 +1,11 @@
-import { apiClient } from '../api';
+import { apiClient } from '@/lib/client';
 import type {
   PlatformUser,
   CreateUserData,
   UpdateUserData,
   UserFilters
-} from '../../types/platform/platform';
-import type { PaginatedResponse } from '../api/client';
+} from '@/types/platform/platform';
+import type { PaginatedResponse } from '@/lib/client';
 
 // Endpoints de usuarios
 const USER_ENDPOINTS = {

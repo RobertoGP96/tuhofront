@@ -1,5 +1,5 @@
-import { apiClient } from '../api';
-import type { PaginatedResponse } from '../api/client';
+import { apiClient } from '@/lib/client';
+import type { PaginatedResponse } from '@/lib/client';
 
 export interface ProcedureStatus {
   id: number;

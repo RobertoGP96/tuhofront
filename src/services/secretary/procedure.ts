@@ -1,6 +1,6 @@
-import { apiClient } from '../api';
-import type { SecretaryProcedure } from '../../types/sec-doc/procedures';
-import type { PaginatedResponse } from '../api/client';
+import { apiClient } from '@/lib/client';
+import type { SecretaryProcedure } from '@/types/sec-doc/procedures';
+import type { PaginatedResponse } from '@/lib/client';
 
 // Endpoints de trámites
 const PROCEDURE_ENDPOINTS = {

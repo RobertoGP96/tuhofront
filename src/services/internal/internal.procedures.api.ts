@@ -1,9 +1,9 @@
 import axios from 'axios';
-import type { FeedingDays, FeedingProcedure } from '../../types/internal/feeding';
-import type { AccommodationProcedure } from '../../types/internal/accomodation';
-import type { TransportProcedure, TransportProcedureType } from '../../types/internal/transport';
-import type { MaintancePriority, MaintanceProcedure, MaintanceProcedureType } from '../../types/internal/mantenice';
-import type { Area, Department, Procedure, ProcedureStats } from '../../types/internal/general';
+import type { FeedingDays, FeedingProcedure } from '@/types/internal/feeding';
+import type { AccommodationProcedure } from '@/types/internal/accomodation';
+import type { TransportProcedure, TransportProcedureType } from '@/types/internal/transport';
+import type { MaintancePriority, MaintanceProcedure, MaintanceProcedureType } from '@/types/internal/mantenice';
+import type { Area, Department, Procedure, ProcedureStats } from '@/types/internal/general';
 
 const url = 'http://localhost:8000/internal-procedures/';
 

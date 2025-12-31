@@ -1,5 +1,4 @@
-import { apiClient } from '../api';
-import type { PaginatedResponse } from '../api/client';
+import { type PaginatedResponse, apiClient } from '@/lib/client';
 
 export interface News {
   id: number;

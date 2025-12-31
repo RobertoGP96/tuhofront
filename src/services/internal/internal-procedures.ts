@@ -1,10 +1,10 @@
-import { apiClient } from '../api';
-import type { PaginatedResponse } from '../api/client';
-import type { FeedingDays, FeedingProcedure } from '../../types/internal/feeding';
-import type { AccommodationProcedure } from '../../types/internal/accomodation';
-import type { TransportProcedure, TransportProcedureType } from '../../types/internal/transport';
-import type { MaintancePriority, MaintanceProcedure, MaintanceProcedureType } from '../../types/internal/mantenice';
-import type { Area, Department } from '../../types/internal/general';
+import { apiClient } from '@/lib/client';
+import type { PaginatedResponse } from '@/lib/client';
+import type { FeedingDays, FeedingProcedure } from '@/types/internal/feeding';
+import type { AccommodationProcedure } from '@/types/internal/accomodation';
+import type { TransportProcedure, TransportProcedureType } from '@/types/internal/transport';
+import type { MaintancePriority, MaintanceProcedure, MaintanceProcedureType } from '@/types/internal/mantenice';
+import type { Area, Department } from '@/types/internal/general';
 
 // Endpoints base
 const INTERNAL_PROCEDURES_ENDPOINTS = {

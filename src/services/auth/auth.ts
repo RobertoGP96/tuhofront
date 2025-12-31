@@ -1,15 +1,12 @@
-import { apiClient } from '../api';
+import { apiClient } from '@/lib/client';
 import type { 
   LoginCredentials, 
   RegisterData, 
   AuthResponse, 
   TokenRefreshResponse,
   PasswordResetRequest,
-  PasswordResetConfirm,
-  ChangePasswordData,
   User
-} from '../../types/users/auth';
-import type { ApiResponse } from '../api/client';
+} from '@/types/users/auth';
 
 // Endpoints de autenticación
 const AUTH_ENDPOINTS = {
@@ -53,7 +50,7 @@ class AuthService {
       return response;
     }
     
-    throw new Error(response.message || 'Error al iniciar sesión');
+    throw new Error('Error al iniciar sesión');
   }
 
   /**
@@ -141,17 +138,6 @@ class AuthService {
     return response;
   }
 
-  /**
-   * Verificar si el token actual es válido
-   */
-  async verifyToken(): Promise<boolean> {
-    try {
-      await this.getCurrentUser();
-      return true;
-    } catch {
-      return false;
-    }
-  }
 }
 
 // Instancia singleton del servicio de autenticación

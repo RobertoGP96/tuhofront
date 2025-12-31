@@ -1,11 +1,11 @@
-import { apiClient } from '../api';
+import { apiClient } from '@/lib/client';
 import type {
   Role,
   CreateRoleData,
   UpdateRoleData,
   Permission
-} from '../../types/platform/platform';
-import type { ApiResponse, PaginatedResponse } from '../api/client';
+} from '@/types/platform/platform';
+import type { ApiResponse, PaginatedResponse } from '@/lib/client';
 
 // Endpoints de roles
 const ROLE_ENDPOINTS = {
