@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+  <style>
+    .box { fill:#f8f9fa; stroke:#343a40; stroke-width:2; rx:6; }
+    .title { font: bold 14px sans-serif; fill:#212529 }
+    .field { font: 12px monospace; fill:#495057 }
+    .link { stroke:#6c757d; stroke-width:1.5; marker-end:url(#arrow); }
+  </style>
+
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <path d="M0,0 L10,3.5 L0,7 z" fill="#6c757d" />
+    </marker>
+  </defs>
+
+  <!-- Usuario -->
+  <rect class="box" x="40" y="40" width="260" height="90" />
+  <text class="title" x="60" y="62">Usuario</text>
+  <text class="field" x="60" y="82">id PK</text>
+  <text class="field" x="60" y="98">carnet, email, first_name...</text>
+
+  <!-- Tramite central -->
+  <rect class="box" x="360" y="30" width="300" height="120" />
+  <text class="title" x="380" y="52">plataforma.Tramite</text>
+  <text class="field" x="380" y="72">id PK</text>
+  <text class="field" x="380" y="88">nombre_tramite</text>
+  <text class="field" x="380" y="104">usuario_id FK -> Usuario</text>
+  <text class="field" x="380" y="120">estado_id FK -> EstadosTramites</text>
+
+  <!-- Solicitante -->
+  <rect class="box" x="360" y="180" width="220" height="80" />
+  <text class="title" x="380" y="202">Solicitante</text>
+  <text class="field" x="380" y="222">id PK</text>
+  <text class="field" x="380" y="238">nombre, apellidos, ci, email</text>
+
+  <!-- EstadosTramites -->
+  <rect class="box" x="740" y="30" width="260" height="100" />
+  <text class="title" x="760" y="52">EstadosTramites</text>
+  <text class="field" x="760" y="72">id PK</text>
+  <text class="field" x="760" y="88">nombre, codigo, descripcion</text>
+
+  <!-- Noticias -->
+  <rect class="box" x="740" y="170" width="300" height="100" />
+  <text class="title" x="760" y="192">Noticias</text>
+  <text class="field" x="760" y="212">id PK</text>
+  <text class="field" x="760" y="228">titulo, slug, categoria</text>
+  <text class="field" x="760" y="244">autor_id FK -> Usuario</text>
+
+  <!-- Department / Area -->
+  <rect class="box" x="40" y="260" width="220" height="80" />
+  <text class="title" x="60" y="282">Area</text>
+  <text class="field" x="60" y="302">id PK</text>
+  <text class="field" x="60" y="318">name</text>
+
+  <rect class="box" x="300" y="260" width="260" height="80" />
+  <text class="title" x="320" y="282">Department</text>
+  <text class="field" x="320" y="302">id PK</text>
+  <text class="field" x="320" y="318">name</text>
+  <text class="field" x="320" y="334">area_id FK -> Area</text>
+
+  <!-- Internal Procedure and related -->
+  <rect class="box" x="40" y="380" width="320" height="120" />
+  <text class="title" x="60" y="402">internal.Procedure</text>
+  <text class="field" x="60" y="422">id PK</text>
+  <text class="field" x="60" y="438">user_id FK -> Usuario</text>
+  <text class="field" x="60" y="454">department_id FK -> Department</text>
+  <text class="field" x="60" y="470">area_id FK -> Area</text>
+
+  <rect class="box" x="420" y="380" width="200" height="80" />
+  <text class="title" x="440" y="402">Note</text>
+  <text class="field" x="440" y="422">id PK</text>
+  <text class="field" x="440" y="438">state, description</text>
+
+  <rect class="box" x="660" y="380" width="220" height="80" />
+  <text class="title" x="680" y="402">FeedingDays</text>
+  <text class="field" x="680" y="422">id PK</text>
+  <text class="field" x="680" y="438">date, breakfast, lunch...</text>
+
+  <rect class="box" x="920" y="380" width="220" height="80" />
+  <text class="title" x="940" y="402">Guest</text>
+  <text class="field" x="940" y="422">id PK</text>
+  <text class="field" x="940" y="438">name, sex, identification</text>
+
+  <!-- Transport / Maintance types -->
+  <rect class="box" x="420" y="500" width="220" height="80" />
+  <text class="title" x="440" y="522">TransportProcedureType</text>
+  <text class="field" x="440" y="542">id PK</text>
+  <text class="field" x="440" y="558">name</text>
+
+  <rect class="box" x="700" y="500" width="220" height="80" />
+  <text class="title" x="720" y="522">MaintanceProcedureType / Priority</text>
+  <text class="field" x="720" y="542">id PK</text>
+
+  <!-- Links (FK / M2M) -->
+  <line class="link" x1="320" y1="85" x2="360" y2="85" />
+  <line class="link" x1="660" y1="85" x2="740" y2="85" />
+  <line class="link" x1="510" y1="200" x2="360" y2="220" marker-end="url(#arrow)" />
+  <line class="link" x1="200" y1="310" x2="300" y2="310" />
+  <line class="link" x1="200" y1="420" x2="120" y2="120" />
+  <!-- Procedure -> Note (M2M) -->
+  <path class="link" d="M320 420 C380 420, 420 420, 420 420" marker-end="url(#arrow)" />
+
+  <!-- Procedure -> Department/Area -->
+  <line class="link" x1="180" y1="470" x2="300" y2="300" marker-end="url(#arrow)" />
+  <line class="link" x1="300" y1="420" x2="180" y2="300" marker-end="url(#arrow)" />
+
+  <!-- FeedingProcedure/Accommodation relations (M2M) - visual hints -->
+  <line class="link" x1="480" y1="420" x2="740" y2="420" marker-end="url(#arrow)" />
+  <line class="link" x1="820" y1="420" x2="960" y2="420" marker-end="url(#arrow)" />
+
+  <!-- Footer note -->
+  <text x="40" y="850" font-size="12" fill="#6c757d">Diagrama ER simplificado generado por Copilot — entidades principales y relaciones (FK, O2O, M2M)</text>
+</svg>
