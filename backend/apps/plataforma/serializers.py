@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field
-from .models import Noticias, Email, TramiteGeneral, EstadosTramites
+from .models.models import Noticias, Email, TramiteGeneral, EstadosTramites
 
 
 class NoticiaSerializer(serializers.ModelSerializer):

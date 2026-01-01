@@ -1,5 +1,5 @@
 from django.db import models
-from plataforma.models import TramiteGeneral
+from backend.apps.plataforma.models.models import TramiteGeneral, Department, Area
 from usuarios.models import Usuario
 
 class Guest(models.Model):
@@ -18,12 +18,7 @@ class FeedingDays(models.Model):
     dinner = models.IntegerField()
     snack = models.IntegerField()
     
-class Department(models.Model):
-    name = models.CharField(max_length=100)
-    area = models.ForeignKey('Area', on_delete=models.CASCADE, null=True, blank=True)
-    
-class Area(models.Model):
-    name = models.CharField(max_length=100)
+
     
 class Note(models.Model):
     STATE_CHOICES = [

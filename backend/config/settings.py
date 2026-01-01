@@ -69,7 +69,7 @@ INSTALLED_APPS = [
     'notificaciones',
     'secretaria_docente',
     'api',
-    'internal_procedures',
+    'internal',
     'labs',
 ]
 

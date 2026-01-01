@@ -8,7 +8,7 @@ from usuarios.forms import InformacionPersonalForm
 from atencion_poblacion.models import AtencionPoblacion
 from atencion_poblacion.forms import CambiarEstadoForm, CambiarEstadoClaudiaForm
 from .forms import CrearNoticiasForm, EmailForm
-from .models import Noticias, Email, TramiteGeneral
+from .models.models import Noticias, Email, TramiteGeneral
 from django.contrib.auth.models import Group, Permission
 from django.db.models import Count
 from django.http import HttpRequest, HttpResponseRedirect

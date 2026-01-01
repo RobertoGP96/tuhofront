@@ -1,6 +1,6 @@
 from django.core.mail import EmailMessage
 from django.core.mail.backends.smtp import EmailBackend
-from .models import Email
+from .models.models import Email
 
 def custom_send_mail():
     email = Email.objects.get(id=1)

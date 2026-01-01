@@ -35,7 +35,7 @@ from notificaciones.models import Notificacion
 from usuarios.models import Usuario
 from plataforma.models import Noticias, Email, EstadosTramites
 from secretaria_docente.models import Tramite
-from internal_procedures.models import (
+from internal.models import (
     Guest, FeedingDays, Department, Area as InternalArea, Note,
     FeedingProcedure, AccommodationProcedure, TransportProcedure, 
     TransportProcedureType, MaintanceProcedure, MaintanceProcedureType, 
@@ -48,7 +48,7 @@ from notificaciones.serializers import NotificacionSerializer
 from atencion_poblacion.serializers import AtencionPoblacionSerializer
 from plataforma.serializers import NoticiaSerializer, EmailSerializer, EstadosTramitesSerializer
 from secretaria_docente.serializers import TramiteSerializer
-from internal_procedures.serializers import (
+from internal.serializers import (
     GuestSerializer, FeedingDaysSerializer, DepartmentSerializer, 
     AreaSerializer as InternalAreaSerializer, NoteSerializer,
     FeedingProcedureSerializer, AccommodationProcedureSerializer,

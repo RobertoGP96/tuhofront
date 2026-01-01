@@ -1,6 +1,6 @@
 from typing import Any
 from django.db import models
-from plataforma.models import TramiteGeneral
+from backend.apps.plataforma.models.models import TramiteGeneral
 from usuarios.models import Usuario
 from datetime import datetime
 from django.core.exceptions import ValidationError

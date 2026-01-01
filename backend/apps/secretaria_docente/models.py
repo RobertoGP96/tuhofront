@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-from plataforma.models import TramiteGeneral
+from backend.apps.plataforma.models.models import TramiteGeneral
 from usuarios.models import Usuario
 import uuid
 from .choices import (

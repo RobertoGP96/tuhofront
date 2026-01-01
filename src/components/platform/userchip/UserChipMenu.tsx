@@ -47,7 +47,7 @@ export const UserChipMenu = ({ user }: { user: user }) => {
             command: () => userRouter(routes.admin.root)
         },
     ];
-    return <div className="flex justify-center items-center gap-2 rounded-full max-h-[60px] border-4 border-secondary/65 bg-primary-100 px-1 py-1">
+    return <div className="flex justify-center items-center gap-2 rounded-full max-h-[60px] ring-1 ring-blue-950/30 border-secondary/65 bg-primary-100 px-1 py-1">
         <Avatar shape="circle" className="p-overlay-badge" size="normal" label={user.name.charAt(0)} icon={user ? "pi pi-user" : ""}>
             <Badge value="" severity="danger" />
         </Avatar>

@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from .models import Noticias , Email
+from .models.models import Noticias , Email
 from django.contrib.auth.models import Group, Permission
 
 

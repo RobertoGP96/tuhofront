@@ -5,7 +5,7 @@ class ApiAreaSerializer(serializers.ModelSerializer):
     """
     Serializer para el modelo Area de la API general.
     
-    Distinguido del AreaSerializer de internal_procedures para evitar
+    Distinguido del AreaSerializer de internal para evitar
     conflictos de nombres en la documentación.
     """
     class Meta:

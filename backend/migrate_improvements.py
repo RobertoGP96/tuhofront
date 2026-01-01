@@ -34,7 +34,7 @@ def main():
         'notificaciones', 
         'plataforma',
         'atencion_poblacion',
-        'internal_procedures',
+        'internal',
         'secretaria_docente',
         'api'
     ]
