@@ -3,8 +3,8 @@ from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Q
-from .validators import validate_carnet_identidad, validate_telefono_cuba, validate_token_activacion
-from config.base_models import TimeStampedModel
+from validators import validate_carnet_identidad, validate_telefono_cuba, validate_token_activacion
+from backend.apps.platform.models.base_models import TimeStampedModel
 
 
 class UsuarioManager(models.Manager):

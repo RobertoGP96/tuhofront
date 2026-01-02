@@ -1,10 +1,10 @@
 
-from atencion_poblacion.models import validate_file_extension
-from plataforma.enums import NewsCategoryEnum
-from plataforma.validators import validate_file_size
-from plataforma.models import models
-from config.base_models import StatusMixin
-from usuarios.base_models import TimeStampedModel
+from atention.models import validate_file_extension
+from platform.enums import NewsCategoryEnum
+from platform.validators import validate_file_size
+from platform.models import models
+from backend.apps.platform.models.base_models import StatusMixin
+from .base_models import TimeStampedModel
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Q
 
@@ -15,7 +15,7 @@ class Noticias(TimeStampedModel, StatusMixin):
     Gestiona las noticias y anuncios que se publican en la plataforma,
     con soporte para imágenes, categorización y programación de publicación.
     """
-    titulo = models.CharField(
+    title = models.CharField(
         max_length=255,
         verbose_name=_("Título"),
         help_text=_("Título de la noticia (máximo 255 caracteres)")
@@ -29,7 +29,7 @@ class Noticias(TimeStampedModel, StatusMixin):
         help_text=_("URL amigable generada automáticamente del título")
     )
     
-    categoria = models.CharField(
+    category = models.CharField(
         max_length=20,
         choices=NewsCategoryEnum,
         default='GENERAL',
@@ -37,7 +37,7 @@ class Noticias(TimeStampedModel, StatusMixin):
         help_text=_("Categoría de la noticia")
     )
     
-    imagen_cabecera = models.ImageField(
+    header_image = models.ImageField(
         upload_to=get_news_upload_path,
         blank=True,
         null=True,
@@ -46,7 +46,7 @@ class Noticias(TimeStampedModel, StatusMixin):
         help_text=_("Imagen principal de la noticia (opcional)")
     )
     
-    resumen = models.CharField(
+    summary = models.CharField(
         max_length=300,
         blank=True,
         null=True,
@@ -54,12 +54,12 @@ class Noticias(TimeStampedModel, StatusMixin):
         help_text=_("Breve resumen de la noticia (máximo 300 caracteres)")
     )
     
-    cuerpo = models.TextField(
+    body = models.TextField(
         verbose_name=_("Contenido"),
         help_text=_("Contenido completo de la noticia")
     )
     
-    autor = models.ForeignKey(
+    author = models.ForeignKey(
         'usuarios.Usuario',
         on_delete=models.SET_NULL,
         null=True,
@@ -68,30 +68,24 @@ class Noticias(TimeStampedModel, StatusMixin):
         verbose_name=_("Autor"),
         help_text=_("Usuario que creó la noticia")
     )
-    
-    publicado = models.BooleanField(
+
+    is_published = models.BooleanField(
         default=False,
         verbose_name=_("Publicado"),
         help_text=_("Indica si la noticia está publicada")
     )
     
-    fecha_publicacion = models.DateTimeField(
+    publication_date = models.DateTimeField(
         null=True,
         blank=True,
         verbose_name=_("Fecha de publicación"),
         help_text=_("Fecha programada para publicar la noticia")
     )
-    
-    destacada = models.BooleanField(
+
+    featured = models.BooleanField(
         default=False,
         verbose_name=_("Destacada"),
         help_text=_("Indica si la noticia debe aparecer destacada")
-    )
-    
-    visitas = models.PositiveIntegerField(
-        default=0,
-        verbose_name=_("Visitas"),
-        help_text=_("Número de veces que se ha visualizado la noticia")
     )
     
     tags = models.CharField(
@@ -104,20 +98,20 @@ class Noticias(TimeStampedModel, StatusMixin):
     class Meta:
         verbose_name = _("Noticia")
         verbose_name_plural = _("Noticias")
-        ordering = ['-fecha_publicacion', '-created_at']
+        ordering = ['-publication_date', '-created_at']
         indexes = [
-            models.Index(fields=['publicado', 'fecha_publicacion']),
-            models.Index(fields=['categoria', 'publicado']),
-            models.Index(fields=['destacada', 'publicado']),
+            models.Index(fields=['is_published', 'publication_date']),
+            models.Index(fields=['category', 'is_published']),
+            models.Index(fields=['featured', 'is_published']),
             models.Index(fields=['slug']),
         ]
         constraints = [
             models.CheckConstraint(
-                check=Q(titulo__isnull=False) & ~Q(titulo=''),
+                check=Q(title__isnull=False) & ~Q(title=''),
                 name='noticias_titulo_not_empty'
             ),
             models.CheckConstraint(
-                check=Q(cuerpo__isnull=False) & ~Q(cuerpo=''),
+                check=Q(body__isnull=False) & ~Q(body=''),
                 name='noticias_cuerpo_not_empty'
             ),
         ]
@@ -131,7 +125,7 @@ class Noticias(TimeStampedModel, StatusMixin):
         # Generar slug automáticamente si no existe
         if not self.slug:
             from django.utils.text import slugify
-            base_slug = slugify(self.titulo)
+            base_slug = slugify(self.title)
             slug = base_slug
             counter = 1
             
@@ -145,34 +139,25 @@ class Noticias(TimeStampedModel, StatusMixin):
         self.full_clean()
         
         # Establecer fecha de publicación si se marca como publicado
-        if self.publicado and not self.fecha_publicacion:
+        if self.is_published and not self.publication_date:
             from django.utils import timezone
-            self.fecha_publicacion = timezone.now()
+            self.publication_date = timezone.now()
         
         super().save(*args, **kwargs)
 
     def __str__(self):
         """Representación en string"""
-        status = "📰" if self.publicado else "📝"
-        destacada = "⭐" if self.destacada else ""
-        return f"{status}{destacada} {self.titulo}"
-
-    def incrementar_visitas(self):
-        """Incrementa el contador de visitas"""
-        self.visitas += 1
-        self.save(update_fields=['visitas'])
-
-    def get_absolute_url(self):
-        """Retorna la URL absoluta de la noticia"""
-        return f"/noticias/{self.slug}/"
+        status = "📰" if self.is_published else "📝"
+        featured = "⭐" if self.featured else ""
+        return f"{status}{featured} {self.title}"
 
     @property
     def is_published(self):
         """Verifica si la noticia está publicada y activa"""
-        return self.publicado and self.is_active
+        return self.is_published and self.is_active
 
     @property
     def can_be_published(self):
         """Verifica si la noticia puede ser publicada"""
-        return bool(self.titulo and self.cuerpo and self.is_active)
+        return bool(self.title and self.body and self.is_active)
 

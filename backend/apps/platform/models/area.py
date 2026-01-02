@@ -1,4 +1,4 @@
-from backend.apps.plataforma.models import models
+from platform.models import models
 
 
 class Area(models.Model):

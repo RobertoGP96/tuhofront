@@ -2,8 +2,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from usuarios.models import Usuario
-from config.base_models import TimeStampedModel, StatusMixin
+from platform.models import Usuario
+from backend.apps.platform.models.base_models import TimeStampedModel, StatusMixin
 
 
 class NotificationManager(models.Manager):
