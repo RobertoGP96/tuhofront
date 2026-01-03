@@ -1,20 +1,32 @@
-from .area import AreaListSerializer, AreaSerializer
-from .department import DepartmentSerializer, DepartmentListSerializer, DepartmentDetailSerializer
-from .news import NoticiaSerializer
-from .user import UserSerializer
+from .area import Area
+from .department import Department
+from .news import Noticias
+from .user import User
+from .procedure import Procedure
+from .base_models import (
+    TimeStampedModel,
+    UUIDModel,
+    StatusMixin,
+    TrackingMixin,
+    FollowNumberMixin,
+    FileUploadMixin,
+    SoftDeleteMixin,
+    BaseModel,
+)
 
 
 __all__ = [
-    'DepartmentSerializer',
-    'DepartmentListSerializer',
-    'DepartmentDetailSerializer',
-    'AreaListSerializer',
-    'AreaSerializer',
-    'NoticiaSerializer',
-    'UserSerializer',
-    'TramiteInterno',
-    'DocumentoInterno',
-    'TramiteSecretaria',
-    'SolicitudSecretaria',
-    'Usuario',
+    'Area',
+    'Department',
+    'Noticias',
+    'User',
+    'Procedure',
+    'TimeStampedModel',
+    'UUIDModel',
+    'StatusMixin',
+    'TrackingMixin',
+    'FollowNumberMixin',
+    'FileUploadMixin',
+    'SoftDeleteMixin',
+    'BaseModel',
 ]
