@@ -1,3 +1,4 @@
+from datetime import timezone
 import uuid
 from django.forms import ValidationError
 from platform.enums import ProcedureStateEnum
@@ -10,6 +11,18 @@ from django.db.models import Q
 from django.db import transaction
 
 
+class ProcedureStateEnum(models.TextChoices):
+    """Estados posibles de un trámite"""
+
+    BORRADOR = "BORRADOR", _("Borrador")
+    ENVIADO = "ENVIADO", _("Enviado")
+    EN_PROCESO = "EN_PROCESO", _("En proceso")
+    REQUIERE_INFO = "REQUIERE_INFO", _("Requiere información")
+    APROBADO = "APROBADO", _("Aprobado")
+    RECHAZADO = "RECHAZADO", _("Rechazado")
+    FINALIZADO = "FINALIZADO", _("Finalizado")
+
+
 class Procedure(TimeStampedModel, FollowNumberMixin):
     """
     Modelo base abstracto mejorado para todos los tipos de trámites.
@@ -18,10 +31,11 @@ class Procedure(TimeStampedModel, FollowNumberMixin):
     universitarios con seguimiento, estados y auditoría.
     """
 
-    id = models.AutoField(
+    id = models.UUIDField(
         primary_key=True,
-        verbose_name=_("ID del trámite"),
         default=uuid.uuid4,
+        editable=False,
+        verbose_name=_("ID del trámite"),
         help_text=_("Identificador único del trámite"),
     )
 
@@ -35,8 +49,8 @@ class Procedure(TimeStampedModel, FollowNumberMixin):
 
     state = models.CharField(
         max_length=20,
-        choices=ProcedureStateEnum,
-        default="BORRADOR",
+        choices=ProcedureStateEnum.choices,
+        default=ProcedureStateEnum.BORRADOR,
         verbose_name=_("Estado del trámite"),
         help_text=_("Estado actual del trámite"),
     )
@@ -61,39 +75,75 @@ class Procedure(TimeStampedModel, FollowNumberMixin):
     class Meta:
         abstract = True
         ordering = ["-created_at"]
+        verbose_name = _("Trámite")
+        verbose_name_plural = _("Trámites")
 
     def clean(self):
         """Validaciones personalizadas"""
         super().clean()
 
         # Validar fecha límite
-        if self.deadline:
-            from django.utils import timezone
-
-            if self.deadline <= timezone.now():
-                raise ValidationError(
-                    {"deadline": _("La fecha límite debe ser futura.")}
-                )
+        if self.deadline and self.deadline <= timezone.now():
+            raise ValidationError({"deadline": _("La fecha límite debe ser futura.")})
 
     def __str__(self):
         """Representación en string"""
-        return f"{self.usuario.get_short_name()} - {self.get_estado_tramite_display()}"
+        return f"{self.user.get_short_name()} - {self.get_state_display()}"
 
     @property
     def is_pending(self):
         """Verifica si el trámite está pendiente"""
-        return self.estado_tramite in ["ENVIADO", "EN_PROCESO", "REQUIERE_INFO"]
+        return self.state in [
+            ProcedureStateEnum.ENVIADO,
+            ProcedureStateEnum.EN_PROCESO,
+            ProcedureStateEnum.REQUIERE_INFO,
+        ]
 
     @property
     def is_completed(self):
         """Verifica si el trámite está completado"""
-        return self.estado_tramite in ["APROBADO", "FINALIZADO"]
+        return self.state in [
+            ProcedureStateEnum.APROBADO,
+            ProcedureStateEnum.FINALIZADO,
+        ]
+
+    @property
+    def is_rejected(self):
+        """Verifica si el trámite fue rechazado"""
+        return self.state == ProcedureStateEnum.RECHAZADO
 
     @property
     def is_expired(self):
         """Verifica si el trámite ha expirado"""
-        if not self.deadline:
-            return False
-        from django.utils import timezone
+        return self.deadline and timezone.now() > self.deadline
 
-        return timezone.now() > self.deadline
+    def can_edit(self):
+        """Verifica si el trámite puede ser editado"""
+        return self.state == ProcedureStateEnum.BORRADOR
+
+    def can_submit(self):
+        """Verifica si el trámite puede ser enviado"""
+        return self.state == ProcedureStateEnum.BORRADOR
+
+    def submit(self):
+        """Envía el trámite"""
+        if self.can_submit():
+            self.state = ProcedureStateEnum.ENVIADO
+            self.save()
+        else:
+            raise ValidationError("No se puede enviar el trámite en su estado actual")
+
+    def approve(self):
+        """Aprueba el trámite"""
+        if self.state == ProcedureStateEnum.EN_PROCESO:
+            self.state = ProcedureStateEnum.APROBADO
+            self.save()
+
+    class Meta:
+        abstract = True
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["state", "created_at"]),
+            models.Index(fields=["user", "state"]),
+            models.Index(fields=["deadline"]),
+        ]
