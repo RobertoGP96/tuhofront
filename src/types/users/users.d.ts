@@ -8,8 +8,13 @@ export interface Usuario {
   is_staff: boolean;
   is_active: boolean;
   date_joined: string; // ISO date string
-  token_activacion: string;
-  carnet: string;
-  telefono: string;
-  direccion: string;
+  activation_token?: string;
+  id_card?: string;
+  phone?: string;
+  address?: string;
+  date_of_birth?: string;
+  user_type?: string;
+  workplace?: string;
+  email_verified?: boolean;
+  phone_verified?: boolean;
 }

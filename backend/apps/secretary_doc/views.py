@@ -384,11 +384,11 @@ class Tramites_Detail_Admin(DetailView):
 def Informacion_Usuario(request,id):
     usuario = Usuario.objects.get(id=id)
     if request.POST:
-        usuario.first_name = request.POST['first_name']
-        usuario.last_name = request.POST['last_name']
-        usuario.carnet = request.POST['carnet']
-        usuario.email = request.POST['email']
-        usuario.telefono = request.POST['telefono']
+        usuario.first_name = request.POST.get('first_name', usuario.first_name)
+        usuario.last_name = request.POST.get('last_name', usuario.last_name)
+        usuario.id_card = request.POST.get('id_card', request.POST.get('carnet', getattr(usuario, 'id_card', None)))
+        usuario.email = request.POST.get('email', usuario.email)
+        usuario.phone = request.POST.get('phone', request.POST.get('telefono', getattr(usuario, 'phone', None)))
         usuario.save()
         return redirect("Usuarios")
     form = InformacionPersonalForm(instance=usuario)

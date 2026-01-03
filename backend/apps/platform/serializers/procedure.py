@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from plataforma.models.procedure import Tramite, Solicitante
+from models.procedure import Tramite, Solicitante
 
 
 class SolicitanteSerializer(serializers.ModelSerializer):

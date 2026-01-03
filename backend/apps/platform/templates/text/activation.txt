@@ -1,0 +1,24 @@
+<!-- templates/emails/activation_email.txt -->
+¡Hola {{ user.first_name }}!
+
+Gracias por registrarte en nuestro Sistema Universitario. Estamos emocionados de tenerte con nosotros.
+
+Para completar tu registro y activar tu cuenta, necesitamos verificar tu dirección de correo electrónico.
+
+Por favor, copia y pega el siguiente enlace en tu navegador:
+
+{{ activation_url }}
+
+IMPORTANTE: Este enlace es válido por 24 horas. Si no activas tu cuenta en este período, deberás solicitar un nuevo enlace de activación.
+
+Si no creaste una cuenta en nuestro sistema, puedes ignorar este correo de forma segura.
+
+¡Bienvenido a bordo!
+
+---
+Sistema Universitario
+Universidad de Ejemplo
+
+Este es un correo electrónico automático, por favor no respondas a este mensaje.
+
+© {% now "Y" %} Sistema Universitario. Todos los derechos reservados.

@@ -1,15 +1,7 @@
 asgiref==3.7.2
 diff-match-patch==20230430
 distlib==0.3.8
-Django==5.0.2
-django-ckeditor==6.7.0
-django-cors-headers==4.3.1
-django-import-export==4.0.6
-django-js-asset==2.2.0
-django-model-utils==4.5.1
-djangorestframework==3.15.1
-djangorestframework-simplejwt==5.3.0
-drf-spectacular==0.27.2
+
 filelock==3.15.4
 pillow==10.3.0
 platformdirs==4.2.2
@@ -21,3 +13,56 @@ tablib==3.5.0
 tzdata==2024.1
 virtualenv==20.26.2
 whitenoise==6.6.0
+
+
+# Django y REST Framework
+Django>=4.2,<5.0
+django-filter>=23.0
+django-ckeditor==6.7.0
+django-cors-headers==4.3.1
+django-import-export==4.0.6
+django-js-asset==2.2.0
+django-model-utils==4.5.1
+djangorestframework==3.15.1
+djangorestframework-simplejwt==5.3.0
+
+# Autenticación y Seguridad
+djangorestframework-simplejwt>=5.3.0  # Si usas JWT
+django-cors-headers>=4.3.0  # Para CORS si tienes frontend separado
+
+# Base de datos
+psycopg2-binary>=2.9.0  # PostgreSQL
+# mysqlclient>=2.2.0  # MySQL (descomentar si usas MySQL)
+
+# Validación y utilidades
+phonenumbers>=8.13.0  # Validación de teléfonos
+python-dateutil>=2.8.0
+
+# Email
+django-templated-mail>=1.1.1  # Templates para emails (opcional)
+
+# Documentación API
+drf-spectacular>=0.27.0  # OpenAPI/Swagger (recomendado)
+# drf-yasg>=1.21.0  # Alternativa para Swagger (descomentar si prefieres esta)
+
+# Testing
+pytest>=7.4.0
+pytest-django>=4.5.0
+factory-boy>=3.3.0  # Para crear datos de prueba
+faker>=19.0.0  # Generar datos falsos
+
+# Desarrollo
+django-debug-toolbar>=4.2.0
+ipython>=8.12.0
+
+# Producción
+gunicorn>=21.2.0
+python-decouple>=3.8  # Para variables de entorno
+whitenoise>=6.5.0  # Servir archivos estáticos
+
+# Celery (opcional, para tareas asíncronas)
+# celery>=5.3.0
+# redis>=5.0.0
+
+# Monitoreo (opcional)
+# sentry-sdk>=1.32.0

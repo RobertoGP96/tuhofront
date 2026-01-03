@@ -51,6 +51,23 @@ import sys
 # Agregar la carpeta 'apps' al PYTHONPATH
 sys.path.append(os.path.join(BASE_DIR, 'apps'))
 
+# Templates
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / 'templates'],  # Importante: agregar esta línea
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -61,10 +78,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_filters',
     'corsheaders',
     'drf_spectacular',
     'platform',
-    'usuarios',
     'atention',
     'notifications',
     'secretary_doc',

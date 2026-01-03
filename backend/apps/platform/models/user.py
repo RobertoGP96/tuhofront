@@ -7,7 +7,7 @@ from validators import validate_carnet_identidad, validate_telefono_cuba, valida
 from backend.apps.platform.models.base_models import TimeStampedModel
 
 
-class UsuarioManager(models.Manager):
+class UserManager(models.Manager):
     """Manager personalizado para el modelo Usuario"""
     
     def active_users(self):
@@ -16,14 +16,14 @@ class UsuarioManager(models.Manager):
     
     def by_carnet(self, carnet):
         """Busca usuario por carnet de identidad"""
-        return self.filter(carnet=carnet).first()
+        return self.filter(id_card=carnet).first()
     
     def staff_users(self):
         """Retorna solo usuarios staff"""
         return self.filter(is_staff=True, is_active=True)
 
 
-class Usuario(AbstractUser):
+class User(AbstractUser):
     """
     Modelo de Usuario extendido para el sistema universitario.
     
@@ -32,7 +32,7 @@ class Usuario(AbstractUser):
     """
     
     # Campos adicionales con validaciones mejoradas
-    token_activacion = models.CharField(
+    activation_token = models.CharField(
         max_length=255,  # Aumentado para tokens más seguros
         blank=True,
         null=True,
@@ -41,7 +41,7 @@ class Usuario(AbstractUser):
         help_text=_("Token utilizado para activar la cuenta del usuario")
     )
     
-    carnet = models.CharField(
+    id_card = models.CharField(
         max_length=11,
         unique=True,  # Los carnets deben ser únicos
         validators=[validate_carnet_identidad],
@@ -49,7 +49,7 @@ class Usuario(AbstractUser):
         help_text=_("Número de carnet de identidad (11 dígitos)")
     )
     
-    telefono = models.CharField(
+    phone = models.CharField(
         max_length=15,  # Aumentado para flexibilidad
         blank=True,
         null=True,
@@ -58,7 +58,7 @@ class Usuario(AbstractUser):
         help_text=_("Número de teléfono (8 dígitos para Cuba)")
     )
     
-    direccion = models.TextField(
+    address = models.TextField(
         blank=True,
         null=True,
         max_length=500,  # Límite razonable
@@ -67,14 +67,14 @@ class Usuario(AbstractUser):
     )
     
     # Campos adicionales útiles para el contexto universitario
-    fecha_nacimiento = models.DateField(
+    date_of_birth = models.DateField(
         blank=True,
         null=True,
         verbose_name=_("Fecha de nacimiento"),
         help_text=_("Fecha de nacimiento del usuario")
     )
     
-    tipo_usuario = models.CharField(
+    user_type = models.CharField(
         max_length=20,
         choices=[
             ('ESTUDIANTE', _('Estudiante')),
@@ -87,7 +87,7 @@ class Usuario(AbstractUser):
         help_text=_("Categoría del usuario en el sistema universitario")
     )
     
-    centro_trabajo = models.CharField(
+    workplace = models.CharField(
         max_length=200,
         blank=True,
         null=True,
@@ -119,25 +119,25 @@ class Usuario(AbstractUser):
     )
     
     # Manager personalizado
-    objects = UsuarioManager()
+    objects = UserManager()
     
     class Meta:
         verbose_name = _("Usuario")
         verbose_name_plural = _("Usuarios")
         ordering = ['-date_joined']
         indexes = [
-            models.Index(fields=['carnet']),
+            models.Index(fields=['id_card']),
             models.Index(fields=['email']),
-            models.Index(fields=['tipo_usuario']),
+            models.Index(fields=['user_type']),
             models.Index(fields=['is_active', 'is_staff']),
         ]
         constraints = [
             models.UniqueConstraint(
-                fields=['carnet'],
+                fields=['id_card'],
                 name='unique_carnet_identidad'
             ),
             models.CheckConstraint(
-                check=Q(carnet__isnull=False) & ~Q(carnet=''),
+                check=Q(id_card__isnull=False) & ~Q(id_card=''),
                 name='carnet_not_empty'
             ),
         ]
@@ -148,7 +148,7 @@ class Usuario(AbstractUser):
         
         # Validar que el email sea único (case-insensitive)
         if self.email:
-            existing_user = Usuario.objects.filter(
+            existing_user = User.objects.filter(
                 email__iexact=self.email
             ).exclude(pk=self.pk).first()
             
@@ -157,33 +157,33 @@ class Usuario(AbstractUser):
                     'email': _('Ya existe un usuario con este email.')
                 })
         
-        # Validar carnet único
-        if self.carnet:
-            existing_carnet = Usuario.objects.filter(
-                carnet=self.carnet
+        # Validar id_card único
+        if getattr(self, 'id_card', None):
+            existing_carnet = User.objects.filter(
+                id_card=self.id_card
             ).exclude(pk=self.pk).first()
             
             if existing_carnet:
                 raise ValidationError({
-                    'carnet': _('Ya existe un usuario con este carnet de identidad.')
+                    'id_card': _('Ya existe un usuario con este carnet de identidad.')
                 })
         
         # Validar fecha de nacimiento si se proporciona
-        if self.fecha_nacimiento:
+        if getattr(self, 'date_of_birth', None):
             from datetime import date
             today = date.today()
-            age = today.year - self.fecha_nacimiento.year - (
-                (today.month, today.day) < (self.fecha_nacimiento.month, self.fecha_nacimiento.day)
+            age = today.year - self.date_of_birth.year - (
+                (today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day)
             )
             
             if age < 16:
                 raise ValidationError({
-                    'fecha_nacimiento': _('El usuario debe tener al menos 16 años.')
+                    'date_of_birth': _('El usuario debe tener al menos 16 años.')
                 })
             
             if age > 100:
                 raise ValidationError({
-                    'fecha_nacimiento': _('La fecha de nacimiento no es válida.')
+                    'date_of_birth': _('La fecha de nacimiento no es válida.')
                 })
 
     def save(self, *args, **kwargs):
@@ -196,8 +196,8 @@ class Usuario(AbstractUser):
             self.email = self.email.lower()
         
         # Limpiar espacios en carnet
-        if self.carnet:
-            self.carnet = self.carnet.replace(' ', '')
+        if getattr(self, 'id_card', None):
+            self.id_card = self.id_card.replace(' ', '')
         
         super().save(*args, **kwargs)
 
@@ -220,33 +220,33 @@ class Usuario(AbstractUser):
     @property
     def age(self):
         """Calcula la edad del usuario basada en su fecha de nacimiento"""
-        if not self.fecha_nacimiento:
+        if not getattr(self, 'date_of_birth', None):
             return None
         
         from datetime import date
         today = date.today()
-        return today.year - self.fecha_nacimiento.year - (
-            (today.month, today.day) < (self.fecha_nacimiento.month, self.fecha_nacimiento.day)
+        return today.year - self.date_of_birth.year - (
+            (today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day)
         )
 
     @property
     def is_verified(self):
         """Verifica si el usuario tiene email y teléfono verificados"""
-        return self.email_verified and (not self.telefono or self.phone_verified)
+        return self.email_verified and (not getattr(self, 'phone', None) or self.phone_verified)
 
     def generate_activation_token(self):
         """Genera un nuevo token de activación"""
         import secrets
-        self.token_activacion = secrets.token_urlsafe(32)
-        self.save(update_fields=['token_activacion'])
-        return self.token_activacion
+        self.activation_token = secrets.token_urlsafe(32)
+        self.save(update_fields=['activation_token'])
+        return self.activation_token
 
     def activate_account(self):
         """Activa la cuenta del usuario"""
         self.is_active = True
         self.email_verified = True
-        self.token_activacion = None
-        self.save(update_fields=['is_active', 'email_verified', 'token_activacion'])
+        self.activation_token = None
+        self.save(update_fields=['is_active', 'email_verified', 'activation_token'])
 
     def verify_phone(self):
         """Marca el teléfono como verificado"""
@@ -255,9 +255,9 @@ class Usuario(AbstractUser):
 
     def get_carnet_masked(self):
         """Retorna el carnet parcialmente oculto por seguridad"""
-        if not self.carnet:
+        if not getattr(self, 'id_card', None):
             return ""
-        return f"***{self.carnet[-4:]}"
+        return f"***{self.id_card[-4:]}"
 
     def can_access_module(self, module_name):
         """Verifica si el usuario puede acceder a un módulo específico"""
@@ -276,5 +276,5 @@ class Usuario(AbstractUser):
             'EXTERNO': ['atencion_poblacion', 'notificaciones'],
         }
         
-        allowed_modules = module_permissions.get(self.tipo_usuario, [])
+        allowed_modules = module_permissions.get(self.user_type, [])
         return module_name in allowed_modules

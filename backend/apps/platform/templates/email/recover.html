@@ -1,0 +1,248 @@
+<!-- templates/emails/password_reset_email.html -->
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recupera tu contraseña</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Arial", "Helvetica", sans-serif;
+        background-color: #f4f4f4;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+      }
+      .header {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        padding: 40px 20px;
+        text-align: center;
+      }
+      .header h1 {
+        color: #ffffff;
+        margin: 0;
+        font-size: 28px;
+      }
+      .content {
+        padding: 40px 30px;
+      }
+      .greeting {
+        font-size: 18px;
+        color: #333333;
+        margin-bottom: 20px;
+      }
+      .message {
+        font-size: 16px;
+        color: #666666;
+        line-height: 1.6;
+        margin-bottom: 30px;
+      }
+      .button-container {
+        text-align: center;
+        margin: 30px 0;
+      }
+      .reset-button {
+        display: inline-block;
+        padding: 15px 40px;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: bold;
+        transition: transform 0.2s;
+      }
+      .reset-button:hover {
+        transform: translateY(-2px);
+      }
+      .alternative-link {
+        margin-top: 20px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        border-left: 4px solid #f5576c;
+      }
+      .alternative-link p {
+        margin: 0 0 10px 0;
+        font-size: 14px;
+        color: #666666;
+      }
+      .link-text {
+        word-break: break-all;
+        font-size: 12px;
+        color: #f5576c;
+        font-family: monospace;
+      }
+      .security-info {
+        background-color: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 5px;
+      }
+      .security-info p {
+        margin: 5px 0;
+        font-size: 14px;
+        color: #1565c0;
+      }
+      .security-info ul {
+        margin: 10px 0;
+        padding-left: 20px;
+      }
+      .security-info li {
+        margin: 5px 0;
+        font-size: 14px;
+        color: #1565c0;
+      }
+      .warning {
+        background-color: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 5px;
+      }
+      .warning p {
+        margin: 0;
+        font-size: 14px;
+        color: #856404;
+      }
+      .alert {
+        background-color: #f8d7da;
+        border-left: 4px solid #dc3545;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 5px;
+      }
+      .alert p {
+        margin: 0;
+        font-size: 14px;
+        color: #721c24;
+      }
+      .footer {
+        background-color: #f9f9f9;
+        padding: 30px;
+        text-align: center;
+        border-top: 1px solid #e0e0e0;
+      }
+      .footer p {
+        margin: 5px 0;
+        font-size: 14px;
+        color: #999999;
+      }
+      .icon {
+        font-size: 48px;
+        margin-bottom: 20px;
+      }
+      .divider {
+        height: 1px;
+        background-color: #e0e0e0;
+        margin: 30px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-container">
+      <!-- Header -->
+      <div class="header">
+        <div class="icon">🔐</div>
+        <h1>Recuperación de Contraseña</h1>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+        <p class="greeting">Hola {{ user.first_name }},</p>
+
+        <p class="message">
+          Hemos recibido una solicitud para restablecer la contraseña de tu
+          cuenta en el Sistema Universitario asociada al correo
+          <strong>{{ user.email }}</strong>.
+        </p>
+
+        <p class="message">
+          Para crear una nueva contraseña, haz clic en el botón de abajo:
+        </p>
+
+        <!-- Reset Button -->
+        <div class="button-container">
+          <a href="{{ reset_url }}" class="reset-button">
+            Restablecer mi contraseña
+          </a>
+        </div>
+
+        <!-- Alternative Link -->
+        <div class="alternative-link">
+          <p><strong>¿No puedes hacer clic en el botón?</strong></p>
+          <p>Copia y pega el siguiente enlace en tu navegador:</p>
+          <p class="link-text">{{ reset_url }}</p>
+        </div>
+
+        <!-- Warning -->
+        <div class="warning">
+          <p>
+            <strong>⚠️ Importante:</strong> Este enlace es válido solo por 1
+            hora por razones de seguridad. Si expira, deberás solicitar un nuevo
+            enlace de recuperación.
+          </p>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Security Info -->
+        <div class="security-info">
+          <p><strong>🛡️ Consejos de seguridad:</strong></p>
+          <ul>
+            <li>Usa una contraseña fuerte con al menos 8 caracteres</li>
+            <li>Combina letras mayúsculas, minúsculas, números y símbolos</li>
+            <li>No reutilices contraseñas de otras cuentas</li>
+            <li>Nunca compartas tu contraseña con nadie</li>
+          </ul>
+        </div>
+
+        <!-- Alert if not requested -->
+        <div class="alert">
+          <p>
+            <strong>🚨 ¿No solicitaste este cambio?</strong><br />
+            Si no fuiste tú quien solicitó restablecer la contraseña, ignora
+            este correo. Tu contraseña permanecerá sin cambios. Te recomendamos
+            cambiar tu contraseña de inmediato si crees que alguien más está
+            intentando acceder a tu cuenta.
+          </p>
+        </div>
+
+        <p class="message" style="margin-top: 30px">
+          Si tienes problemas o necesitas ayuda, no dudes en contactar con
+          nuestro equipo de soporte.
+        </p>
+
+        <p class="message">
+          Saludos,<br />
+          <strong>Equipo del Sistema Universitario</strong>
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p><strong>Sistema Universitario</strong></p>
+        <p>Universidad de Ejemplo</p>
+        <p>
+          Este es un correo electrónico automático, por favor no respondas a
+          este mensaje.
+        </p>
+        <p style="margin-top: 15px">
+          Si necesitas ayuda, contacta a:
+          <a href="mailto:soporte@universidad.cu" style="color: #f5576c"
+            >soporte@universidad.cu</a
+          >
+        </p>
+        <p style="margin-top: 15px; font-size: 12px">
+          © {{ "now"|date:"Y" }} Sistema Universitario. Todos los derechos
+          reservados.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

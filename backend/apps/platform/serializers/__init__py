@@ -1,0 +1,20 @@
+from .area import AreaListSerializer, AreaSerializer
+from .department import DepartmentSerializer, DepartmentListSerializer, DepartmentDetailSerializer
+from .news import NoticiaSerializer
+from .user import UserSerializer
+
+
+__all__ = [
+    'DepartmentSerializer',
+    'DepartmentListSerializer',
+    'DepartmentDetailSerializer',
+    'AreaListSerializer',
+    'AreaSerializer',
+    'NoticiaSerializer',
+    'UserSerializer',
+    'TramiteInterno',
+    'DocumentoInterno',
+    'TramiteSecretaria',
+    'SolicitudSecretaria',
+    'Usuario',
+]
