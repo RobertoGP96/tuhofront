@@ -2,10 +2,10 @@ from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils.translation import gettext_lazy as _
-from .user import User
+from ..models.user import User
 
 
-class UsuarioBaseSerializer(serializers.ModelSerializer):
+class UserBaseSerializer(serializers.ModelSerializer):
     """Serializer base con campos comunes del usuario"""
     
     full_name = serializers.CharField(source='get_full_name', read_only=True)
@@ -24,7 +24,7 @@ class UsuarioBaseSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'date_joined']
 
 
-class UsuarioListSerializer(serializers.ModelSerializer):
+class UserListSerializer(serializers.ModelSerializer):
     """Serializer para listar usuarios (vista resumida)"""
     
     full_name = serializers.CharField(source='get_full_name', read_only=True)
@@ -37,19 +37,19 @@ class UsuarioListSerializer(serializers.ModelSerializer):
         ]
 
 
-class UsuarioDetailSerializer(UsuarioBaseSerializer):
+class UserDetailSerializer(UserBaseSerializer):
     """Serializer detallado del usuario"""
     
-    class Meta(UsuarioBaseSerializer.Meta):
-        fields = UsuarioBaseSerializer.Meta.fields + [
+    class Meta(UserBaseSerializer.Meta):
+        fields = UserBaseSerializer.Meta.fields + [
             'is_staff', 'is_superuser', 'last_login', 'created_at', 'updated_at'
         ]
-        read_only_fields = UsuarioBaseSerializer.Meta.read_only_fields + [
+        read_only_fields = UserBaseSerializer.Meta.read_only_fields + [
             'is_staff', 'is_superuser', 'last_login', 'created_at', 'updated_at'
         ]
 
 
-class UsuarioCreateSerializer(serializers.ModelSerializer):
+class UserCreateSerializer(serializers.ModelSerializer):
     """Serializer para crear nuevos usuarios"""
     
     password = serializers.CharField(
@@ -120,7 +120,7 @@ class UsuarioCreateSerializer(serializers.ModelSerializer):
         return user
 
 
-class UsuarioUpdateSerializer(serializers.ModelSerializer):
+class UserUpdateSerializer(serializers.ModelSerializer):
     """Serializer para actualizar información del usuario"""
     
     class Meta:
@@ -222,7 +222,7 @@ class ResetPasswordConfirmSerializer(serializers.Serializer):
         return attrs
 
 
-class UsuarioStaffSerializer(serializers.ModelSerializer):
+class UserStaffSerializer(serializers.ModelSerializer):
     """Serializer para gestión de usuarios por staff/admin"""
     
     full_name = serializers.CharField(source='get_full_name', read_only=True)

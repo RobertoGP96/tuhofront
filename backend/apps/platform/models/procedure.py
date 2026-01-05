@@ -1,9 +1,9 @@
 from datetime import timezone
 import uuid
 from django.forms import ValidationError
-from platform.enums import ProcedureStateEnum
-from platform.models import models
-from backend.apps.platform.models.base_models import FollowNumberMixin, StatusMixin
+from django.db import models
+from ..enums import ProcedureStateEnum
+from .base_models import FollowNumberMixin, StatusMixin
 
 from django.utils.translation import gettext_lazy as _
 from model_utils.managers import InheritanceManager
@@ -40,7 +40,7 @@ class Procedure(FollowNumberMixin):
     )
 
     user = models.ForeignKey(
-        "user.Usuario",
+        "user.User",
         on_delete=models.CASCADE,
         related_name="%(class)s_tramites",
         verbose_name=_("Usuario solicitante"),

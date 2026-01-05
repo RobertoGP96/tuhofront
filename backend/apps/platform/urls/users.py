@@ -1,10 +1,10 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from apps.platform.views.user import UsuarioViewSet
+from apps.platform.views.user import UserViewSet
 
-# Router específico para Comment
+# Router específico para Users
 router = DefaultRouter()
-router.register(r'users', UsuarioViewSet, basename='users')
+router.register(r'users', UserViewSet, basename='users')
 
 urlpatterns = [
     path('', include(router.urls)),

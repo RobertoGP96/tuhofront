@@ -1,9 +1,9 @@
 import django_filters
 from django.db.models import Q
-from models import Usuario
+from ..models.user import User
 
 
-class UsuarioFilter(django_filters.FilterSet):
+class UserFilter(django_filters.FilterSet):
     """
     Filtro avanzado para el modelo Usuario.
     Permite filtrado complejo por múltiples campos.
@@ -21,7 +21,7 @@ class UsuarioFilter(django_filters.FilterSet):
     
     # Filtros por tipo y estado
     user_type = django_filters.ChoiceFilter(
-        choices=Usuario._meta.get_field('user_type').choices
+        choices=User._meta.get_field('user_type').choices
     )
     is_active = django_filters.BooleanFilter()
     is_staff = django_filters.BooleanFilter()
@@ -78,7 +78,7 @@ class UsuarioFilter(django_filters.FilterSet):
     )
     
     class Meta:
-        model = Usuario
+        model = User
         fields = [
             'username', 'email', 'first_name', 'last_name', 'id_card',
             'user_type', 'is_active', 'is_staff', 'email_verified',
@@ -126,7 +126,7 @@ class UsuarioFilter(django_filters.FilterSet):
         )
 
 
-class UsuarioStaffFilter(UsuarioFilter):
+class UsuarioStaffFilter(UserFilter):
     """
     Filtro extendido para staff con más opciones.
     """
@@ -151,8 +151,8 @@ class UsuarioStaffFilter(UsuarioFilter):
         label='Días sin acceso'
     )
     
-    class Meta(UsuarioFilter.Meta):
-        fields = UsuarioFilter.Meta.fields + ['is_superuser']
+    class Meta(UserFilter.Meta):
+        fields = UserFilter.Meta.fields + ['is_superuser']
     
     def filter_inactive_days(self, queryset, name, value):
         """Filtra usuarios que no han accedido en X días"""

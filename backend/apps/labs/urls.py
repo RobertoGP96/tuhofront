@@ -11,7 +11,7 @@ router = DefaultRouter()
 router.register(r'locals', LocalViewSet, basename='local')
 router.register(r'reservations', LocalReservationViewSet, basename='reservation')
 
-app_name = 'local_reservations'
+app_name = 'labs'
 
 urlpatterns = [
     path('', include(router.urls)),

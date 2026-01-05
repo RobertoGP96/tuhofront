@@ -1,7 +1,4 @@
 from django.db import models
-from platform.models import TramiteGeneral, Department, Area
-from users.models import Usuario
-
 
 class Guest(models.Model):
     SEX_CHOICES = [("M", "MASCULINO"), ("F", "FEMENINO")]

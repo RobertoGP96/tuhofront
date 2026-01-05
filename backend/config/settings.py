@@ -81,12 +81,12 @@ INSTALLED_APPS = [
     'django_filters',
     'corsheaders',
     'drf_spectacular',
-    'platform',
-    'atention',
-    'notifications',
-    'secretary_doc',
-    'internal',
-    'labs',
+    'apps.platform',
+    #'apps.atention',
+    #'apps.notifications',
+    #'apps.secretary_doc',
+    #'apps.internal',
+    #'apps.labs',
 ]
 
 MIDDLEWARE = [
@@ -502,7 +502,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'notificaciones.context.notificacionesContext',
+                #'notificaciones.context.notificacionesContext',
                 'config.context.groups_processor'
             ],
         },
@@ -583,7 +583,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = 'Login'
 
-AUTH_USER_MODEL = 'usuarios.Usuario'
 
 # Email Config - Usar variables de entorno para credenciales sensibles
 EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')

@@ -3,7 +3,7 @@ from secretaria_docente.correo import enviar_correo_cambio_estado
 from django.contrib.auth.decorators import login_required
 from atencion_poblacion.forms import CambiarEstadoForm
 from django.utils.decorators import method_decorator
-from usuarios.forms import InformacionPersonalForm
+from apps.platform.forms import UserInfoForm
 from django.db.models.functions import TruncMonth
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group

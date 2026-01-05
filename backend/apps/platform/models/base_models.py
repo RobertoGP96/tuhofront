@@ -100,7 +100,7 @@ class TrackingMixin(models.Model):
     """
 
     created_by = models.ForeignKey(
-        "usuarios.Usuario",
+        "platform.User",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -109,7 +109,7 @@ class TrackingMixin(models.Model):
         help_text=_("Usuario que creó el registro"),
     )
     updated_by = models.ForeignKey(
-        "usuarios.Usuario",
+        "users.User",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

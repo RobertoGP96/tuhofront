@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.utils import timezone
-from models.news import News
+from ..models.news import News
 
 
 class NewsListSerializer(serializers.ModelSerializer):

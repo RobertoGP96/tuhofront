@@ -5,8 +5,8 @@ def group_names(group:Group):
     return group.name
 
 # Verificar si ese usuario pertenece a ese grupo
-def verify_group(usuario, allowed_groups):
-    for i in list(usuario.groups.all()):
+def verify_group(user, allowed_groups):
+    for i in list(user.groups.all()):
         if i.name in allowed_groups:
             return True
     return False

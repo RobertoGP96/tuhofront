@@ -1,11 +1,6 @@
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from apps.platform.views import DepartmentViewSet
 
-# Router específico para Comment
-router = DefaultRouter()
-router.register(r'procedures', DepartmentViewSet, basename='procedures')
+# Procedures is an abstract base model, so we don't register it directly
+# Specific procedure types are registered in their respective apps
 
-urlpatterns = [
-    path('', include(router.urls)),
-]
+urlpatterns = []

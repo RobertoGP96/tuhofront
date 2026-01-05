@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import models
-from backend.apps.plataforma.models.models import TramiteGeneral
-from usuarios.models import Usuario
+from apps.platform.models.procedure import Procedure
+from apps.platform.models.user import User
 import uuid
 from .choices import (
     Intereses,

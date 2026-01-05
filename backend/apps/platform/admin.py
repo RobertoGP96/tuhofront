@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import Noticias , Email, Department, Area, User
+from .models.area import Area
+from .models.department import Department
+from .models.news import News
+from .models.user import User
 
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
@@ -8,13 +11,12 @@ from django.urls import reverse
 from django.db.models import Q
 # Register your models here.
 
-admin.site.register(Noticias)
-admin.site.register(Email)
+admin.site.register(News)
 admin.site.register(Department)
 admin.site.register(Area)
 
 @admin.register(User)
-class UsuarioAdmin(BaseUserAdmin):
+class UserAdmin(BaseUserAdmin):
     """
     Admin personalizado para el modelo Usuario.
     Extiende UserAdmin de Django con campos específicos del modelo.

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Tramite, TramiteSecretariaDocente
-from usuarios.serializers import UsuarioSerializer
-from plataforma.models.procedure import Solicitante, Tramite as CentralTramite
+from apps.platform.serializers.user import UserSerializer
+from apps.platform.models.procedure import Procedure
 
 
 class TramiteSecretariaDetalleSerializer(serializers.ModelSerializer):
@@ -20,8 +20,8 @@ class TramiteCreateSerializer(serializers.Serializer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Asignar el queryset en tiempo de inicialización para evitar import loops
-        from usuarios.models import Usuario
-        self.fields['usuario'].queryset = Usuario.objects.all()
+        from apps.platform.models.user import User
+        self.fields['usuario'].queryset = User.objects.all()
 
     def create(self, validated_data):
         Usuario = None

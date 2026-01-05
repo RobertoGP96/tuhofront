@@ -16,14 +16,14 @@ urlpatterns = [
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     
    
-    path('platform/',include('platform.urls')),
+    path('platform/',include('apps.platform.urls')),
     
-    path('notifications/',include('notifications.urls')),
+    #path('notifications/',include('apps.notifications.urls')),
     
-    path('atention/',include('atention.urls')),
-    path('secretary_doc/', include('secretary_doc.urls')),
-    path('labs/', include('labs.urls')),
-    path('internal/', include('internal.urls')),
+    #path('atention/',include('atention.urls')),
+    #path('secretary_doc/', include('secretary_doc.urls')),
+    #path('labs/', include('labs.urls')),
+    #path('internal/', include('internal.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

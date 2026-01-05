@@ -3,8 +3,8 @@ from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Q
-from validators import validate_carnet_identidad, validate_telefono_cuba, validate_token_activacion
-from models.base_models import TimeStampedModel, UUIDModel
+from ..validators import validate_carnet_identidad, validate_telefono_cuba, validate_token_activacion
+from ..models.base_models import TimeStampedModel, UUIDModel
 
 
 class UserManager(models.Manager):
@@ -120,6 +120,27 @@ class User(AbstractUser):
     
     # Manager personalizado
     objects = UserManager()
+    
+    # Override groups and user_permissions to use different related_name
+    groups = models.ManyToManyField(
+        'auth.Group',
+        verbose_name=_('groups'),
+        blank=True,
+        help_text=_(
+            'The groups this user belongs to. A user will get all permissions '
+            'granted to each of their groups.'
+        ),
+        related_name='platform_user_groups',
+        related_query_name='platform_user',
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        verbose_name=_('user permissions'),
+        blank=True,
+        help_text=_('Specific permissions for this user.'),
+        related_name='platform_user_permissions',
+        related_query_name='platform_user',
+    )
     
     class Meta:
         verbose_name = _("Usuario")
@@ -270,10 +291,10 @@ class User(AbstractUser):
         
         # Lógica específica por tipo de usuario
         module_permissions = {
-            'ESTUDIANTE': ['plataforma', 'notificaciones', 'atencion_poblacion'],
-            'PROFESOR': ['plataforma', 'notificaciones', 'secretaria_docente', 'labs'],
-            'TRABAJADOR': ['plataforma', 'notificaciones', 'internal'],
-            'EXTERNO': ['atencion_poblacion', 'notificaciones'],
+            'ESTUDIANTE': ['platform'],
+            'PROFESOR': ['platform'],
+            'TRABAJADOR': ['platform'],
+            'EXTERNO': ['atencion_poblacion'],
         }
         
         allowed_modules = module_permissions.get(self.user_type, [])

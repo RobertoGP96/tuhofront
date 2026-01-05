@@ -2,8 +2,8 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from models.department import Department
-from serializers import (
+from ..models.department import Department
+from ..serializers import (
     DepartmentSerializer, DepartmentListSerializer, DepartmentDetailSerializer,
     AreaSerializer, AreaListSerializer
 )

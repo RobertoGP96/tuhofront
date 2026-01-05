@@ -1,7 +1,7 @@
 # serializers.py
 from rest_framework import serializers
-from models.area import Area
-from models.department import Department
+from ..models.area import Area
+from ..models.department import Department
 
 
 # ============== DEPARTMENT SERIALIZERS ==============

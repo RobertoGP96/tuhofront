@@ -8,8 +8,8 @@ class NoticiaViewSet(viewsets.ModelViewSet):
     serializer_class = NoticiaSerializer
 
 
-from plataforma.serializers.procedure import TramiteSerializer, TramiteDetailSerializer
-from plataforma.models.procedure import Tramite as CentralTramite
+from .serializers.procedure import ProcedureSerializer, ProcedureDetailSerializer
+from .models.procedure import Procedure
 
 
 class TramiteViewSet(viewsets.ModelViewSet):

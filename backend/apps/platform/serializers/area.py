@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from models.department import Department
-from models.area import Area
+from ..models.department import Department
+from ..models.area import Area
 
 class DepartmentInAreaSerializer(serializers.ModelSerializer):
     """Serializer for department info in area views."""

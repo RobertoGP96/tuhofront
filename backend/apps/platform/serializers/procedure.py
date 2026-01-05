@@ -1,22 +1,15 @@
 from rest_framework import serializers
-from models.procedure import Tramite, Solicitante
+from ..models.procedure import Procedure
 
 
-class SolicitanteSerializer(serializers.ModelSerializer):
+class ProcedureSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Solicitante
-        fields = ('id', 'nombre', 'apellidos', 'ci', 'email', 'telefono')
+        model = Procedure
+        fields = ('id', 'user', 'state', 'observation', 'deadline', 'created_at', 'updated_at')
 
 
-class TramiteSerializer(serializers.ModelSerializer):
-    solicitante = SolicitanteSerializer(read_only=True)
-
-    class Meta:
-        model = Tramite
-        fields = ('id', 'nombre_tramite', 'usuario', 'solicitante', 'estado', 'observaciones', 'fecha_limite', 'numero_seguimiento', 'created_at', 'updated_at')
-
-
-class TramiteDetailSerializer(TramiteSerializer):
+class ProcedureDetailSerializer(ProcedureSerializer):
     # Para incluir detalles específicos, se pueden añadir campos dinámicamente desde las apps
-    class Meta(TramiteSerializer.Meta):
+    class Meta(ProcedureSerializer.Meta):
         pass
+

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field
 from .models import Notificacion
-from usuarios.serializers import UsuarioSerializer
+from apps.platform.serializers.user import UserSerializer
 
 class NotificacionSerializer(serializers.ModelSerializer):
     """
