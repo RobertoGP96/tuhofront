@@ -18,11 +18,11 @@ urlpatterns = [
    
     path('platform/',include('apps.platform.urls')),
     path('notifications/',include('apps.notifications.urls')),
+    path('secretary_doc/', include('apps.secretary_doc.urls')),
+    path('labs/', include('apps.labs.urls')),
+    path('internal/', include('apps.internal.urls')),
     
     #path('atention/',include('atention.urls')),
-    #path('secretary_doc/', include('secretary_doc.urls')),
-    #path('labs/', include('labs.urls')),
-    #path('internal/', include('internal.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
