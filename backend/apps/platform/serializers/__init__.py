@@ -19,8 +19,8 @@ from .user import (
     BulkUserActionSerializer,
     UserStatsSerializer,
 )
+from .news import NewsListSerializer, NewsDetailSerializer, NewsCreateUpdateSerializer
 from .procedure import ProcedureSerializer, ProcedureDetailSerializer
-# Nota: `news.py` está vacío actualmente; añadir `NoticiaSerializer` cuando exista.
 
 
 __all__ = [
@@ -42,6 +42,9 @@ __all__ = [
     'UserStaffSerializer',
     'BulkUserActionSerializer',
     'UserStatsSerializer',
+    'NewsListSerializer',
+    'NewsDetailSerializer',
+    'NewsCreateUpdateSerializer',
     'ProcedureSerializer',
     'ProcedureDetailSerializer',
 ]

@@ -4,7 +4,7 @@ from ..views.area import AreaViewSet
 
 # Router específico para Areas
 router = DefaultRouter()
-router.register(r'areas', AreaViewSet, basename='areas')
+router.register(r'', AreaViewSet, basename='areas')
 
 urlpatterns = [
     path('', include(router.urls)),

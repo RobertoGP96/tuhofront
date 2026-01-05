@@ -1,20 +1,20 @@
 from .area import AreaViewSet
 from .department import DepartmentViewSet
 from .user import (
-    UsuarioViewSet,
-    UsuarioStaffViewSet,
+    UserViewSet,
+    UserStaffViewSet,
     PasswordResetView,
     PasswordResetConfirmView,
     UserSearchView,
 )
-from news import NewsViewSet
+from .news import NewsViewSet
 
 
 __all__ = [
     'AreaViewSet',
     'DepartmentViewSet',
-    'UsuarioViewSet',
-    'UsuarioStaffViewSet',
+    'UserViewSet',
+    'UserStaffViewSet',
     'PasswordResetView',
     'PasswordResetConfirmView',
     'UserSearchView',

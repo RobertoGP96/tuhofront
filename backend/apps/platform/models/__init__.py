@@ -1,6 +1,6 @@
 from .area import Area
 from .department import Department
-from .news import Noticias
+from .news import News
 from .user import User
 from .procedure import Procedure
 from .base_models import (
@@ -18,7 +18,7 @@ from .base_models import (
 __all__ = [
     'Area',
     'Department',
-    'Noticias',
+    'News',
     'User',
     'Procedure',
     'TimeStampedModel',

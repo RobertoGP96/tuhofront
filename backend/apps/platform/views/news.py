@@ -6,8 +6,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.utils import timezone
 from django.db.models import Q
 
-from platform.models.news import News
-from platform.serializers.news import (
+from ..models.news import News
+from ..serializers.news import (
     NewsListSerializer,
     NewsDetailSerializer,
     NewsCreateUpdateSerializer

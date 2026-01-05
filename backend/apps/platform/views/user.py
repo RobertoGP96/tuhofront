@@ -242,7 +242,7 @@ class PasswordResetConfirmView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UsuarioStaffViewSet(viewsets.ModelViewSet):
+class UserStaffViewSet(viewsets.ModelViewSet):
     """
     ViewSet para gestión de usuarios por parte del staff.
     Incluye funcionalidades administrativas avanzadas.
