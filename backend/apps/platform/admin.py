@@ -3,6 +3,7 @@ from .models.area import Area
 from .models.department import Department
 from .models.news import News
 from .models.user import User
+from .models.procedure import Procedure
 
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
@@ -14,6 +15,113 @@ from django.db.models import Q
 admin.site.register(News)
 admin.site.register(Department)
 admin.site.register(Area)
+
+@admin.register(Procedure)
+class ProcedureAdmin(admin.ModelAdmin):
+    """
+    Admin personalizado para el modelo Procedure.
+    Permite visualizar y gestionar trámites generales y monitorear sus estados.
+    """
+    
+    # Campos a mostrar en la lista
+    list_display = [
+        'numero_seguimiento', 'user', 'state', 'created_at_display', 'deadline_display'
+    ]
+    
+    # Campos por los que se puede filtrar
+    list_filter = [
+        'state', 'created_at', 'updated_at', 'deadline'
+    ]
+    
+    # Campos de búsqueda
+    search_fields = [
+        'numero_seguimiento', 'user__username', 'user__email', 'observation'
+    ]
+    
+    # Ordenamiento por defecto
+    ordering = ['-created_at']
+    
+    # Campos de solo lectura
+    readonly_fields = [
+        'id', 'numero_seguimiento', 'created_at', 'updated_at'
+    ]
+    
+    # Configuración de los fieldsets
+    fieldsets = (
+        (_('Información principal'), {
+            'fields': ('id', 'numero_seguimiento', 'user')
+        }),
+        (_('Detalles del trámite'), {
+            'fields': ('state', 'deadline', 'observation')
+        }),
+        (_('Auditoría'), {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    # Fieldsets para creación
+    add_fieldsets = (
+        (_('Información principal'), {
+            'classes': ('wide',),
+            'fields': ('user', 'state')
+        }),
+        (_('Detalles del trámite'), {
+            'classes': ('wide',),
+            'fields': ('deadline', 'observation')
+        }),
+    )
+    
+    # Acciones en lote
+    actions = ['mark_as_submitted', 'mark_as_in_process', 'mark_as_approved', 'mark_as_rejected']
+    
+    def created_at_display(self, obj):
+        """Muestra la fecha de creación formateada"""
+        return obj.created_at.strftime('%d/%m/%Y %H:%M')
+    created_at_display.short_description = _('Fecha de creación')
+    
+    def deadline_display(self, obj):
+        """Muestra la fecha límite con color según estado"""
+        if not obj.deadline:
+            return "—"
+        
+        from django.utils import timezone
+        if obj.is_expired:
+            return format_html(
+                '<span style="color: red;">✗ Vencido ({0.strftime(\'%d/%m/%Y\')})</span>',
+                obj.deadline
+            )
+        return obj.deadline.strftime('%d/%m/%Y')
+    deadline_display.short_description = _('Fecha límite')
+    
+    @admin.action(description=_('Marcar como enviado'))
+    def mark_as_submitted(self, request, queryset):
+        """Marca trámites como enviados"""
+        updated = queryset.update(state='ENVIADO')
+        self.message_user(request, _(f'{updated} trámites marcados como enviados.'))
+    
+    @admin.action(description=_('Marcar como en proceso'))
+    def mark_as_in_process(self, request, queryset):
+        """Marca trámites como en proceso"""
+        updated = queryset.update(state='EN_PROCESO')
+        self.message_user(request, _(f'{updated} trámites marcados como en proceso.'))
+    
+    @admin.action(description=_('Marcar como aprobado'))
+    def mark_as_approved(self, request, queryset):
+        """Marca trámites como aprobados"""
+        updated = queryset.update(state='APROBADO')
+        self.message_user(request, _(f'{updated} trámites marcados como aprobados.'))
+    
+    @admin.action(description=_('Marcar como rechazado'))
+    def mark_as_rejected(self, request, queryset):
+        """Marca trámites como rechazados"""
+        updated = queryset.update(state='RECHAZADO')
+        self.message_user(request, _(f'{updated} trámites marcados como rechazados.'))
+    
+    def get_queryset(self, request):
+        """Optimiza las queries"""
+        qs = super().get_queryset(request)
+        return qs.select_related('user')
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):

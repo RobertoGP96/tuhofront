@@ -25,10 +25,11 @@ class ProcedureStateEnum(models.TextChoices):
 
 class Procedure(FollowNumberMixin):
     """
-    Modelo base abstracto mejorado para todos los tipos de trámites.
+    Modelo principal y tabla central para todos los tipos de trámites.
 
     Proporciona funcionalidad común para el sistema de gestión de trámites
     universitarios con seguimiento, estados y auditoría.
+    Utiliza herencia multi-tabla para integrar diferentes tipos de trámites.
     """
 
     id = models.UUIDField(
@@ -40,9 +41,9 @@ class Procedure(FollowNumberMixin):
     )
 
     user = models.ForeignKey(
-        "user.User",
+        "platform.User",
         on_delete=models.CASCADE,
-        related_name="%(class)s_tramites",
+        related_name="procedures",
         verbose_name=_("Usuario solicitante"),
         help_text=_("Usuario que solicita el trámite"),
     )
@@ -76,10 +77,15 @@ class Procedure(FollowNumberMixin):
     objects = InheritanceManager()
 
     class Meta:
-        abstract = True
+        abstract = False
         ordering = ["-created_at"]
         verbose_name = _("Trámite")
         verbose_name_plural = _("Trámites")
+        indexes = [
+            models.Index(fields=["state", "created_at"]),
+            models.Index(fields=["user", "state"]),
+            models.Index(fields=["deadline"]),
+        ]
 
     def clean(self):
         """Validaciones personalizadas"""
@@ -141,12 +147,3 @@ class Procedure(FollowNumberMixin):
         if self.state == ProcedureStateEnum.EN_PROCESO:
             self.state = ProcedureStateEnum.APROBADO
             self.save()
-
-    class Meta:
-        abstract = True
-        ordering = ["-created_at"]
-        indexes = [
-            models.Index(fields=["state", "created_at"]),
-            models.Index(fields=["user", "state"]),
-            models.Index(fields=["deadline"]),
-        ]

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field
 from .models import Notificacion
-from apps.platform.serializers.user import UserSerializer
+from apps.platform.serializers.user import UserBaseSerializer
 
 class NotificacionSerializer(serializers.ModelSerializer):
     """
@@ -11,7 +11,7 @@ class NotificacionSerializer(serializers.ModelSerializer):
     y estado de lectura.
     """
     
-    para_info = UsuarioSerializer(source='para', read_only=True)
+    para_info = UserBaseSerializer(source='para', read_only=True)
     tiempo_transcurrido = serializers.SerializerMethodField()
     
     class Meta:

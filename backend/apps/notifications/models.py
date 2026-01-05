@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from platform.models import Usuario
+from apps.platform.models import User as Usuario
 from apps.platform.models.base_models import TimeStampedModel, StatusMixin
 
 

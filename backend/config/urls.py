@@ -17,8 +17,7 @@ urlpatterns = [
     
    
     path('platform/',include('apps.platform.urls')),
-    
-    #path('notifications/',include('apps.notifications.urls')),
+    path('notifications/',include('apps.notifications.urls')),
     
     #path('atention/',include('atention.urls')),
     #path('secretary_doc/', include('secretary_doc.urls')),

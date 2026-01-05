@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import (
     Guest, FeedingDays, FeedingProcedure, AccommodationProcedure,
     TransportProcedureType, TransportProcedure, MaintanceProcedureType,
-    MaintancePriority, MaintanceProcedure, Procedure
+    MaintancePriority, MaintanceProcedure
 )
 
 # Register your models here.

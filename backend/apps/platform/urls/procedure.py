@@ -1,6 +1,12 @@
 from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from ..views.procedure import ProcedureViewSet
 
-# Procedures is an abstract base model, so we don't register it directly
-# Specific procedure types are registered in their respective apps
+app_name = 'procedures'
 
-urlpatterns = []
+router = DefaultRouter()
+router.register(r'', ProcedureViewSet, basename='procedure')
+
+urlpatterns = [
+    path('', include(router.urls)),
+]

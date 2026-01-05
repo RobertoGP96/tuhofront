@@ -66,11 +66,11 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_spectacular',
     'apps.platform',
+    'apps.internal',
+    'apps.labs',
+    'apps.secretary_doc',
+    'apps.notifications',
     #'apps.atention',
-    #'apps.notifications',
-    #'apps.secretary_doc',
-    #'apps.internal',
-    #'apps.labs',
 ]
 
 MIDDLEWARE = [

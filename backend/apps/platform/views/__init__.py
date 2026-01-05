@@ -8,6 +8,7 @@ from .user import (
     UserSearchView,
 )
 from .news import NewsViewSet
+from .procedure import ProcedureViewSet
 
 
 __all__ = [
@@ -19,4 +20,5 @@ __all__ = [
     'PasswordResetConfirmView',
     'UserSearchView',
     'NewsViewSet',
+    'ProcedureViewSet',
 ]
