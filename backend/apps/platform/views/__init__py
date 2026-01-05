@@ -1,20 +1,22 @@
-from .area import AreaListSerializer, AreaSerializer
-from .department import DepartmentSerializer, DepartmentListSerializer, DepartmentDetailSerializer
-from .news import NoticiaSerializer
-from .user import UserSerializer
+from .area import AreaViewSet
+from .department import DepartmentViewSet
+from .user import (
+    UsuarioViewSet,
+    UsuarioStaffViewSet,
+    PasswordResetView,
+    PasswordResetConfirmView,
+    UserSearchView,
+)
+from news import NewsViewSet
 
 
 __all__ = [
-    'DepartmentSerializer',
-    'DepartmentListSerializer',
-    'DepartmentDetailSerializer',
-    'AreaListSerializer',
-    'AreaSerializer',
-    'NoticiaSerializer',
-    'UserSerializer',
-    'TramiteInterno',
-    'DocumentoInterno',
-    'TramiteSecretaria',
-    'SolicitudSecretaria',
-    'Usuario',
+    'AreaViewSet',
+    'DepartmentViewSet',
+    'UsuarioViewSet',
+    'UsuarioStaffViewSet',
+    'PasswordResetView',
+    'PasswordResetConfirmView',
+    'UserSearchView',
+    'NewsViewSet',
 ]

@@ -15,12 +15,13 @@ urlpatterns = [
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     
-    # Legacy URLs (mantener por compatibilidad durante la transición)
-    path('user/',include('users.urls')),
-    path('atention/',include('atention.urls')),
+   
+    path('platform/',include('platform.urls')),
+    
     path('notifications/',include('notifications.urls')),
+    
+    path('atention/',include('atention.urls')),
     path('secretary_doc/', include('secretary_doc.urls')),
-    path('platform/',include('plataforma.urls')),
     path('labs/', include('labs.urls')),
     path('internal/', include('internal.urls')),
 ]

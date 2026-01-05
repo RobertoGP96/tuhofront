@@ -1,7 +1,26 @@
 from .area import AreaListSerializer, AreaSerializer
-from .department import DepartmentSerializer, DepartmentListSerializer, DepartmentDetailSerializer
-from .news import NoticiaSerializer
-from .user import UserSerializer
+from .department import (
+    DepartmentSerializer,
+    DepartmentListSerializer,
+    DepartmentDetailSerializer,
+)
+from .user import (
+    UsuarioBaseSerializer,
+    UsuarioListSerializer,
+    UsuarioDetailSerializer,
+    UsuarioCreateSerializer,
+    UsuarioUpdateSerializer,
+    ChangePasswordSerializer,
+    ActivateAccountSerializer,
+    VerifyPhoneSerializer,
+    ResetPasswordSerializer,
+    ResetPasswordConfirmSerializer,
+    UsuarioStaffSerializer,
+    BulkUserActionSerializer,
+    UserStatsSerializer,
+)
+from .procedure import SolicitanteSerializer, TramiteSerializer, TramiteDetailSerializer
+# Nota: `news.py` está vacío actualmente; añadir `NoticiaSerializer` cuando exista.
 
 
 __all__ = [
@@ -10,11 +29,20 @@ __all__ = [
     'DepartmentDetailSerializer',
     'AreaListSerializer',
     'AreaSerializer',
-    'NoticiaSerializer',
-    'UserSerializer',
-    'TramiteInterno',
-    'DocumentoInterno',
-    'TramiteSecretaria',
-    'SolicitudSecretaria',
-    'Usuario',
+    'UsuarioBaseSerializer',
+    'UsuarioListSerializer',
+    'UsuarioDetailSerializer',
+    'UsuarioCreateSerializer',
+    'UsuarioUpdateSerializer',
+    'ChangePasswordSerializer',
+    'ActivateAccountSerializer',
+    'VerifyPhoneSerializer',
+    'ResetPasswordSerializer',
+    'ResetPasswordConfirmSerializer',
+    'UsuarioStaffSerializer',
+    'BulkUserActionSerializer',
+    'UserStatsSerializer',
+    'SolicitanteSerializer',
+    'TramiteSerializer',
+    'TramiteDetailSerializer',
 ]

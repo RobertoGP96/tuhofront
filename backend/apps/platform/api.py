@@ -1,4 +1,4 @@
-from .models.models import Noticias
+from .models import Noticias
 from rest_framework import viewsets, permissions
 from .serializers import NoticiaSerializer
 

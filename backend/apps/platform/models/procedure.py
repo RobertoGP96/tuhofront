@@ -4,7 +4,7 @@ from django.forms import ValidationError
 from platform.enums import ProcedureStateEnum
 from platform.models import models
 from backend.apps.platform.models.base_models import FollowNumberMixin, StatusMixin
-from users.base_models import TimeStampedModel
+
 from django.utils.translation import gettext_lazy as _
 from model_utils.managers import InheritanceManager
 from django.db.models import Q
@@ -23,7 +23,7 @@ class ProcedureStateEnum(models.TextChoices):
     FINALIZADO = "FINALIZADO", _("Finalizado")
 
 
-class Procedure(TimeStampedModel, FollowNumberMixin):
+class Procedure(FollowNumberMixin):
     """
     Modelo base abstracto mejorado para todos los tipos de trámites.
 
@@ -68,6 +68,9 @@ class Procedure(TimeStampedModel, FollowNumberMixin):
         verbose_name=_("Fecha límite"),
         help_text=_("Fecha límite para completar el trámite"),
     )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     # Manager personalizado
     objects = InheritanceManager()
