@@ -1,5 +1,6 @@
 from .models import (
     Tramite,
+    SecretaryDocProcedure
     )
 from django import forms
 
@@ -7,43 +8,83 @@ from django import forms
 class Pregrado_Nacional_Form(forms.ModelForm):
     
     class Meta:
-        model = Tramite
-        fields = {
-            'nombre', 
-            'apellidos',
-            'ci',
+        model = SecretaryDocProcedure
+        fields = [
+            'full_name',
+            'id_card',
             'email',
-            'telefono',
-            'organismo',
-            'motivo',
-            'funcionario', 
-            'year',    
-            'tomo',
+            'phone',
+            'career',
+            'year',
+            'document_type',
+            'study_type',
+            'visibility_type',
+            'registry_volume',
             'folio',
-            'numero',
-            'carrera',
-            'tipo_pren',
-            'tipo_estudio',
-            'uso',
-        }
+            'registry_number',
+            'academic_program',
+            'interest'
+        ]
         widgets = {
-            'nombre': forms.TextInput(attrs={'type':'text','name':'nombre','id':'name','class':'form-control', 'placeholder':'Introduzca su nombre'}),
-            'apellidos': forms.TextInput(attrs={'type':'text','name':'apellidos','id':'lastName','class':'form-control','placeholder':'Introduzca sus apellidos'}),
-            'ci': forms.NumberInput(attrs={'type':'text','name':'ci','id':'ci','class':'form-control','placeholder':'Introduzca su carnet de identidad'}),
-            'email': forms.EmailInput(attrs={'type':'email','name':'email','id':'email','class':'form-control','placeholder':'Introduzca correo electrónico'}),
-            'telefono': forms.NumberInput(attrs={'type':'tel','name':'telefono','id':'tel','class':'form-control', 'placeholder':'Introduzca su número de móvil'}),
-            'organismo': forms.TextInput(attrs={'type':'text','name':'organismo','id':'organismo','class':'form-control', 'placeholder':'Introduzca el organismo'}),
-            'motivo': forms.Textarea(attrs={'type':'text','name':'motivo','id':'motivo','class':'form-control', 'placeholder':'Introduzca el motivo de su trámite'}),
-            'funcionario': forms.TextInput(attrs={'type':'text','name':'funcionario','id':'funcionario','class':'form-control','placeholder':'Introduzca el funcionario'}),
-            'year': forms.TextInput(attrs={'type':'text','name':'year','id':'year','class':'form-control', 'placeholder':'Introduzca su año de graduado'}),
-            'tomo': forms.TextInput(attrs={'type':'text','name':'tomo','id':'tomo','class':'form-control','placeholder':'Introduzca el tomo'}),
-            'folio': forms.TextInput(attrs={'type':'text','name':'folio','id':'folio','class':'form-control','placeholder':'Introduzca el folio'}),
-            'numero': forms.TextInput(attrs={'type':'text','name':'numero','id':'numero','class':'form-control', 'placeholder':'Introduzca el número'}),
-            'carrera': forms.TextInput(attrs={'name':'carrera','id':'carrera','class':'form-control', 'placeholder':'Introduzca su carrera'}),
-            'tipo_pren': forms.Select(attrs={'type':'text','name':'tipo','id':'tipo','class':'form-control', 'value':'ts' , 'placeholder':'Seleccione el  trámite'}),
-           
-            'tipo_estudio': forms.Select(attrs={'name':'tipoestudio','id':'tipoestudio','class':'form-control'}),
-            'uso': forms.Select(attrs={'name':'uso','id':'uso','class':'form-control'}),  
+            'full_name': forms.TextInput(attrs={
+                'type': 'text',
+                'class': 'form-control',
+                'placeholder': 'Nombre completo del solicitante'
+            }),
+            'id_card': forms.TextInput(attrs={
+                'type': 'text',
+                'class': 'form-control',
+                'placeholder': 'Número de carné de identidad'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Correo electrónico'
+            }),
+            'phone': forms.TextInput(attrs={
+                'type': 'tel',
+                'class': 'form-control',
+                'placeholder': 'Teléfono de contacto'
+            }),
+            'career': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Carrera o programa académico'
+            }),
+            'year': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Año de estudio'
+            }),
+            'document_type': forms.Select(attrs={
+                'class': 'form-control',
+                'placeholder': 'Tipo de documento'
+            }),
+            'study_type': forms.Select(attrs={
+                'class': 'form-control',
+                'placeholder': 'Tipo de estudio'
+            }),
+            'visibility_type': forms.Select(attrs={
+                'class': 'form-control',
+                'placeholder': 'Visibilidad'
+            }),
+            'registry_volume': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Tomo del registro'
+            }),
+            'folio': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Folio del registro'
+            }),
+            'registry_number': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Número del registro'
+            }),
+            'academic_program': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Programa académico'
+            }),
+            'interest': forms.Select(attrs={
+                'class': 'form-control',
+                'placeholder': 'Tipo de interés'
+            })
         }
 
 
@@ -51,37 +92,109 @@ class Pregrado_Nacional_Form(forms.ModelForm):
 class Pregrado_Nacional_Legalizacion_Form(forms.ModelForm):
     
     class Meta:
-        model = Tramite
-        fields = ('nombre', 'apellidos', 'ci', 'email', 'telefono','organismo', 'motivo', 'funcionario', 'carrera', 'year', 'tomo', 'folio', 'numero', 'tipo_estudio', 'uso', 'archivo',)
+        model = SecretaryDocProcedure
+        fields = [
+            'full_name',
+            'id_card',
+            'email',
+            'phone',
+            'career',
+            'year',
+            'document_type',
+            'study_type',
+            'visibility_type',
+            'registry_volume',
+            'folio',
+            'registry_number',
+            'academic_program',
+            'interest',
+            'document_file'
+        ]
         widgets = {
-            'nombre': forms.TextInput(attrs={'type':'text','name':'nombre','id':'name','class':'form-control', 'placeholder':'Introduzca su nombre','required': 'True'}),
-            'apellidos': forms.TextInput(attrs={'type':'text','name':'apellidos','id':'lastName','class':'form-control','placeholder':'Introduzca sus apellidos','required': 'True'}),
-            'ci': forms.NumberInput(attrs={'type':'text','name':'ci','id':'ci','class':'form-control','placeholder':'Introduzca su carnet de identidad','required': 'True'}),
-            'email': forms.EmailInput(attrs={'type':'email','name':'email','id':'email','class':'form-control','placeholder':'Introduzca correo electrónico','required': 'True'}),
-            'telefono': forms.NumberInput(attrs={'type':'tel','name':'telefono','id':'tel','class':'form-control', 'placeholder':'Introduzca su número de móvil','required': 'True'}),
-            'organismo': forms.TextInput(attrs={'type':'text','name':'organismo','id':'organismo','class':'form-control', 'placeholder':'Introduzca el organismo','required': 'True'}),
-            'motivo': forms.Textarea(attrs={'type':'text','name':'motivo','id':'motivo','class':'form-control', 'placeholder':'Introduzca el motivo de su tramite','required': 'True'}),
-            'funcionario': forms.TextInput(attrs={'type':'text','name':'funcionario','id':'funcionario','class':'form-control','placeholder':'Introduzca el funcionario','required': 'True'}),
-            'carrera': forms.TextInput(attrs={'name':'carrera','id':'carrera','class':'form-control', 'placeholder':'Introduzca su carrera','required': 'True'}),
-            'year': forms.TextInput(attrs={'type':'text','name':'year','id':'year','class':'form-control', 'placeholder':'Introduzca su año de graduado' ,'required': 'True'}),
-            'tomo': forms.TextInput(attrs={'type':'text','name':'tomo','id':'tomo','class':'form-control','placeholder':'Introduzca el tomo'}),
-            'folio': forms.TextInput(attrs={'type':'text','name':'folio','id':'folio','class':'form-control','placeholder':'Introduzca el folio'}),
-            'numero': forms.TextInput(attrs={'type':'text','name':'numero','id':'numero','class':'form-control', 'placeholder':'Introduzca el número'}),
-            'tipo_estudio': forms.Select(attrs={'name':'tipoestudio','id':'tipoestudio','class':'form-control','required': 'True'}),
-            'uso': forms.Select(attrs={'name':'uso','id':'uso','class':'form-control'}),  
-            'archivo': forms.FileInput(attrs={'accept': '.pdf','class':'form-control', 'name':'archivo', 'value':'archivo','id':'arhivo','required': 'True'}),
-            #'legalizacion': forms.forms.TextInput(attrs={'readonly': 'readonly',' type':'text','name':'legalizacion','id':'legalizacion','class':'form-control','required': 'True'})  
+            'full_name': forms.TextInput(attrs={
+                'type': 'text',
+                'class': 'form-control',
+                'placeholder': 'Nombre completo del solicitante',
+                'required': 'True'
+            }),
+            'id_card': forms.TextInput(attrs={
+                'type': 'text',
+                'class': 'form-control',
+                'placeholder': 'Número de carné de identidad',
+                'required': 'True'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Correo electrónico',
+                'required': 'True'
+            }),
+            'phone': forms.TextInput(attrs={
+                'type': 'tel',
+                'class': 'form-control',
+                'placeholder': 'Teléfono de contacto',
+                'required': 'True'
+            }),
+            'career': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Carrera o programa académico',
+                'required': 'True'
+            }),
+            'year': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Año de estudio',
+                'required': 'True'
+            }),
+            'document_type': forms.Select(attrs={
+                'class': 'form-control',
+                'placeholder': 'Tipo de documento',
+                'required': 'True'
+            }),
+            'study_type': forms.Select(attrs={
+                'class': 'form-control',
+                'placeholder': 'Tipo de estudio',
+                'required': 'True'
+            }),
+            'visibility_type': forms.Select(attrs={
+                'class': 'form-control',
+                'placeholder': 'Visibilidad',
+                'required': 'True'
+            }),
+            'registry_volume': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Tomo del registro'
+            }),
+            'folio': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Folio del registro'
+            }),
+            'registry_number': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Número del registro'
+            }),
+            'academic_program': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Programa académico',
+                'required': 'True'
+            }),
+            'interest': forms.Select(attrs={
+                'class': 'form-control',
+                'placeholder': 'Tipo de interés',
+                'required': 'True'
+            }),
+            'document_file': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': '.pdf',
+                'required': 'True'
+            })
         }
 
-
-    def clean_archivo(self):
-        archivo = self.cleaned_data.get('archivo')
-        if not archivo:
+    def clean_document_file(self):
+        document_file = self.cleaned_data.get('document_file')
+        if not document_file:
             raise forms.ValidationError("Este campo es requerido.")
-        elif not str(archivo).endswith('.pdf'):
+        elif not str(document_file).endswith('.pdf'):
             raise forms.ValidationError("Solo se aceptan archivos PDF.")
-        return archivo
-    
+        return document_file
 
 
 # Pregrado Internacional Tramites Generales
@@ -89,133 +202,252 @@ class Pregrado_Nacional_Legalizacion_Form(forms.ModelForm):
 class Pregrado_Internacional_Form(forms.ModelForm):
     
     class Meta:
-        model = Tramite
-        fields = {
-            'nombre', 
-            'apellidos',
-            'ci',
+        model = SecretaryDocProcedure
+        fields = [
+            'full_name',
+            'id_card',
             'email',
-            'telefono',
-            'organismo',
-            'motivo',
-            'funcionario', 
-            'year',    
-            'tomo',
+            'phone',
+            'career',
+            'year',
+            'document_type',
+            'study_type',
+            'visibility_type',
+            'registry_volume',
             'folio',
-            'numero',
-            'carrera',
-            'tipo_prei',
-            'tipo_estudio',
-            'uso_i',
-            'organismo_op',
-            'intereses',
-        }
+            'registry_number',
+            'academic_program',
+            'interest',
+            'document_file'
+        ]
         
         widgets = {
-            'nombre': forms.TextInput(attrs={'type':'text','name':'nombre','id':'name','class':'form-control', 'placeholder':'Introduzca su nombre'}),
-            'apellidos': forms.TextInput(attrs={'type':'text','name':'apellidos','id':'lastName','class':'form-control','placeholder':'Introduzca sus apellidos'}),
-            'ci': forms.NumberInput(attrs={'type':'text','name':'ci','id':'ci','class':'form-control','placeholder':'Introduzca su carnet de identidad'}),
-            'email': forms.EmailInput(attrs={'type':'email','name':'email','id':'email','class':'form-control','placeholder':'Introduzca correo electrónico'}),
-            'telefono': forms.NumberInput(attrs={'type':'tel','name':'telefono','id':'tel','class':'form-control', 'placeholder':'Introduzca su número de móvil'}),
-            'organismo': forms.TextInput(attrs={'type':'text','name':'organismo','id':'organismo','class':'form-control', 'placeholder':'Introduzca el organismo'}),
-            'motivo': forms.Textarea(attrs={'type':'text','name':'motivo','id':'motivo','class':'form-control', 'placeholder':'Introduzca el motivo de su trámite'}),
-            'funcionario': forms.TextInput(attrs={'type':'text','name':'funcionario','id':'funcionario','class':'form-control','placeholder':'Introduzca el funcionario'}),
-            'carrera': forms.TextInput(attrs={'name':'carrera','id':'carrera','class':'form-control', 'placeholder':'Introduzca su carrera','required': 'True'}),
-            'year': forms.TextInput(attrs={'type':'text','name':'year','id':'year','class':'form-control', 'placeholder':'Introduzca su año de graduado' ,'required': 'True'}),
-            'tomo': forms.TextInput(attrs={'type':'text','name':'tomo','id':'tomo','class':'form-control','placeholder':'Introduzca el tomo'}),
-            'folio': forms.TextInput(attrs={'type':'text','name':'folio','id':'folio','class':'form-control','placeholder':'Introduzca el folio'}),
-            'numero': forms.TextInput(attrs={'type':'text','name':'numero','id':'numero','class':'form-control', 'placeholder':'Introduzca el número'}),
-            'tipo_prei': forms.Select(attrs={'name':'tipo','id':'tipo','class':'form-control', 'value':'ts' , 'placeholder':'Seleccione el  trámite'}),
-           
-            'tipo_estudio': forms.Select(attrs={'name':'tipoestudio','id':'tipoestudio','class':'form-control'}),
-            'uso_i': forms.Select(attrs={'name':'uso','id':'uso','class':'form-control'}),  
-
-           
-            'organismo_op':forms.Select(attrs={'name':'organismo_op','id':'organismo_op','class':'form-control'}),
-            'intereses':forms.RadioSelect(attrs={ 'value':'Estatal', 'type':'radio','name':'intereses','id':'intereses','class':'form-check-input'}),
+            'full_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Nombre completo del solicitante',
+                'required': 'True'
+            }),
+            'id_card': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Número de carné de identidad',
+                'required': 'True',
+                'maxlength': '15'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Correo electrónico',
+                'required': 'True'
+            }),
+            'phone': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Teléfono de contacto',
+                'maxlength': '20',
+                'required': 'True'
+            }),
+            'career': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Carrera o programa académico',
+                'maxlength': '150',
+                'required': 'True'
+            }),
+            'year': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Año de estudio',
+                'maxlength': '10',
+                'required': 'True'
+            }),
+            'document_type': forms.Select(attrs={
+                'class': 'form-control',
+                'placeholder': 'Tipo de documento',
+                'required': 'True'
+            }),
+            'study_type': forms.Select(attrs={
+                'class': 'form-control',
+                'placeholder': 'Tipo de estudio',
+                'required': 'True',
+                'choices': 'STUDY_TYPE_CHOICES'
+            }),
+            'visibility_type': forms.Select(attrs={
+                'class': 'form-control',
+                'placeholder': 'Visibilidad',
+                'required': 'True',
+                'choices': 'STUDY_VISIBILITY_CHOICES'
+            }),
+            'registry_volume': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Tomo del registro',
+                'maxlength': '10'
+            }),
+            'folio': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Folio del registro',
+                'maxlength': '10'
+            }),
+            'registry_number': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Número del registro',
+                'maxlength': '10'
+            }),
+            'academic_program': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Programa académico',
+                'maxlength': '250',
+                'required': 'True'
+            }),
+            'interest': forms.Select(attrs={
+                'class': 'form-control',
+                'placeholder': 'Tipo de interés',
+                'required': 'True',
+                'choices': 'INTEREST_CHOICES'
+            }),
+            'document_file': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': '.pdf',
+                'required': 'True'
+            })
         }
         
         def clean(self):
             cleaned_data = super().clean()
-            intereses = cleaned_data.get('intereses')
-
-            # Si se selecciona 'Particular', todos los campos son requeridos excepto 'organismo' y 'motivo'
-            if intereses == 'Particular':
-                for field in ['nombre', 'apellidos', 'ci', 'email', 'telefono', 'funcionario', 'year', 'tomo', 'folio', 'numero', 'carrera', 'tipo_prei', 'tipo_estudio', 'uso_i', 'organismo_op']:
-                    if not cleaned_data.get(field):
-                        self.add_error(field, f'Este campo es requerido para la opción Particular.')
-                    # Si se selecciona 'Estatal', todos los campos son requeridos excepto 'organismo_op'
-            elif intereses == 'Estatal':
-                for field in ['nombre', 'apellidos', 'ci', 'email', 'telefono', 'funcionario', 'year', 'tomo', 'folio', 'numero', 'carrera', 'tipo_prei', 'tipo_estudio', 'uso_i', 'organismo', 'motivo']:
-                    if not cleaned_data.get(field):
-                        self.add_error(field, f'Este campo es requerido para la opción Estatal.')
-            else:
-
-                return cleaned_data
+            interest = cleaned_data.get('interest')
             
+            # Validación adicional según el tipo de interés
+            if interest == 'NO_ESTATAL':
+                required_fields = [
+                    'full_name', 'id_card', 'email', 'phone', 'career', 'year',
+                    'document_type', 'study_type', 'visibility_type', 'academic_program',
+                    'document_file'
+                ]
+                for field in required_fields:
+                    if not cleaned_data.get(field):
+                        self.add_error(field, 'Este campo es requerido para trámites particulares')
+            
+            return cleaned_data
+            
+    def clean_document_file(self):
+        document_file = self.cleaned_data.get('document_file')
+        if document_file and not str(document_file).lower().endswith('.pdf'):
+            raise forms.ValidationError("Solo se aceptan archivos PDF.")
+        return document_file
+
 
 class Pregrado_Internacional_Legalizacion_Form(forms.ModelForm):
     
     class Meta:
-        model = Tramite
-        fields = {
-            'nombre', 
-            'apellidos',
-            'ci',
+        model = SecretaryDocProcedure
+        fields = [
+            'full_name',
+            'id_card',
             'email',
-            'telefono',
-            'organismo',
-            'motivo',
-            'funcionario', 
-            'year',    
-            'tomo',
+            'phone',
+            'career',
+            'year',
+            'document_type',
+            'study_type',
+            'visibility_type',
+            'registry_volume',
             'folio',
-            'numero',
-            'carrera',
-            'archivo',
-            'tipo_estudio',
-            'uso_i',
-            'organismo_op',
-            'intereses',
-        }
+            'registry_number',
+            'academic_program',
+            'interest',
+            'document_file'
+        ]
         
         widgets = {
-            'nombre': forms.TextInput(attrs={'type':'text','name':'nombre','id':'name','class':'form-control', 'placeholder':'Introduzca su nombre'}),
-            'apellidos': forms.TextInput(attrs={'type':'text','name':'apellidos','id':'lastName','class':'form-control','placeholder':'Introduzca sus apellidos'}),
-            'ci': forms.NumberInput(attrs={'type':'text','name':'ci','id':'ci','class':'form-control','placeholder':'Introduzca su carnet de identidad'}),
-            'email': forms.EmailInput(attrs={'type':'email','name':'email','id':'email','class':'form-control','placeholder':'Introduzca correo electrónico'}),
-            'telefono': forms.NumberInput(attrs={'type':'tel','name':'telefono','id':'tel','class':'form-control', 'placeholder':'Introduzca su número de móvil'}),
-            'organismo': forms.TextInput(attrs={'type':'text','name':'organismo','id':'organismo','class':'form-control', 'placeholder':'Introduzca el organismo'}),
-            'motivo': forms.Textarea(attrs={'type':'text','name':'motivo','id':'motivo','class':'form-control', 'placeholder':'Introduzca el motivo de su trámite'}),
-            'funcionario': forms.TextInput(attrs={'type':'text','name':'funcionario','id':'funcionario','class':'form-control','placeholder':'Introduzca el funcionario'}),
-            'carrera': forms.TextInput(attrs={'name':'carrera','id':'carrera','class':'form-control', 'placeholder':'Introduzca su carrera','required': 'True'}),
-            'year': forms.TextInput(attrs={'type':'text','name':'year','id':'year','class':'form-control', 'placeholder':'Introduzca su año de graduado' ,'required': 'True'}),
-            'tomo': forms.TextInput(attrs={'type':'text','name':'tomo','id':'tomo','class':'form-control','placeholder':'Introduzca el tomo'}),
-            'folio': forms.TextInput(attrs={'type':'text','name':'folio','id':'folio','class':'form-control','placeholder':'Introduzca el folio'}),
-            'numero': forms.TextInput(attrs={'type':'text','name':'numero','id':'numero','class':'form-control', 'placeholder':'Introduzca el número'}),
-            'archivo': forms.FileInput(attrs={'accept': '.pdf','class':'form-control', 'name':'archivo', 'value':'archivo','id':'arhivo','required': 'True'}),
-            'tipo_estudio': forms.Select(attrs={'name':'tipoestudio','id':'tipoestudio','class':'form-control'}),
-            'uso_i': forms.Select(attrs={'name':'uso','id':'uso','class':'form-control'}),  
-
-           
-            'organismo_op':forms.Select(attrs={'name':'organismo_op','id':'organismo_op','class':'form-control'}),
-            'intereses':forms.RadioSelect(attrs={ 'value':'Estatal', 'type':'radio','name':'intereses','id':'intereses','class':'form-check-input'}),
+            'full_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Nombre completo del solicitante',
+                'required': 'True',
+                'maxlength': '300'
+            }),
+            'id_card': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Número de carné de identidad',
+                'required': 'True',
+                'maxlength': '15'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Correo electrónico',
+                'required': 'True'
+            }),
+            'phone': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Teléfono de contacto',
+                'required': 'True',
+                'maxlength': '20'
+            }),
+            'career': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Carrera o programa académico',
+                'required': 'True',
+                'maxlength': '150'
+            }),
+            'year': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Año de estudio',
+                'required': 'True',
+                'maxlength': '10'
+            }),
+            'document_type': forms.Select(attrs={
+                'class': 'form-control',
+                'placeholder': 'Tipo de documento',
+                'required': 'True',
+                'maxlength': '100'
+            }),
+            'study_type': forms.Select(attrs={
+                'class': 'form-control',
+                'placeholder': 'Tipo de estudio',
+                'required': 'True',
+                'choices': 'STUDY_TYPE_CHOICES'
+            }),
+            'visibility_type': forms.Select(attrs={
+                'class': 'form-control',
+                'placeholder': 'Visibilidad',
+                'required': 'True',
+                'choices': 'STUDY_VISIBILITY_CHOICES'
+            }),
+            'registry_volume': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Tomo del registro',
+                'maxlength': '10'
+            }),
+            'folio': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Folio del registro',
+                'maxlength': '10'
+            }),
+            'registry_number': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Número del registro',
+                'maxlength': '10'
+            }),
+            'academic_program': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Programa académico',
+                'required': 'True',
+                'maxlength': '250'
+            }),
+            'interest': forms.Select(attrs={
+                'class': 'form-control',
+                'placeholder': 'Tipo de interés',
+                'required': 'True',
+                'choices': 'INTEREST_CHOICES'
+            }),
+            'document_file': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': '.pdf',
+                'required': 'True'
+            })
         }
         
         def clean(self):
             cleaned_data = super().clean()
-            intereses = cleaned_data.get('intereses')
-
-            # Si se selecciona 'Particular', todos los campos son requeridos excepto 'organismo' y 'motivo'
-            if intereses == 'Particular':
-                for field in ['nombre', 'apellidos', 'ci', 'email', 'telefono', 'funcionario', 'year', 'tomo', 'folio', 'numero', 'carrera', 'tipo_prei', 'tipo_estudio', 'uso_i', 'organismo_op']:
-                    if not cleaned_data.get(field):
-                        self.add_error(field, f'Este campo es requerido para la opción Particular.')
-                    # Si se selecciona 'Estatal', todos los campos son requeridos excepto 'organismo_op'
-            elif intereses == 'Estatal':
-                for field in ['nombre', 'apellidos', 'ci', 'email', 'telefono', 'funcionario', 'year', 'tomo', 'folio', 'numero', 'carrera', 'tipo_prei', 'tipo_estudio', 'uso_i', 'organismo', 'motivo']:
-                    if not cleaned_data.get(field):
-                        self.add_error(field, f'Este campo es requerido para la opción Estatal.')
-            else:
-
-                return cleaned_data
+            # Validación adicional según sea necesario
+            return cleaned_data
+            
+    def clean_document_file(self):
+        document_file = self.cleaned_data.get('document_file')
+        if document_file and not str(document_file).lower().endswith('.pdf'):
+            raise forms.ValidationError("Solo se aceptan archivos PDF.")
+        return document_file

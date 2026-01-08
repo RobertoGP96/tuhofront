@@ -1,10 +1,14 @@
 from django.db.models.signals import post_save, pre_save, pre_delete
 from django.dispatch import receiver
 from django.core.exceptions import ValidationError
-from .tramite import Tramite
-from .seguimiento import SeguimientoTramite
-from .documento import Documento
 from django.utils import timezone
+
+# Import models using the correct paths
+from .models import (
+    SecretaryDocProcedure as Tramite,
+    SeguimientoTramite,
+    Documento
+)
 
 @receiver(pre_save, sender=Tramite)
 def tramite_pre_save(sender, instance, **kwargs):

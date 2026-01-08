@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
-from .tramite import Tramite
+
+# Import the model using the correct name and path
+from .procedure import SecretaryDocProcedure as Tramite
 
 class SeguimientoTramite(models.Model):
     """

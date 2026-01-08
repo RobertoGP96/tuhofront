@@ -1,7 +1,9 @@
 from django.db import models
-from .tramite import Tramite
 from django.conf import settings
 import os
+
+# Import the model using the correct name and path
+from .procedure import SecretaryDocProcedure as Tramite
 
 def documento_upload_path(instance, filename):
     """

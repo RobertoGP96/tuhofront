@@ -2,8 +2,9 @@ from rest_framework import serializers
 from .models import (
     Guest, FeedingDays, FeedingProcedure, AccommodationProcedure,
     TransportProcedureType, TransportProcedure, MaintanceProcedureType,
-    MaintancePriority, MaintanceProcedure, Department, Area, Note
+    MaintancePriority, MaintanceProcedure
 )
+from apps.platform.models import Department, Area, Note
 
 class GuestSerializer(serializers.ModelSerializer):
     class Meta:

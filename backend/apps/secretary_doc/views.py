@@ -1,245 +1,234 @@
-from .decorators import administracion_required, gestores_tramites_required,all_required 
-from .correo import enviar_correo_cambio_estado
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from apps.platform.forms import UserInfoForm
-from django.db.models.functions import TruncMonth
+from rest_framework import viewsets, status, permissions
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from django.http.request import HttpRequest
+from django.contrib.auth.decorators import login_required
+from django.db.models import Count, Q
+from django.forms.models import model_to_dict
 from django.http import JsonResponse
-from django.shortcuts import redirect
-from apps.platform.models import User as Usuario
-from django.utils import translation
-from django.contrib import messages
-from django.shortcuts import render
-from django.db.models import Count
-from .choices import Estado
-from.models import Tramite, Usuario
-from datetime import datetime
-import calendar
+from django.shortcuts import render, redirect
+from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.views.generic import DetailView
+from datetime import datetime, timedelta
 import json
 
-from django.views.generic import (
-    DetailView,
-    ListView,
-    )
-from django.forms.models import model_to_dict
+# Local imports
+from apps.platform.models.procedure import ProcedureStateEnum
+from apps.secretary_doc.models import Tramite
+from .models import SecretaryDocProcedure, SeguimientoTramite, Documento
+from .serializers import (
+    SecretaryDocProcedureSerializer,
+    SecretaryDocProcedureCreateSerializer,
+    SecretaryDocProcedureDetailSerializer,
+    SeguimientoTramiteSerializer,
+    DocumentoSerializer
+)
+from .decorators import administracion_required, gestores_tramites_required, all_required
+from .permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
 
+# Get the user model
 User = get_user_model()
+Usuario = User  # For backward compatibility
 
+class TramiteViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint que permite ver y editar los trámites.
+    """
+    queryset = SecretaryDocProcedure.objects.all().order_by('-created_at')
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
-# Create your views here
-def Main(request):
-    usuarios_count =  Usuario.objects.all().count()
-    cantidad_tramites = Tramite.objects.all().count()
-    completados = Tramite.objects.filter(estado='Completado').count()
-    data = {
-        'cantidad_tramites' : cantidad_tramites,
-        'usuarios_count': usuarios_count,
-        'completado': completados,
-    }
-    return JsonResponse({'success': True, 'data': data})
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return SecretaryDocProcedureCreateSerializer
+        elif self.action == 'retrieve':
+            return SecretaryDocProcedureDetailSerializer
+        return SecretaryDocProcedureSerializer
 
-@method_decorator([login_required, administracion_required ], name='dispatch')
-class Tramites_All(ListView):
-    model = Tramite
-    context_object_name = 'tramites'
-    def get(self, request, *args, **kwargs):
-        qs = list(self.get_queryset().values())
-        return JsonResponse({'success': True, 'tramites': qs})
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user, updated_by=self.request.user)
 
-@login_required
-@administracion_required
-def Tramites_Delete_Tramites_All(request,id):
-    tramite = Tramite.objects.get(id=id)
-    tramite.delete()
-    return JsonResponse({'success': True, 'message': 'Trámite eliminado', 'id': id})
+    def perform_update(self, serializer):
+        serializer.save(updated_by=self.request.user)
 
-
-# Administracion
-@login_required
-@administracion_required
-def Cambiar_Gestor(request, id): 
-    if request.method == 'POST':
-        try:
-            usuario = Usuario.objects.get(id=id)
-        except Usuario.DoesNotExist:
-            return JsonResponse({'success': False, 'message': 'Usuario no encontrado'}, status=404)
-
-        allowed_groups = ["Gestores de Trámites Posgrado", "Gestores de Trámites Pregrado", "Gestor General SD","Usuario"]
-        group_names = list(Group.objects.filter(name__in=allowed_groups).values_list('name', flat=True))
-        selected_group = request.POST['role']
-
-        if selected_group in group_names:
-            try:
-                group = Group.objects.get(name=selected_group)
-            except Group.DoesNotExist:
-                return render(request, "plataforma/Atención a la Poblacion.html", {'response': 'incorrecto', 'message': 'Grupo no encontrado'})
-
-            usuario.groups.clear()
-            usuario.groups.add(group)
-            return JsonResponse({'success': True, 'message': 'Grupo asignado', 'user_id': usuario.id})
-        else:
-           return JsonResponse({'success': False, 'message': 'Rol inválido'}, status=400)
-    else:
-        allowed_groups = ["Gestores de Trámites Posgrado", "Gestores de Trámites Pregrado", "Gestor General SD", "Usuario"]
-        group_names = list(Group.objects.filter(name__in=allowed_groups).values_list('name', flat=True))
-        return JsonResponse({'success': True, 'group_names': group_names})
-
-
-@login_required
-@administracion_required
-def Gestores(request):
-    usuarios = list(Usuario.objects.all().values('id','username','email','first_name','last_name'))
-    return JsonResponse({'success': True, 'usuarios': usuarios})
-
-
-def obtener_usuarios_por_mes():
-    with translation.override('es'):
-        usuarios_por_mes = Usuario.objects.annotate(mes_creacion=TruncMonth('date_joined')).values('mes_creacion').annotate(cantidad=Count('id'))
-        datos_usuarios = {dato['mes_creacion'].strftime('%B %Y'): dato['cantidad'] for dato in usuarios_por_mes}
+    @action(detail=True, methods=['post'])
+    def cambiar_estado(self, request, pk=None):
+        tramite = self.get_object()
+        nuevo_estado = request.data.get('estado')
         
-        # Generar una lista completa de meses para el año actual
-        meses = [datetime.now().replace(month=i, day=1) for i in range(1, 13)]
-        categorias = [mes.strftime('%B %Y') for mes in meses]
+        if not nuevo_estado:
+            return Response(
+                {'error': 'El campo estado es requerido'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
-        # Llenar los datos de usuarios con ceros para los meses sin información
-        series_data = [{'name': mes.strftime('%B %Y'), 'y': datos_usuarios.get(mes.strftime('%B %Y'), 0)} for mes in meses]
+        tramite.state = nuevo_estado
+        tramite.updated_by = request.user
+        tramite.save()
         
-    return {'categorias': categorias, 'series_data': series_data}
+        # Crear un nuevo seguimiento
+        SeguimientoTramite.objects.create(
+            tramite=tramite,
+            estado=nuevo_estado,
+            observaciones=f'Estado cambiado a {nuevo_estado}',
+            usuario=request.user
+        )
+        
+        return Response({'status': 'Estado actualizado'})
+
+    @action(detail=True, methods=['post'])
+    def subir_documento(self, request, pk=None):
+        tramite = self.get_object()
+        archivo = request.FILES.get('archivo')
+        
+        if not archivo:
+            return Response(
+                {'error': 'No se ha proporcionado ningún archivo'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        documento = Documento.objects.create(
+            tramite=tramite,
+            nombre=archivo.name,
+            archivo=archivo,
+            subido_por=request.user
+        )
+        
+        return Response(
+            {'documento_id': documento.id, 'url': documento.archivo.url},
+            status=status.HTTP_201_CREATED
+        )
 
 
-@login_required
-@all_required
-def Usuarios_Sd(request):
-    datos_grafica = obtener_usuarios_por_mes()
-    usuarios = list(Usuario.objects.all().values('id','username','email','date_joined'))
-    return JsonResponse({'success': True, 'usuarios': usuarios, 'categorias': datos_grafica['categorias'], 'data_usuarios_por_mes': datos_grafica['series_data']})
-
-@login_required
-@all_required
-def Tramites_Completados(request):
-    tramites_completados = Tramite.objects.filter(estado='Completado')
-
-    # Contamos los trámites completados para cada categoría
-    pregrado_nacional_completados_count = tramites_completados.filter(tipo_estudio='Pregrado', uso='Nacional').count()
-    pregrado_internacional_completados_count = tramites_completados.filter(tipo_estudio='Pregrado', uso_i='Internacional').count()
-    posgrado_nacional_completados_count = tramites_completados.filter(tipo_est='Posgrado', uso='Nacional').count()
-    posgrado_internacional_completados_count = tramites_completados.filter(tipo_est='Posgrado', uso_i='Internacional').count()
-
-    # Preparamos los datos para la gráfica
-    data_grafica_completados = [
-        {'categoria': 'Pregrado Nacional Completados', 'cantidad': pregrado_nacional_completados_count},
-        {'categoria': 'Pregrado Internacional Completados', 'cantidad': pregrado_internacional_completados_count},
-        {'categoria': 'Posgrado Nacional Completados', 'cantidad': posgrado_nacional_completados_count},
-        {'categoria': 'Posgrado Internacional Completados', 'cantidad': posgrado_internacional_completados_count}
-    ]
+class EstadisticasView(APIView):
+    """
+    Vista para obtener estadísticas de trámites.
+    """
+    permission_classes = [permissions.IsAuthenticated]
     
-    data_json_completados = json.dumps(data_grafica_completados)
+    def get(self, request, format=None):
+        # Conteo total de trámites
+        total_tramites = SecretaryDocProcedure.objects.count()
+        
+        # Conteo por estado
+        por_estado = (
+            SecretaryDocProcedure.objects
+            .values('state')
+            .annotate(total=Count('id'))
+            .order_by('-total')
+        )
+        
+        # Conteo por tipo de estudio
+        por_tipo_estudio = (
+            SecretaryDocProcedure.objects
+            .values('study_type')
+            .annotate(total=Count('id'))
+            .order_by('-total')
+        )
+        
+        # Trámites de los últimos 30 días
+        fecha_limite = timezone.now() - timedelta(days=30)
+        tramites_recientes = (
+            SecretaryDocProcedure.objects
+            .filter(created_at__gte=fecha_limite)
+            .count()
+        )
+        
+        return Response({
+            'total_tramites': total_tramites,
+            'por_estado': list(por_estado),
+            'por_tipo_estudio': list(por_tipo_estudio),
+            'tramites_ultimos_30_dias': tramites_recientes
+        })
 
-    total_tramites = Tramite.objects.all().count()
-    tramites_completadoos = Tramite.objects.filter(estado='Completado').count()
-    porcentaje_completados = (tramites_completadoos / total_tramites) * 100 if total_tramites else 0
-    data_grafica_porcent = [{
-        'name': 'Trámites Completados',
-        'y': porcentaje_completados
-    }, {
-        'name': 'Trámites Pendientes',
-        'y': 100 - porcentaje_completados
-    }]
+
+class SeguimientoViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint para gestionar los seguimientos de los trámites.
+    """
+    serializer_class = SeguimientoTramiteSerializer
+    permission_classes = [permissions.IsAuthenticated]
     
-    data_json_grafica = data_grafica_porcent
-    return JsonResponse({'success': True, 'tramites_completados_count': tramites_completados.count(), 'data_grafica_completados': data_grafica_completados, 'data_grafica_porcent': data_json_grafica})
-
-@login_required
-@all_required
-def Tramites_Espera(request):
-    tramites_espera = Tramite.objects.filter(estado='En Espera')
-
-    pregrado_nacional_espera_count = tramites_espera.filter(tipo_estudio='Pregrado', uso='Nacional').count()
-    pregrado_internacional_espera_count = tramites_espera.filter(tipo_estudio='Pregrado', uso_i='Internacional').count()
-    posgrado_nacional_espera_count = tramites_espera.filter(tipo_est='Posgrado', uso='Nacional').count()
-    posgrado_internacional_espera_count = tramites_espera.filter(tipo_est='Posgrado', uso_i='Internacional').count()
-
-    # Preparamos los datos para la gráfica
-    data_grafica_espera = [
-        {'categoria': 'Pregrado Nacional En Espera', 'cantidad': pregrado_nacional_espera_count},
-        {'categoria': 'Pregrado Internacional En Espera', 'cantidad': pregrado_internacional_espera_count},
-        {'categoria': 'Posgrado Nacional En Espera', 'cantidad': posgrado_nacional_espera_count},
-        {'categoria': 'Posgrado Internacional En Espera', 'cantidad': posgrado_internacional_espera_count}
-    ]
+    def get_queryset(self):
+        # Solo los seguimientos de trámites que el usuario puede ver
+        return SeguimientoTramite.objects.filter(
+            Q(tramite__created_by=self.request.user) | 
+            Q(usuario=self.request.user)
+        ).order_by('-fecha')
     
-    data_json_espera = json.dumps(data_grafica_espera)
+    def perform_create(self, serializer):
+        serializer.save(usuario=self.request.user)
 
-    total_tramites = Tramite.objects.all().count()
-    tramites_enespera = Tramite.objects.filter(estado='En Espera').count()
+
+class DocumentoViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint para gestionar los documentos de los trámites.
+    """
+    serializer_class = DocumentoSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
     
-    data_grafica_porcent = [
-        {
-            'name': 'Trámites en Espera',
-            'y': tramites_enespera,  # Usamos directamente la cantidad de trámites en espera
-            'color': '#66a8f3'  # Color para los trámites en espera
-        }, 
-        {
-            'name': 'Otros Estados de Trámites',
-            'y': total_tramites - tramites_enespera,  # La diferencia entre el total y los en espera para obtener el resto de trámites
-            'color': '#93ba22'  # Color para los trámites que no están en espera
+    def get_queryset(self):
+        # Solo los documentos de trámites que el usuario puede ver
+        return Documento.objects.filter(
+            Q(tramite__created_by=self.request.user) | 
+            Q(subido_por=self.request.user)
+        ).order_by('-fecha_subida')
+    
+    def perform_create(self, serializer):
+        serializer.save(subido_por=self.request.user)
+
+
+# Vistas para compatibilidad con el frontend existente
+class MainView(APIView):
+    """
+    Vista para la página principal con estadísticas básicas.
+    """
+    def get(self, request, format=None):
+        usuarios_count = User.objects.count()
+        cantidad_tramites = SecretaryDocProcedure.objects.count()
+        completados = SecretaryDocProcedure.objects.filter(state='Completado').count()
+        
+        posgrado_nacional = Tramite.objects.filter(tipo_est='Posgrado', uso='Nacional')
+        posgrado_internacional = Tramite.objects.filter(tipo_est='Posgrado', uso_i='Internacional')
+        pregrado_nacional = Tramite.objects.filter(tipo_est='Pregrado', uso='Nacional')
+        pregrado_internacional = Tramite.objects.filter(tipo_est='Pregrado', uso_i='Internacional')
+        
+        pregrado_nacional_count = pregrado_nacional.count()
+        pregrado_internacional_count = pregrado_internacional.count()
+        posgrado_nacional_count = posgrado_nacional.count()
+        posgrado_internacional_count = posgrado_internacional.count()
+        
+        data_grafica = [
+            {'categoria': 'Pregrado Nacional', 'cantidad': pregrado_nacional_count},
+            {'categoria': 'Pregrado Internacional', 'cantidad': pregrado_internacional_count},
+            {'categoria': 'Posgrado Nacional', 'cantidad': posgrado_nacional_count},
+            {'categoria': 'Posgrado Internacional', 'cantidad': posgrado_internacional_count}
+        ]
+        data_json = json.dumps(data_grafica)
+        
+        estados_tramites = Tramite.objects.values('estado').annotate(frecuencia=Count('estado'))
+        estados_validos = ProcedureStateEnum.values
+        estados_filtrados = {estado['estado']: estado['frecuencia'] for estado in estados_tramites if estado['estado'] in estados_validos}
+        data_grafica_estados = [{'nombre': estado, 'valor': frecuencia} for estado, frecuencia in estados_filtrados.items()]
+        data_json_estados = json.dumps(data_grafica_estados)
+        
+        completados = Tramite.objects.filter(estado='Completado').count()
+        espera = Tramite.objects.filter(estado='En Espera').count()
+        
+        context = {
+            'tramite_t': tramite_t,
+            'cantidad_tramites': cantidad_tramites,
+            'usuarios_count': usuarios_count,
+            'completado': completados,
+            'espera': espera,
+            'data_grafica': data_json,
+            'data_grafica_estados': data_json_estados,
         }
-    ]
-    data_json_grafica = data_grafica_porcent
-    return JsonResponse({'success': True, 'tramites_espera_count': tramites_espera.count(), 'data_grafica_espera': data_json_espera, 'data_grafica_porcent': data_json_grafica})
-  
-
-@login_required
-@all_required
-def Sitio_Administrativo(request):
-    usuarios_count =  Usuario.objects.all().count()
-    cantidad_tramites = Tramite.objects.all().count()
-    tramite_t =Tramite.objects.all() 
-
-    pregrado_nacional = Tramite.objects.filter(tipo_estudio='Pregrado', uso= 'Nacional') 
-    pregrado_internacional = Tramite.objects.filter(tipo_estudio='Pregrado', uso_i='Internacional') 
-    posgrado_nacional = Tramite.objects.filter(tipo_est='Posgrado', uso='Nacional')  
-    posgrado_internacional = Tramite.objects.filter(tipo_est='Posgrado', uso_i='Internacional') 
-    # Contamos los trámites para cada categoría
-    pregrado_nacional_count = pregrado_nacional.count()
-    pregrado_internacional_count = pregrado_internacional.count()
-    posgrado_nacional_count = posgrado_nacional.count()
-    posgrado_internacional_count = posgrado_internacional.count()
-    
-    
-    data_grafica = [
-        {'categoria': 'Pregrado Nacional', 'cantidad': pregrado_nacional_count},
-        {'categoria': 'Pregrado Internacional', 'cantidad': pregrado_internacional_count},
-        {'categoria': 'Posgrado Nacional', 'cantidad': posgrado_nacional_count},
-        {'categoria': 'Posgrado Internacional', 'cantidad': posgrado_internacional_count}
-    ]
-    # Convertimos los datos a JSON para pasarlos al template
-    data_json = json.dumps(data_grafica)
-
-    #Grafica Estados
-    estados_tramites = Tramite.objects.values('estado').annotate(frecuencia=Count('estado'))
-   
-    estados_validos = [item[0] for item in Estado]
-    # Filtra los resultados para incluir solo los estados válidos
-    estados_filtrados = {estado['estado']: estado['frecuencia'] for estado in estados_tramites if estado['estado'] in estados_validos}
-    data_grafica_estados = [{'nombre': estado, 'valor': frecuencia} for estado, frecuencia in estados_filtrados.items()]
-    data_json_estados = json.dumps(data_grafica_estados)
-    
-    completados = Tramite.objects.filter(estado='Completado').count()
-    espera = Tramite.objects.filter(estado='En Espera').count()
-    context ={
-        'tramite_t': tramite_t,
-        'cantidad_tramites' : cantidad_tramites,
-        'usuarios_count': usuarios_count,
-        'completado': completados,
-        'espera': espera,
-        'data_grafica': data_json,
-        'data_grafica_estados': data_json_estados,
-    }
-    # Devolver datos JSON
-    return JsonResponse({'success': True, 'context': context})
+        
+        # Devolver datos JSON
+        return JsonResponse({'success': True, 'context': context})
 
 @login_required
 @administracion_required
@@ -254,7 +243,7 @@ def Cambiar_Estado(request, id):
         except Exception as e:
             print(e)
             return JsonResponse({'success': False, 'message': 'Error cambiando estado'}, status=500)
-    estados = [e[0] for e in Estado]
+    estados = ProcedureStateEnum.values
     return JsonResponse({'success': True, 'estados': estados})
 
 @login_required
@@ -270,7 +259,7 @@ def Cambiar_Estado_Posgrado(request, id):
         except Exception as e:
             print(e)
             return JsonResponse({'success': False, 'message': 'Error cambiando estado'}, status=500)
-    estados = [e[0] for e in Estado]
+    estados = ProcedureStateEnum.values
     return JsonResponse({'success': True, 'estados': estados})
 
 
@@ -287,7 +276,7 @@ def Cambiar_Estado_Pregrado(request, id):
         except Exception as e:
             print(e)
             return JsonResponse({'success': False, 'message': 'Error cambiando estado'}, status=500)
-    estados = [e[0] for e in Estado]
+    estados = ProcedureStateEnum.values
     return JsonResponse({'success': True, 'estados': estados})
 
 @login_required

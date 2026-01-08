@@ -153,6 +153,7 @@ class Notificacion(TimeStampedModel, StatusMixin):
     objects = NotificationManager()
     
     class Meta:
+        app_label = 'notifications'
         verbose_name = _("Notificación")
         verbose_name_plural = _("Notificaciones")
         ordering = ['-created_at']

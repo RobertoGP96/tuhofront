@@ -11,7 +11,7 @@ from .views import (
     MaintanceProcedureListCreateView, MaintanceProcedureRetrieveUpdateDestroyView,
     get_all_procedures, get_procedure_stats, DepartmentListCreateView, 
     DepartmentRetrieveUpdateDestroyView, AreaListCreateView, AreaRetrieveUpdateDestroyView, 
-    NoteListCreateView, NoteRetrieveUpdateDestroyView, print_feeding_procedure_pdf, print_accommodation_procedure_pdf, print_transport_procedure_pdf, print_maintance_procedure_pdf
+    NoteListCreateView, NoteRetrieveUpdateDestroyView
 )
 
 urlpatterns = [
@@ -68,8 +68,8 @@ urlpatterns = [
     path('stats/', get_procedure_stats, name='get_procedure_stats'),
     
     # PDF
-    path('feeding-procedures/<int:pk>/pdf/', print_feeding_procedure_pdf, name='feeding_procedure_pdf'),
-    path('accommodation-procedures/<int:pk>/pdf/', print_accommodation_procedure_pdf, name='accommodation_procedure_pdf'),
-    path('transport-procedures/<int:pk>/pdf/', print_transport_procedure_pdf, name='transport_procedure_pdf'),
-    path('maintance-procedures/<int:pk>/pdf/', print_maintance_procedure_pdf, name='maintance_procedure_pdf'),
+    # path('feeding-procedures/<int:pk>/pdf/', print_feeding_procedure_pdf, name='feeding_procedure_pdf'),
+    # path('accommodation-procedures/<int:pk>/pdf/', print_accommodation_procedure_pdf, name='accommodation_procedure_pdf'),
+    # path('transport-procedures/<int:pk>/pdf/', print_transport_procedure_pdf, name='transport_procedure_pdf'),
+    # path('maintance-procedures/<int:pk>/pdf/', print_maintance_procedure_pdf, name='maintance_procedure_pdf'),
 ]

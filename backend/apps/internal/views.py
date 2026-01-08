@@ -1,13 +1,14 @@
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from django.template.loader import render_to_string
 from django.http import HttpResponse
-from weasyprint import HTML
+# from weasyprint import HTML
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
 from .models import (
     Guest, FeedingDays, FeedingProcedure, AccommodationProcedure,
     TransportProcedureType, TransportProcedure, MaintanceProcedureType,
-    MaintancePriority, MaintanceProcedure, Department, Area, Note
+    MaintancePriority, MaintanceProcedure
 )
+from apps.platform.models import Department, Area, Note
 from .serializers import (
     GuestSerializer, FeedingDaysSerializer, FeedingProcedureSerializer,
     AccommodationProcedureSerializer, TransportProcedureTypeSerializer,
@@ -382,38 +383,38 @@ def get_procedure_stats(request):
 
 # PDF
 
-def print_feeding_procedure_pdf(request, pk):
-    procedure = FeedingProcedure.objects.select_related('user', 'department', 'area').get(pk=pk)
-    html_string = render_to_string('feeding_procedure_pdf.html', {'procedure': procedure})
-    pdf = HTML(string=html_string).write_pdf()
-    response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = f'inline; filename="tramite_alimentacion_{pk}.pdf"'
-    return response
+# def print_feeding_procedure_pdf(request, pk):
+#     procedure = FeedingProcedure.objects.select_related('user', 'department', 'area').get(pk=pk)
+#     html_string = render_to_string('feeding_procedure_pdf.html', {'procedure': procedure})
+#     pdf = HTML(string=html_string).write_pdf()
+#     response = HttpResponse(pdf, content_type='application/pdf')
+#     response['Content-Disposition'] = f'inline; filename="tramite_alimentacion_{pk}.pdf"'
+#     return response
 
-def print_accommodation_procedure_pdf(request, pk):
-    procedure = AccommodationProcedure.objects.select_related('user', 'department', 'area').prefetch_related('guests', 'feeding_days').get(pk=pk)
-    html_string = render_to_string('accommodation_procedure_pdf.html', {'procedure': procedure})
-    pdf = HTML(string=html_string).write_pdf()
-    response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = f'inline; filename="tramite_hospedaje_{pk}.pdf"'
-    return response
+# def print_accommodation_procedure_pdf(request, pk):
+#     procedure = AccommodationProcedure.objects.select_related('user', 'department', 'area').prefetch_related('guests', 'feeding_days').get(pk=pk)
+#     html_string = render_to_string('accommodation_procedure_pdf.html', {'procedure': procedure})
+#     pdf = HTML(string=html_string).write_pdf()
+#     response = HttpResponse(pdf, content_type='application/pdf')
+#     response['Content-Disposition'] = f'inline; filename="tramite_hospedaje_{pk}.pdf"'
+#     return response
 
-def print_transport_procedure_pdf(request, pk):
-    procedure = TransportProcedure.objects.select_related(
-        'user', 'department', 'area', 'procedure_type'
-    ).get(pk=pk)
-    html_string = render_to_string('transport_procedure_pdf.html', {'procedure': procedure})
-    pdf = HTML(string=html_string).write_pdf()
-    response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = f'inline; filename="tramite_transporte_{pk}.pdf"'
-    return response
+# def print_transport_procedure_pdf(request, pk):
+#     procedure = TransportProcedure.objects.select_related(
+#         'user', 'department', 'area', 'procedure_type'
+#     ).get(pk=pk)
+#     html_string = render_to_string('transport_procedure_pdf.html', {'procedure': procedure})
+#     pdf = HTML(string=html_string).write_pdf()
+#     response = HttpResponse(pdf, content_type='application/pdf')
+#     response['Content-Disposition'] = f'inline; filename="tramite_transporte_{pk}.pdf"'
+#     return response
 
-def print_maintance_procedure_pdf(request, pk):
-    procedure = MaintanceProcedure.objects.select_related(
-        'user', 'department', 'area', 'procedure_type', 'priority'
-    ).get(pk=pk)
-    html_string = render_to_string('maintance_procedure_pdf.html', {'procedure': procedure, 'request': request})
-    pdf = HTML(string=html_string, base_url=request.build_absolute_uri('/')).write_pdf()
-    response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = f'inline; filename="tramite_mantenimiento_{pk}.pdf"'
-    return response
+# def print_maintance_procedure_pdf(request, pk):
+#     procedure = MaintanceProcedure.objects.select_related(
+#         'user', 'department', 'area', 'procedure_type', 'priority'
+#     ).get(pk=pk)
+#     html_string = render_to_string('maintance_procedure_pdf.html', {'procedure': procedure, 'request': request})
+#     pdf = HTML(string=html_string, base_url=request.build_absolute_uri('/')).write_pdf()
+#     response = HttpResponse(pdf, content_type='application/pdf')
+#     response['Content-Disposition'] = f'inline; filename="tramite_mantenimiento_{pk}.pdf"'
+#     return response

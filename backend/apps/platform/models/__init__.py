@@ -3,6 +3,7 @@ from .department import Department
 from .news import News
 from .user import User
 from .procedure import Procedure
+from .note import Note
 from .base_models import (
     TimeStampedModel,
     UUIDModel,
@@ -21,6 +22,7 @@ __all__ = [
     'News',
     'User',
     'Procedure',
+    'Note',
     'TimeStampedModel',
     'UUIDModel',
     'StatusMixin',

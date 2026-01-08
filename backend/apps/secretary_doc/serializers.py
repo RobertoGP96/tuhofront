@@ -1,76 +1,91 @@
 from rest_framework import serializers
-from .models import Tramite, TramiteSecretariaDocente
-from apps.platform.serializers.user import UserSerializer
-from apps.platform.models.procedure import Procedure
+from .models import SecretaryDocProcedure, SeguimientoTramite, Documento
+from apps.platform.serializers.user import UserBaseSerializer
+from apps.platform.models.user import User
 
 
-class TramiteSecretariaDetalleSerializer(serializers.ModelSerializer):
+class DocumentoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TramiteSecretariaDocente
-        exclude = ('tramite',)
+        model = Documento
+        fields = '__all__'
+        read_only_fields = ('fecha_subida',)
 
 
-class TramiteCreateSerializer(serializers.Serializer):
-    usuario = serializers.PrimaryKeyRelatedField(queryset=None, required=False, allow_null=True)
-    solicitante = serializers.DictField(child=serializers.CharField(), required=False)
-    nombre_tramite = serializers.CharField()
-    fecha_limite = serializers.DateTimeField(required=False, allow_null=True)
-    detalle = TramiteSecretariaDetalleSerializer()
+class SeguimientoTramiteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SeguimientoTramite
+        fields = '__all__'
+        read_only_fields = ('fecha',)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Asignar el queryset en tiempo de inicialización para evitar import loops
-        from apps.platform.models.user import User
-        self.fields['usuario'].queryset = User.objects.all()
 
-    def create(self, validated_data):
-        Usuario = None
-        usuario = validated_data.get('usuario', None)
-        solicitante_data = validated_data.get('solicitante')
-
-        if solicitante_data:
-            solicitante = Solicitante.objects.create(
-                nombre=solicitante_data.get('nombre'),
-                apellidos=solicitante_data.get('apellidos'),
-                ci=solicitante_data.get('ci'),
-                email=solicitante_data.get('email'),
-                telefono=solicitante_data.get('telefono'),
-            )
-        else:
-            solicitante = None
-
-        # Crear tramite central
-        central = CentralTramite.objects.create(
-            nombre_tramite=validated_data.get('nombre_tramite'),
-            usuario=usuario,
-            solicitante=solicitante,
-            fecha_limite=validated_data.get('fecha_limite'),
-        )
-
-        # Crear detalle especifico
-        detalle_data = validated_data.get('detalle')
-        detalle = TramiteSecretariaDocente.objects.create(
-            tramite=central,
-            **detalle_data
-        )
-
-        return central
+class SecretaryDocProcedureSerializer(serializers.ModelSerializer):
+    """
+    Serializador para el modelo SecretaryDocProcedure.
+    Incluye los campos básicos del trámite.
+    """
+    class Meta:
+        model = SecretaryDocProcedure
+        fields = [
+            'id', 'state', 'created_at', 'updated_at',
+            'study_type', 'visibility_type', 'career', 'year',
+            'academic_program', 'document_type', 'interest',
+            'full_name', 'id_card', 'email', 'phone',
+            'document_file', 'registry_volume', 'folio', 'number',
+            'created_by', 'updated_by'
+        ]
+        read_only_fields = ('created_at', 'updated_at', 'state')
 
     def to_representation(self, instance):
-        # Representación simple del tramite central con detalle
-        detalle = None
-        try:
-            detalle = instance.secretaria_detalle
-        except Exception:
-            detalle = None
+        representation = super().to_representation(instance)
+        # Agregar la URL del archivo si existe
+        if instance.document_file:
+            representation['document_file_url'] = instance.document_file.url
+        return representation
 
-        return {
-            'id': instance.id,
-            'nombre_tramite': instance.nombre_tramite,
-            'usuario': instance.usuario.pk if instance.usuario else None,
-            'solicitante': str(instance.solicitante) if instance.solicitante else None,
-            'estado': instance.estado.nombre if instance.estado else None,
-            'numero_seguimiento': instance.numero_seguimiento,
-            'detalle': TramiteSecretariaDetalleSerializer(detalle).data if detalle else None,
-        }
+
+class SecretaryDocProcedureCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializador para la creación de trámites de secretaría docente.
+    Incluye validación de campos requeridos.
+    """
+    class Meta:
+        model = SecretaryDocProcedure
+        fields = [
+            'study_type', 'visibility_type', 'career', 'year',
+            'academic_program', 'document_type', 'interest',
+            'full_name', 'id_card', 'email', 'phone',
+            'document_file', 'registry_volume', 'folio', 'number'
+        ]
+
+    def create(self, validated_data):
+        # Obtener el usuario autenticado si existe
+        user = None
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            user = request.user
+
+        # Crear el trámite
+        tramite = SecretaryDocProcedure.objects.create(
+            **validated_data,
+            created_by=user,
+            updated_by=user
+        )
+        return tramite
+
+
+class SecretaryDocProcedureDetailSerializer(SecretaryDocProcedureSerializer):
+    """
+    Serializador detallado que incluye los seguimientos y documentos relacionados.
+    """
+    seguimientos = SeguimientoTramiteSerializer(many=True, read_only=True)
+    documentos = DocumentoSerializer(many=True, read_only=True)
+    
+    class Meta(SecretaryDocProcedureSerializer.Meta):
+        fields = SecretaryDocProcedureSerializer.Meta.fields + ['seguimientos', 'documentos']
+
+
+# Alias para compatibilidad con código existente
+TramiteSerializer = SecretaryDocProcedureSerializer
+TramiteCreateSerializer = SecretaryDocProcedureCreateSerializer
+TramiteDetailSerializer = SecretaryDocProcedureDetailSerializer
 

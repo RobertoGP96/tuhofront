@@ -1,7 +1,7 @@
 from django.db import models
 
 from labs.enums import LocalTypeEnum, ReservationStateEnum, ReservationPurposeEnum
-from platform.models.procedure import Procedure
+from apps.platform.models import Procedure
 
 # Create your models here.
 """
@@ -231,7 +231,7 @@ class LocalReservation(Procedure):
 
     # Campos de aprobación
     approved_by = models.ForeignKey(
-        "user.Usuario",
+        "platform.User",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -261,8 +261,6 @@ class LocalReservation(Procedure):
         ordering = ["-start_time"]
         indexes = [
             models.Index(fields=["local", "start_time", "end_time"]),
-            models.Index(fields=["state", "start_time"]),
-            models.Index(fields=["user", "state"]),
         ]
 
     def __str__(self):
@@ -491,7 +489,7 @@ class ReservationHistory(models.Model):
     )
 
     user = models.ForeignKey(
-        "user.Usuario",
+        "platform.User",
         on_delete=models.SET_NULL,
         null=True,
         verbose_name=_("Usuario"),
