@@ -1,7 +1,6 @@
 from .decorators import administracion_required, gestores_tramites_required,all_required 
-from secretaria_docente.correo import enviar_correo_cambio_estado
+from .correo import enviar_correo_cambio_estado
 from django.contrib.auth.decorators import login_required
-from atencion_poblacion.forms import CambiarEstadoForm
 from django.utils.decorators import method_decorator
 from apps.platform.forms import UserInfoForm
 from django.db.models.functions import TruncMonth
@@ -10,7 +9,7 @@ from django.contrib.auth.models import Group
 from django.http.request import HttpRequest
 from django.http import JsonResponse
 from django.shortcuts import redirect
-from usuarios.models import Usuario
+from apps.platform.models import User as Usuario
 from django.utils import translation
 from django.contrib import messages
 from django.shortcuts import render
@@ -255,7 +254,6 @@ def Cambiar_Estado(request, id):
         except Exception as e:
             print(e)
             return JsonResponse({'success': False, 'message': 'Error cambiando estado'}, status=500)
-    form = CambiarEstadoForm(instance=tramite)
     estados = [e[0] for e in Estado]
     return JsonResponse({'success': True, 'estados': estados})
 
@@ -272,7 +270,6 @@ def Cambiar_Estado_Posgrado(request, id):
         except Exception as e:
             print(e)
             return JsonResponse({'success': False, 'message': 'Error cambiando estado'}, status=500)
-    form = CambiarEstadoForm(instance=tramite)
     estados = [e[0] for e in Estado]
     return JsonResponse({'success': True, 'estados': estados})
 
@@ -290,7 +287,6 @@ def Cambiar_Estado_Pregrado(request, id):
         except Exception as e:
             print(e)
             return JsonResponse({'success': False, 'message': 'Error cambiando estado'}, status=500)
-    form = CambiarEstadoForm(instance=tramite)
     estados = [e[0] for e in Estado]
     return JsonResponse({'success': True, 'estados': estados})
 
@@ -391,8 +387,7 @@ def Informacion_Usuario(request,id):
         usuario.phone = request.POST.get('phone', request.POST.get('telefono', getattr(usuario, 'phone', None)))
         usuario.save()
         return redirect("Usuarios")
-    form = InformacionPersonalForm(instance=usuario)
-    return render(request,"General/informacion_usuario.html",{"form":form})
+    return render(request,"General/informacion_usuario.html",{"usuario":usuario})
 
 
 
