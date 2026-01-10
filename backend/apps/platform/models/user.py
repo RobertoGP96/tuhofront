@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Q
@@ -7,17 +7,36 @@ from ..validators import validate_carnet_identidad, validate_telefono_cuba, vali
 from ..models.base_models import TimeStampedModel, UUIDModel
 
 
-class UserManager(models.Manager):
-    """Manager personalizado para el modelo Usuario"""
-    
+class UserManager(BaseUserManager):
+    def create_user(self, username, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError('El email es obligatorio')
+        email = self.normalize_email(email)
+        user = self.model(username=username, email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, username, email, password=None, **extra_fields):
+        extra_fields.setdefault('id_card', '00010112345')
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
+        return self.create_user(username, email, password, **extra_fields)
+
     def active_users(self):
         """Retorna solo usuarios activos"""
         return self.filter(is_active=True)
-    
+
     def by_carnet(self, carnet):
         """Busca usuario por carnet de identidad"""
         return self.filter(id_card=carnet).first()
-    
+
     def staff_users(self):
         """Retorna solo usuarios staff"""
         return self.filter(is_staff=True, is_active=True)

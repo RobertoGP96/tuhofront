@@ -44,6 +44,7 @@ class SecretaryDocProcedure(Procedure):
     visibility_type = models.CharField(
         max_length=20,
         choices=STUDY_VISIBILITY_CHOICES,
+        default='NACIONAL',
         verbose_name=_("Tipo de visibilidad"),
         help_text=_("Visibilidad nacional o internacional")
     )
@@ -164,7 +165,6 @@ class SecretaryDocProcedure(Procedure):
         indexes = [
             models.Index(fields=['study_type', 'career']),
             models.Index(fields=['id_card']),
-            models.Index(fields=['state']),
         ]
     
     def __str__(self):
@@ -197,11 +197,3 @@ class SecretaryDocProcedure(Procedure):
         verbose_name=_("Número"),
         help_text=_("Número del registro")
     )
-
-    class Meta:
-        verbose_name = _("Solicitud de Secretaría Docente")
-        verbose_name_plural = _("Solicitudes de Secretaría Docente")
-        ordering = ["-created_at"]
-
-    def __str__(self):
-        return f"Secretaría Docente - {self.user.username} ({self.get_state_display()})"

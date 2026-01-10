@@ -1,16 +1,16 @@
-import { useState } from "react";
-import type { FormEvent } from "react";
-import { Button } from "primereact/button"
-import { InputText } from "primereact/inputtext"
-import { Password } from "primereact/password"
+import { Button } from "primereact/button";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
+import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
+import { Password } from "primereact/password";
+import type { FormEvent } from "react";
+import { useState } from "react";
 
-import "./Login.css"
 import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../../../context/auth";
 import routes from '../../../routes/paths';
-import { authService } from '../../../services/auth/auth';
+import "./Login.css";
 
 export const LoginForm = () => {
     const [email, setEmail] = useState("");
@@ -18,6 +18,7 @@ export const LoginForm = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -25,20 +26,18 @@ export const LoginForm = () => {
         setLoading(true);
 
         try {
-            const response = await authService.login({ email, password });
-            
-            // Login exitoso - redirigir al perfil o página principal
-            if (response.user) {
-                navigate(routes.profile || '/');
-            }
+            await login({ email, password });
+            // El login fue exitoso, el contexto se actualizó.
+            // Ahora redirigimos.
+            navigate(routes.profile || '/');
         } catch (err: any) {
             // Manejar errores del backend
             let errorMessage = 'Error al iniciar sesión. Por favor, verifique sus credenciales.';
             
             if (err.response?.data) {
                 const data = err.response.data;
-                // El backend puede devolver 'message' o 'response' con 'message'
-                errorMessage = data.message || data.response?.message || errorMessage;
+                // El backend puede devolver 'detail', 'message' o 'response' con 'message'
+                errorMessage = data.detail || data.message || data.response?.message || errorMessage;
             } else if (err.message) {
                 errorMessage = err.message;
             }
