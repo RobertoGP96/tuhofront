@@ -1,21 +1,22 @@
+// Base types
+export * from './base';
+
 // Internal types
-export type * from './internal/general';
-export type * from './internal/feeding';
-export type * from './internal/accomodation';
-export type * from './internal/transport';
-export type * from './internal/mantenice';
+export * from './internal/accomodation';
+export * from './internal/feeding';
+export * from './internal/general';
+export * from './internal/mantenice';
+export * from './internal/transport';
 
-// User and auth types
-export type * from './users/auth';
-export type * from './users/users';
+// User types
+export * from './user';
 
-// Secretary/procedures types
-export type * from './sec-doc/procedures';
-export type * from './sec-doc/sercretary';
+// Organitation types
+export * from './area';
+export * from './department';
 
-// Platform types
-export type * from './platform/platform';
-export type * from './platform/support';
+// Procedure types
+export * from './procedure';
 
-// General types
-export type * from './news';
+// Content types
+export * from './news';

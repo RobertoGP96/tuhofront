@@ -435,7 +435,7 @@ SPECTACULAR_SETTINGS = {
             '''
         }
     ],
-    'COMPONENT_SPLIT_REQUEST': True,
+        'COMPONENT_SPLIT_REQUEST': False,
     'SORT_OPERATIONS': False,
     'SWAGGER_UI_SETTINGS': {
         'deepLinking': True,

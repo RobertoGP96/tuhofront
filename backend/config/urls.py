@@ -21,6 +21,7 @@ urlpatterns = [
     path('secretary_doc/', include('apps.secretary_doc.urls')),
     path('labs/', include('apps.labs.urls')),
     path('internal/', include('apps.internal.urls')),
+    path('api/v1/auth/', include('apps.platform.urls.auth')),
     
     #path('atention/',include('atention.urls')),
 ]

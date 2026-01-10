@@ -1,6 +1,7 @@
 import { apiClient } from '@/lib/client';
 import { authService } from '@/services/auth/auth';
 import type { LoginCredentials, User } from '@/types/users/auth';
+import Cookies from 'js-cookie';
 import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 
 type AuthContextValue = {
@@ -13,7 +14,7 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-const AUTH_STORAGE_KEY = 'tuhofront_auth';
+const COOKIE_OPTIONS = { secure: true, sameSite: 'strict' } as const;
 
 export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -21,47 +22,53 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(AUTH_STORAGE_KEY);
-      if (raw) {
-        const { user, token, refresh } = JSON.parse(raw);
-        setUser(user ?? null);
-        setToken(token ?? null);
-        setRefreshToken(refresh ?? null);
-        if (token) {
-          apiClient.setAuthToken(token);
-        }
-      }
-    } catch {
-      // no-op
+    const storedToken = Cookies.get('token');
+    const storedRefreshToken = Cookies.get('refresh_token');
+    const storedUser = Cookies.get('user');
+
+    if (storedToken) {
+      setToken(storedToken);
+      apiClient.setAuthToken(storedToken);
     }
-  }, []);
-
-  const persistAuthData = useCallback((user: User | null, accessToken: string | null, refreshToken: string | null) => {
-    setUser(user);
-    setToken(accessToken);
-    setRefreshToken(refreshToken);
-
-    if (accessToken) {
-      apiClient.setAuthToken(accessToken);
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ user, token: accessToken, refresh: refreshToken }));
-    } else {
-      apiClient.clearAuthToken();
-      localStorage.removeItem(AUTH_STORAGE_KEY);
+    if (storedRefreshToken) {
+      setRefreshToken(storedRefreshToken);
+    }
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch {
+        setUser(null);
+      }
     }
   }, []);
 
   const login = useCallback(async (credentials: LoginCredentials) => {
     const response = await authService.login(credentials);
     if (response.user && response.access) {
-      persistAuthData(response.user, response.access, response.refresh);
+      setUser(response.user);
+      setToken(response.access);
+      Cookies.set('token', response.access, COOKIE_OPTIONS);
+      Cookies.set('user', JSON.stringify(response.user), COOKIE_OPTIONS);
+
+      if (response.refresh) {
+        setRefreshToken(response.refresh);
+        Cookies.set('refresh_token', response.refresh, COOKIE_OPTIONS);
+      } else {
+        setRefreshToken(null);
+        Cookies.remove('refresh_token');
+      }
     }
-  }, [persistAuthData]);
+  }, []);
 
   const logout = useCallback(async () => {
     await authService.logout(refreshToken ?? undefined);
-    persistAuthData(null, null, null);
-  }, [refreshToken, persistAuthData]);
+    setUser(null);
+    setToken(null);
+    setRefreshToken(null);
+    Cookies.remove('token');
+    Cookies.remove('refresh_token');
+    Cookies.remove('user');
+  }, [refreshToken]);
 
   const value = useMemo(() => ({
     user,

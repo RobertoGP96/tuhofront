@@ -14,6 +14,6 @@ export interface TransportProcedure extends Procedure {
   return_place: string;
   passengers: number;
   description: string;
-  plate?: string | null;
-  round_trip: boolean;
+  plate: string | null;   // Placa del vehículo
+  round_trip: boolean;    // Indica si es un viaje redondo
 }

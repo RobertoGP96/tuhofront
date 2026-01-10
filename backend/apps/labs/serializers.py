@@ -204,7 +204,7 @@ class ReservationListSerializer(serializers.ModelSerializer):
         model = LocalReservation
         fields = [
             'id',
-            'follow_number',
+            'numero_seguimiento',
             'local',
             'local_name',
             'local_code',
@@ -221,7 +221,7 @@ class ReservationListSerializer(serializers.ModelSerializer):
             'responsible_name',
             'created_at',
         ]
-        read_only_fields = ['id', 'follow_number', 'created_at']
+        read_only_fields = ['id', 'numero_seguimiento', 'created_at']
     
     def get_user_name(self, obj):
         """Obtiene el nombre del usuario solicitante"""
@@ -250,7 +250,7 @@ class ReservationDetailSerializer(serializers.ModelSerializer):
         model = LocalReservation
         fields = [
             'id',
-            'follow_number',
+            'numero_seguimiento',
             'local',
             'user',
             'start_time',
@@ -284,7 +284,7 @@ class ReservationDetailSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = [
             'id',
-            'follow_number',
+            'numero_seguimiento',
             'user',
             'state',
             'approved_by',

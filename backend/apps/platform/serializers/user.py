@@ -1,3 +1,4 @@
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -281,3 +282,11 @@ class UserStatsSerializer(serializers.Serializer):
     verified_users = serializers.IntegerField()
     users_by_type = serializers.DictField()
     recent_registrations = serializers.IntegerField()
+
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        user_serializer = UserDetailSerializer(self.user)
+        data['user'] = user_serializer.data
+        return data

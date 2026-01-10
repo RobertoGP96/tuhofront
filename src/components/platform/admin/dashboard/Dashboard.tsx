@@ -1,12 +1,11 @@
-import { ChipAdminInfo } from "./ChipAdminInfo"
+import { EnhancedDashboard } from './EnhancedDashboard';
 
 export const DashboardAdmin: React.FC = () => {
-    return <section className="dashboard-admin w-full">
-        <ChipAdminInfo label="Usuarios" cuantity="200" icon="bx bx-user bx-lg"/>
-        <ChipAdminInfo label="Tramites" cuantity="1200" icon="bx bx-pencil bx-lg"/>
-        <ChipAdminInfo label="Procesados" cuantity="700" icon="bx bx-file bx-lg"/>
-        <ChipAdminInfo label="Completados" cuantity="500" icon="bx bx-check bx-lg"/>
-        <div className="charts bg-amber-100 w-full h-full">
+    return (
+        <div className="w-full bg-gray-50 min-h-screen p-4">
+            <EnhancedDashboard />
         </div>
-    </section>
-}
+    );
+};
+
+export default DashboardAdmin;

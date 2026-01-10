@@ -1,96 +1,136 @@
 import { type PaginatedResponse, apiClient } from '@/lib/client';
+import type {
+    CreateNewsData,
+    NewsBase,
+    NewsDetail,
+    NewsListItem,
+    UpdateNewsData
+} from '@/types/news';
 
-export interface News {
-  id: number;
-  titulo: string;
-  contenido: string;
-  autor?: number;
-  created_at: string;
-  updated_at: string;
-  imagen?: string;
-  activa?: boolean;
-}
-
-export interface CreateNewsData {
-  titulo: string;
-  contenido: string;
-  imagen?: File | string;
-  activa?: boolean;
-}
-
-export interface UpdateNewsData extends Partial<CreateNewsData> {}
-
-// Endpoints de noticias
+// News API endpoints
 const NEWS_ENDPOINTS = {
-  NEWS: '/v1/noticias/',
+  NEWS: '/v1/news/',
+  FEATURED: '/v1/news/featured/',
+  CATEGORIES: '/v1/news/categories/',
 } as const;
 
 class NewsService {
   /**
-   * Obtener lista de noticias con paginación
+   * Get paginated list of news
    */
   async getNews(
     page = 1,
-    pageSize = 10
-  ): Promise<PaginatedResponse<News>> {
+    pageSize = 10,
+    filters: Record<string, any> = {}
+  ): Promise<PaginatedResponse<NewsListItem>> {
     const params = new URLSearchParams({
       page: page.toString(),
       page_size: pageSize.toString(),
+      ...filters
     });
 
-    const response = await apiClient.get<PaginatedResponse<News>>(
+    const response = await apiClient.get<PaginatedResponse<NewsListItem>>(
       `${NEWS_ENDPOINTS.NEWS}?${params}`
     );
-
     return response;
   }
 
   /**
-   * Obtener una noticia por ID
+   * Get a single news item by slug or ID
    */
-  async getNewsById(id: number): Promise<News> {
-    const response = await apiClient.get<News>(
-      `${NEWS_ENDPOINTS.NEWS}${id}/`
-    );
-
+  async getNewsDetail(identifier: string | number): Promise<NewsDetail> {
+    const response = await apiClient.get<NewsDetail>(`${NEWS_ENDPOINTS.NEWS}${identifier}/`);
     return response;
   }
 
   /**
-   * Crear una nueva noticia
+   * Create a new news article
    */
-  async createNews(data: CreateNewsData): Promise<News> {
-    const response = await apiClient.post<News>(
-      NEWS_ENDPOINTS.NEWS,
-      data
-    );
+  async createNews(data: CreateNewsData): Promise<NewsBase> {
+    const formData = new FormData();
+    
+    // Append all fields to form data
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        if (key === 'header_image' && value instanceof File) {
+          formData.append('header_image', value);
+        } else if (typeof value === 'boolean') {
+          formData.append(key, value ? 'true' : 'false');
+        } else {
+          formData.append(key, value as string);
+        }
+      }
+    });
 
+    const response = await apiClient.post<NewsBase>(NEWS_ENDPOINTS.NEWS, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response;
   }
 
   /**
-   * Actualizar una noticia
+   * Update an existing news article
    */
-  async updateNews(id: number, data: UpdateNewsData): Promise<News> {
-    const response = await apiClient.patch<News>(
+  async updateNews(id: number | string, data: UpdateNewsData): Promise<NewsBase> {
+    const formData = new FormData();
+    
+    // Append all fields to form data
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        if (key === 'header_image' && value instanceof File) {
+          formData.append('header_image', value);
+        } else if (typeof value === 'boolean') {
+          formData.append(key, value ? 'true' : 'false');
+        } else {
+          formData.append(key, value as string);
+        }
+      }
+    });
+
+    const response = await apiClient.patch<NewsBase>(
       `${NEWS_ENDPOINTS.NEWS}${id}/`,
-      data
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
     );
-
     return response;
   }
 
   /**
-   * Eliminar una noticia
+   * Delete a news article
    */
-  async deleteNews(id: number): Promise<void> {
+  async deleteNews(id: number | string): Promise<void> {
     await apiClient.delete(`${NEWS_ENDPOINTS.NEWS}${id}/`);
+  }
+
+  /**
+   * Get featured news
+   */
+  async getFeaturedNews(limit = 3): Promise<NewsListItem[]> {
+    const response = await apiClient.get<NewsListItem[]>(
+      `${NEWS_ENDPOINTS.FEATURED}?limit=${limit}`
+    );
+    return response;
+  }
+
+  /**
+   * Publish a news article
+   */
+  async publishNews(id: number | string): Promise<NewsBase> {
+    const response = await apiClient.post<NewsBase>(
+      `${NEWS_ENDPOINTS.NEWS}${id}/publish/`
+    );
+    return response;
   }
 }
 
-// Instancia singleton del servicio de noticias
+// Singleton instance of the news service
 export const newsService = new NewsService();
 
-// Export default para compatibilidad
+// Default export for compatibility
 export default newsService;
-

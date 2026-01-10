@@ -2,11 +2,11 @@ import { Menubar } from "primereact/menubar";
 import type { MenuItem } from "primereact/menuitem";
 import "./NavBar.css";
 
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { UserChipMenu } from "../userchip/UserChipMenu";
-import { ToggleButton, type ToggleButtonChangeEvent } from "primereact/togglebutton";
+import { useEffect, useState } from "react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../../context/auth";
 import routes from '../../../routes/paths';
+import { UserChipMenu } from "../userchip/UserChipMenu";
 
 export const NavBar = () => {
   const [active, setActive] = useState<string>("home");
@@ -176,7 +176,8 @@ export const NavBar = () => {
       }
     },
   ];
-  const [checked, setChecked] = useState<boolean>(false);
+  const { isAuthenticated, user, logout } = useAuth();
+
   return (
     <nav className="bg-white max-h-[65px] ">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto h-full">
@@ -194,12 +195,12 @@ export const NavBar = () => {
           <Menubar className="menu-navbar menu-adapt" model={items} />
         </div>
         <div className="flex flex-row gap-2 justify-center items-center">
-          <ToggleButton onLabel="" offLabel="" onIcon="pi pi-sign-out" offIcon="pi pi-sign-in" checked={checked} onChange={(e: ToggleButtonChangeEvent) => setChecked(e.value)} className="" />
-
-          {
-            !checked ? <>
+          {isAuthenticated && user ? (
+            <UserChipMenu user={user} onLogout={logout} />
+          ) : (
+            <>
               <NavLink to={routes.login}>
-                <p className="text-sm font-bold">Inicia sesion</p>
+                <p className="text-sm font-bold">Inicia sesión</p>
               </NavLink>
               <p>o</p>
               <NavLink to={routes.register}>
@@ -207,9 +208,8 @@ export const NavBar = () => {
                   Regístrate
                 </p>
               </NavLink>
-            </> :
-              <UserChipMenu user={{ name: "Username", last: "", addres: "", email: "", phone: "", role: "", id: "" }} />
-          }
+            </>
+          )}
         </div>
       </div>
     </nav>

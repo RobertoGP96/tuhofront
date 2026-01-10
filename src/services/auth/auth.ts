@@ -1,22 +1,22 @@
 import { apiClient } from '@/lib/client';
-import type { 
-  LoginCredentials, 
-  RegisterData, 
-  AuthResponse, 
-  TokenRefreshResponse,
-  PasswordResetRequest,
-  User
-} from '@/types/users/auth';
+import type {
+    AuthResponse,
+    LoginCredentials,
+    PasswordResetRequest,
+    RegisterData,
+    TokenRefreshResponse,
+    UserProfile as User
+} from '@/types/user';
 
 // Endpoints de autenticación
 const AUTH_ENDPOINTS = {
   LOGIN: '/v1/auth/login/',
   REGISTER: '/v1/auth/register/',
-  REFRESH: '/v1/auth/token/refresh/',
+  REFRESH: '/v1/auth/refresh/',
   LOGOUT: '/v1/auth/logout/',
-  PROFILE: '/v1/auth/profile/',
-  VERIFY_TOKEN: '/v1/auth/verify/',
+  PROFILE: '/v1/usuarios/me/',
   RESET_PASSWORD: '/v1/auth/reset-password/',
+  RESET_PASSWORD_CONFIRM: '/v1/auth/reset-password/confirm/',
 } as const;
 
 class AuthService {
@@ -24,17 +24,11 @@ class AuthService {
    * Iniciar sesión
    */
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    // El backend espera 'username' pero LoginCredentials tiene 'email'
-    // Usamos el email como username
     const response = await apiClient.post<AuthResponse>(
       AUTH_ENDPOINTS.LOGIN,
-      {
-        username: credentials.email,
-        password: credentials.password
-      }
+      credentials
     );
     
-    // El backend devuelve directamente { user, access, refresh, message }
     if (response.access) {
       // Configurar token en el cliente API
       apiClient.setAuthToken(response.access);
@@ -80,6 +74,7 @@ class AuthService {
     } finally {
       // Limpiar token del cliente API
       apiClient.clearAuthToken();
+      localStorage.removeItem('tuhofront_auth');
     }
   }
 
@@ -87,13 +82,8 @@ class AuthService {
    * Obtener información del usuario actual
    */
   async getCurrentUser(): Promise<User> {
-    const response = await apiClient.get<{ user: User }>(AUTH_ENDPOINTS.PROFILE);
-    
-    if (response.user) {
-      return response.user;
-    }
-    
-    throw new Error('Error al obtener información del usuario');
+    const response = await apiClient.get<User>(AUTH_ENDPOINTS.PROFILE);
+    return response;
   }
 
   /**
@@ -105,10 +95,18 @@ class AuthService {
       { refresh: refreshToken }
     );
     
-    // El backend devuelve directamente { access }
     if (response.access) {
       // Actualizar token en el cliente API
       apiClient.setAuthToken(response.access);
+      
+      // Actualizar localStorage
+      const authData = JSON.parse(localStorage.getItem('tuhofront_auth') || '{}');
+      authData.token = response.access;
+      if (response.refresh) {
+        authData.refresh = response.refresh;
+      }
+      localStorage.setItem('tuhofront_auth', JSON.stringify(authData));
+      
       return response;
     }
     
@@ -126,18 +124,6 @@ class AuthService {
     
     return response;
   }
-
-  /**
-   * Verificar token de activación
-   */
-  async verifyToken(token: string): Promise<{ message: string }> {
-    const response = await apiClient.get<{ message: string }>(
-      `/v1/auth/verify/${token}/`
-    );
-    
-    return response;
-  }
-
 }
 
 // Instancia singleton del servicio de autenticación

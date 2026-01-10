@@ -1,6 +1,6 @@
 import type { Procedure } from "./general";
 
-export type FeedingType = 'A' | 'B';
+export type FeedingType = 'RESTAURANT' | 'HOTELITO';
 
 export interface FeedingDays {
   id?: number;
@@ -17,6 +17,6 @@ export interface FeedingProcedure extends Procedure {
   start_day: string; // ISO date string
   end_day: string;   // ISO date string
   description: string;
-  ammount: number;
+  amount: number;
   feeding_days: FeedingDays[];
 }
