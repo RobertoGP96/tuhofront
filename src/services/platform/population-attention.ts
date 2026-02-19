@@ -24,14 +24,12 @@ export interface UpdatePopulationAttentionData extends Partial<CreatePopulationA
 }
 
 // Endpoints de atención a la población
+// NOTA: El endpoint /v1/atencion_poblacion/ no existe en el backend
 const POPULATION_ATTENTION_ENDPOINTS = {
-  REQUESTS: '/v1/atencion_poblacion/',
+  REQUESTS: '/v1/population-attention/',
 } as const;
 
 class PopulationAttentionService {
-  /**
-   * Obtener lista de solicitudes de atención
-   */
   async getRequests(
     page = 1,
     pageSize = 10
@@ -48,9 +46,6 @@ class PopulationAttentionService {
     return response;
   }
 
-  /**
-   * Obtener una solicitud por ID
-   */
   async getRequestById(id: number): Promise<PopulationAttention> {
     const response = await apiClient.get<PopulationAttention>(
       `${POPULATION_ATTENTION_ENDPOINTS.REQUESTS}${id}/`
@@ -59,9 +54,6 @@ class PopulationAttentionService {
     return response;
   }
 
-  /**
-   * Crear una nueva solicitud
-   */
   async createRequest(data: CreatePopulationAttentionData): Promise<PopulationAttention> {
     const response = await apiClient.post<PopulationAttention>(
       POPULATION_ATTENTION_ENDPOINTS.REQUESTS,
@@ -71,9 +63,6 @@ class PopulationAttentionService {
     return response;
   }
 
-  /**
-   * Actualizar una solicitud
-   */
   async updateRequest(id: number, data: UpdatePopulationAttentionData): Promise<PopulationAttention> {
     const response = await apiClient.patch<PopulationAttention>(
       `${POPULATION_ATTENTION_ENDPOINTS.REQUESTS}${id}/`,
@@ -83,17 +72,10 @@ class PopulationAttentionService {
     return response;
   }
 
-  /**
-   * Eliminar una solicitud
-   */
   async deleteRequest(id: number): Promise<void> {
     await apiClient.delete(`${POPULATION_ATTENTION_ENDPOINTS.REQUESTS}${id}/`);
   }
 }
 
-// Instancia singleton del servicio de atención a la población
 export const populationAttentionService = new PopulationAttentionService();
-
-// Export default para compatibilidad
 export default populationAttentionService;
-

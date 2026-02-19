@@ -11,7 +11,7 @@ export const useProtectedNavigation = () => {
     
     if (!user) return false;
     
-    const userRoles = Array.isArray(user.role) ? user.role : [user.role];
+    const userRoles = Array.isArray(user.user_type) ? user.user_type : [user.user_type];
     const requiredRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
     
     return requiredRoles.some(role => userRoles.includes(role));

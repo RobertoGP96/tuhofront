@@ -1,14 +1,6 @@
 import type { PaginatedResponse } from '@/lib/client';
-import { platformProcedureService } from '@/services/platform/procedure';
-import type {
-    CreateProcedureData,
-    ProcedureDetail,
-    ProcedureFilterOptions,
-    ProcedureListItem,
-    ProcedureStats,
-    ProcedureType,
-    UpdateProcedureData
-} from '@/types/procedure';
+import { platformProcedureService, type CreateProcedureData, type ProcedureDetail, type ProcedureFilterOptions, type ProcedureListItem, type ProcedureStats, type ProcedureType, type UpdateProcedureData } from '@/services/platform/procedure';
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 /**

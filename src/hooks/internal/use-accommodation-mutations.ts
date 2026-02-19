@@ -1,22 +1,17 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AccommodationProcedure } from '../../types/internal/accomodation';
-import {
-  createAccommodationProcedure,
-  updateAccommodationProcedure,
-  patchAccommodationProcedure,
-  deleteAccommodationProcedure,
-} from '../../services/internal/internal.procedures.api';
+import { internalProceduresService } from '../../services/internal';
 
 export function useAccommodationMutations() {
   const qc = useQueryClient();
 
   const create = useMutation<AccommodationProcedure, Error, AccommodationProcedure, unknown>({
-    mutationFn: (data: AccommodationProcedure) => createAccommodationProcedure(data).then(r => r.data),
+    mutationFn: (data: AccommodationProcedure) => internalProceduresService.createAccommodationProcedure(data),
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['accommodation-procedures'] }),
   });
 
   const update = useMutation<AccommodationProcedure, Error, { id: number; data: AccommodationProcedure }, unknown>({
-    mutationFn: ({ id, data }) => updateAccommodationProcedure(id, data).then(r => r.data),
+    mutationFn: ({ id, data }) => internalProceduresService.updateAccommodationProcedure(id, data),
     onSuccess: (_data, vars) => {
       void qc.invalidateQueries({ queryKey: ['accommodation-procedures'] });
       void qc.invalidateQueries({ queryKey: ['accommodation-procedure', vars.id] });
@@ -24,7 +19,7 @@ export function useAccommodationMutations() {
   });
 
   const patch = useMutation<AccommodationProcedure, Error, { id: number; data: Partial<AccommodationProcedure> }, unknown>({
-    mutationFn: ({ id, data }) => patchAccommodationProcedure(id, data).then(r => r.data),
+    mutationFn: ({ id, data }) => internalProceduresService.patchAccommodationProcedure(id, data),
     onSuccess: (_data, vars) => {
       void qc.invalidateQueries({ queryKey: ['accommodation-procedures'] });
       void qc.invalidateQueries({ queryKey: ['accommodation-procedure', vars.id] });
@@ -32,7 +27,7 @@ export function useAccommodationMutations() {
   });
 
   const remove = useMutation<void, Error, number, unknown>({
-    mutationFn: (id: number) => deleteAccommodationProcedure(id).then(r => r.data),
+    mutationFn: (id: number) => internalProceduresService.deleteAccommodationProcedure(id),
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['accommodation-procedures'] }),
   });
 

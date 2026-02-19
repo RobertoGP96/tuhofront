@@ -3,7 +3,8 @@ import { userService } from '@/services/platform/user';
 import type {
     CreateUserData,
     UpdateUserData,
-    UserProfile
+    UserProfile,
+    UserRole
 } from '@/types/user';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -12,7 +13,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
  */
 export interface UserFilterOptions {
   search?: string;
-  user_type?: string;
+  user_type?: UserRole;
   is_active?: boolean;
   page?: number;
   page_size?: number;

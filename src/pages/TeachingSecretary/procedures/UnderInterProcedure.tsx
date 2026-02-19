@@ -24,11 +24,11 @@ export const UnderInterProcedure = () => {
             <div className="flex flex-row flex-wrap items-start justify-around gap-3 w-1/4">
                 <h3 className="w-full">Interés:</h3>
                 <div className="flex align-items-center">
-                    <Checkbox inputId="option1" name="option" />
+                    <Checkbox checked={true} inputId="option1" name="option" />
                     <label htmlFor="option1" className="ml-2">Estatal</label>
                 </div>
                 <div className="flex align-items-center">
-                    <Checkbox inputId="option2" name="option" />
+                    <Checkbox checked={false} inputId="option2" name="option" />
                     <label htmlFor="option2" className="ml-2">Particular</label>
                 </div>
             </div>

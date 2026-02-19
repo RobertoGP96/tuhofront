@@ -1,27 +1,66 @@
 import { type PaginatedResponse, apiClient } from '@/lib/client';
-import type {
-  CreateNewsData,
-  NewsBase,
-  NewsDetail,
-  NewsFilterOptions,
-  NewsListItem,
-  UpdateNewsData
-} from '@/types/news';
 
-// News API endpoints
+export interface NewsBase {
+  id: number;
+  title: string;
+  slug: string;
+  summary: string;
+  body: string;
+  author: number;
+  category: string;
+  tags: string[];
+  featured: boolean;
+  is_published: boolean;
+  publication_date?: string;
+  header_image?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface NewsListItem extends NewsBase {
+  author_name?: string;
+  category_display?: string;
+}
+
+export interface NewsDetail extends NewsBase {
+  author_detail?: {
+    id: number;
+    username: string;
+    first_name: string;
+    last_name: string;
+  };
+}
+
+export interface CreateNewsData {
+  title: string;
+  summary?: string;
+  body: string;
+  category?: string;
+  tags?: string[];
+  featured?: boolean;
+  header_image?: File;
+}
+
+export interface UpdateNewsData extends Partial<CreateNewsData> {}
+
+export interface NewsFilterOptions {
+  page?: number;
+  page_size?: number;
+  category?: string;
+  featured?: boolean;
+  is_published?: boolean;
+  search?: string;
+}
+
 const NEWS_ENDPOINTS = {
   NEWS: '/v1/news/',
   FEATURED: '/v1/news/featured/',
-  CATEGORIES: '/v1/news/categories/',
+  BY_CATEGORY: '/v1/news/by_category/',
+  BY_TAG: '/v1/news/by_tag/',
+  SEARCH: '/v1/news/search/',
 } as const;
 
-/**
- * Servicio de noticias
- */
 class NewsService {
-  /**
-   * Get paginated list of news
-   */
   async getNews(
     filters: NewsFilterOptions = {}
   ): Promise<PaginatedResponse<NewsListItem>> {
@@ -37,7 +76,6 @@ class NewsService {
       }
     });
 
-    // Usar fetch directamente para evitar el envío del token de autenticación
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}${NEWS_ENDPOINTS.NEWS}?${params}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -52,11 +90,7 @@ class NewsService {
     return response.json();
   }
 
-  /**
-   * Get a single news item by slug or ID
-   */
   async getNewsDetail(identifier: string | number): Promise<NewsDetail> {
-    // Usar fetch directamente para evitar el envío del token de autenticación
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}${NEWS_ENDPOINTS.NEWS}${identifier}/`, {
       headers: {
         'Content-Type': 'application/json',
@@ -71,19 +105,17 @@ class NewsService {
     return response.json();
   }
 
-  /**
-   * Create a new news article
-   */
   async createNews(data: CreateNewsData): Promise<NewsBase> {
     const formData = new FormData();
     
-    // Append all fields to form data
     Object.entries(data).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         if (key === 'header_image' && value instanceof File) {
           formData.append('header_image', value);
         } else if (typeof value === 'boolean') {
           formData.append(key, value ? 'true' : 'false');
+        } else if (Array.isArray(value)) {
+          formData.append(key, JSON.stringify(value));
         } else {
           formData.append(key, value as string);
         }
@@ -98,19 +130,17 @@ class NewsService {
     return response;
   }
 
-  /**
-   * Update an existing news article
-   */
   async updateNews(id: number | string, data: UpdateNewsData): Promise<NewsBase> {
     const formData = new FormData();
     
-    // Append all fields to form data
     Object.entries(data).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         if (key === 'header_image' && value instanceof File) {
           formData.append('header_image', value);
         } else if (typeof value === 'boolean') {
           formData.append(key, value ? 'true' : 'false');
+        } else if (Array.isArray(value)) {
+          formData.append(key, JSON.stringify(value));
         } else {
           formData.append(key, value as string);
         }
@@ -129,18 +159,11 @@ class NewsService {
     return response;
   }
 
-  /**
-   * Delete a news article
-   */
   async deleteNews(id: number | string): Promise<void> {
     await apiClient.delete(`${NEWS_ENDPOINTS.NEWS}${id}/`);
   }
 
-  /**
-   * Get featured news
-   */
   async getFeaturedNews(limit = 3): Promise<NewsListItem[]> {
-    // Usar fetch directamente para evitar el envío del token de autenticación
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}${NEWS_ENDPOINTS.FEATURED}?limit=${limit}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -155,19 +178,41 @@ class NewsService {
     return response.json();
   }
 
-  /**
-   * Publish a news article
-   */
+  async getNewsByCategory(category: string, page = 1, pageSize = 10): Promise<PaginatedResponse<NewsListItem>> {
+    const params = new URLSearchParams({
+      category,
+      page: page.toString(),
+      page_size: pageSize.toString(),
+    });
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}${NEWS_ENDPOINTS.BY_CATEGORY}?${params}`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'same-origin',
+    });
+    
+    if (!response.ok) {
+      throw new Error('Error al cargar las noticias por categoría');
+    }
+    
+    return response.json();
+  }
+
   async publishNews(id: number | string): Promise<NewsBase> {
     const response = await apiClient.post<NewsBase>(
       `${NEWS_ENDPOINTS.NEWS}${id}/publish/`
     );
     return response;
   }
+
+  async unpublishNews(id: number | string): Promise<NewsBase> {
+    const response = await apiClient.post<NewsBase>(
+      `${NEWS_ENDPOINTS.NEWS}${id}/unpublish/`
+    );
+    return response;
+  }
 }
 
-// Singleton instance of the news service
 export const newsService = new NewsService();
-
-// Default export for compatibility
 export default newsService;

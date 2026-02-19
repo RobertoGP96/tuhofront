@@ -1,4 +1,9 @@
 import { ProceduresManagement } from '@/pages/TeachingSecretary/ProceduresManagement';
+import { UnderNatProcedure } from '@/pages/TeachingSecretary/procedures/UnderNatProcedure';
+import { UnderInterProcedure } from '@/pages/TeachingSecretary/procedures/UnderInterProcedure';
+import { PostNatProcedure } from '@/pages/TeachingSecretary/procedures/PostNatProcedure';
+import { PostInterProcedure } from '@/pages/TeachingSecretary/procedures/PostInterProcedure';
+import { TitleLegalization } from '@/pages/TeachingSecretary/procedures/TitleLegalization';
 import routes from '@/routes/paths';
 import { lazyAdminComponents, lazyPages } from '@/utils/lazy-imports';
 import { Suspense } from 'react';
@@ -47,11 +52,11 @@ export const AppRoutes = () => {
         {/* Rutas de secretaría - accesibles sin autenticación */}
         <Route path={`${routes.procedures.secretary.root}/*`} element={<TeachingSecretary />}>
           <Route index element={null} />
-          <Route path="undernat" element={null} />
-          <Route path="underinter" element={null} />
-          <Route path="postnat" element={null} />
-          <Route path="postinter" element={null} />
-          <Route path="legaliz" element={null} />
+          <Route path="undernat" element={<UnderNatProcedure />} />
+          <Route path="underinter" element={<UnderInterProcedure />} />
+          <Route path="postnat" element={<PostNatProcedure />} />
+          <Route path="postinter" element={<PostInterProcedure />} />
+          <Route path="legaliz" element={<TitleLegalization />} />
           <Route path=":id" element={null} />
         </Route>
 

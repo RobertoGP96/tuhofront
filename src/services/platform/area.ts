@@ -87,10 +87,10 @@ class AreaService {
 
   /**
    * Get area statistics
+   * NOTE: This endpoint does not exist in backend
    */
   async getAreaStats(): Promise<AreaStats> {
-    const response = await apiClient.get<AreaStats>(AREA_ENDPOINTS.STATS);
-    return response;
+    throw new Error('El endpoint de estadísticas de áreas no está implementado en el backend');
   }
 
   /**

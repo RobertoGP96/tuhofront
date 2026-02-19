@@ -1,24 +1,19 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { FeedingProcedure } from '../../types/internal/feeding';
-import {
-  createFeedingProcedure,
-  updateFeedingProcedure,
-  patchFeedingProcedure,
-  deleteFeedingProcedure,
-} from '../../services/internal/internal.procedures.api';
+import { internalProceduresService } from '../../services/internal';
 
 export function useFeedingMutations() {
   const qc = useQueryClient();
 
   const create = useMutation<FeedingProcedure, Error, FeedingProcedure, unknown>({
-    mutationFn: (data: FeedingProcedure) => createFeedingProcedure(data).then(r => r.data),
+    mutationFn: (data: FeedingProcedure) => internalProceduresService.createFeedingProcedure(data),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['feeding-procedures'] });
     },
   });
 
   const update = useMutation<FeedingProcedure, Error, { id: number; data: FeedingProcedure }, unknown>({
-    mutationFn: ({ id, data }: { id: number; data: FeedingProcedure }) => updateFeedingProcedure(id, data).then(r => r.data),
+    mutationFn: ({ id, data }: { id: number; data: FeedingProcedure }) => internalProceduresService.updateFeedingProcedure(id, data),
     onSuccess: (_data, vars) => {
       void qc.invalidateQueries({ queryKey: ['feeding-procedures'] });
       void qc.invalidateQueries({ queryKey: ['feeding-procedure', vars.id] });
@@ -26,7 +21,7 @@ export function useFeedingMutations() {
   });
 
   const patch = useMutation<FeedingProcedure, Error, { id: number; data: Partial<FeedingProcedure> }, unknown>({
-    mutationFn: ({ id, data }: { id: number; data: Partial<FeedingProcedure> }) => patchFeedingProcedure(id, data).then(r => r.data),
+    mutationFn: ({ id, data }: { id: number; data: Partial<FeedingProcedure> }) => internalProceduresService.patchFeedingProcedure(id, data),
     onSuccess: (_data, vars) => {
       void qc.invalidateQueries({ queryKey: ['feeding-procedures'] });
       void qc.invalidateQueries({ queryKey: ['feeding-procedure', vars.id] });
@@ -34,7 +29,7 @@ export function useFeedingMutations() {
   });
 
   const remove = useMutation<void, Error, number, unknown>({
-    mutationFn: (id: number) => deleteFeedingProcedure(id).then(r => r.data),
+    mutationFn: (id: number) => internalProceduresService.deleteFeedingProcedure(id),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['feeding-procedures'] });
     },

@@ -1,175 +1,120 @@
 import { apiClient } from '@/lib/client';
-import type {
-  Role,
-  CreateRoleData,
-  UpdateRoleData,
-  Permission
-} from '@/types/platform/platform';
-import type { ApiResponse, PaginatedResponse } from '@/lib/client';
+import type { PaginatedResponse } from '@/lib/client';
 
 // Endpoints de roles
+// NOTA: Los endpoints de roles/permisos no existen en el backend actual
+// Esta implementación es un placeholder para cuando se necesiten
 const ROLE_ENDPOINTS = {
-  ROLES: '/platform/roles/',
-  PERMISSIONS: '/platform/permissions/',
-  ROLE_PERMISSIONS: '/platform/roles/:id/permissions/',
+  ROLES: '/v1/roles/',
+  PERMISSIONS: '/v1/permissions/',
 } as const;
 
+export interface Role {
+  id: number;
+  name: string;
+  description?: string;
+  permissions?: number[];
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface Permission {
+  id: number;
+  name: string;
+  codename: string;
+  description?: string;
+}
+
+export interface CreateRoleData {
+  name: string;
+  description?: string;
+  permissions?: number[];
+}
+
+export interface UpdateRoleData extends Partial<CreateRoleData> {}
+
 class RoleService {
-  /**
-   * Obtener lista de roles
-   */
   async getRoles(page = 1, pageSize = 50): Promise<PaginatedResponse<Role>> {
     const params = new URLSearchParams({
       page: page.toString(),
       page_size: pageSize.toString(),
     });
 
-    const response = await apiClient.get<ApiResponse<PaginatedResponse<Role>>>(
+    const response = await apiClient.get<PaginatedResponse<Role>>(
       `${ROLE_ENDPOINTS.ROLES}?${params}`
     );
 
-    if (response.success && response.data) {
-      return response.data;
-    }
-
-    throw new Error(response.message || 'Error al obtener roles');
+    return response;
   }
 
-  /**
-   * Obtener todos los roles (sin paginación)
-   */
   async getAllRoles(): Promise<Role[]> {
-    const response = await apiClient.get<ApiResponse<Role[]>>(
-      `${ROLE_ENDPOINTS.ROLES}all/`
+    const response = await apiClient.get<Role[]>(
+      ROLE_ENDPOINTS.ROLES
     );
 
-    if (response.success && response.data) {
-      return response.data;
-    }
-
-    throw new Error(response.message || 'Error al obtener roles');
+    return response;
   }
 
-  /**
-   * Obtener un rol por ID
-   */
   async getRoleById(id: number): Promise<Role> {
-    const response = await apiClient.get<ApiResponse<Role>>(
+    const response = await apiClient.get<Role>(
       `${ROLE_ENDPOINTS.ROLES}${id}/`
     );
 
-    if (response.success && response.data) {
-      return response.data;
-    }
-
-    throw new Error(response.message || 'Error al obtener rol');
+    return response;
   }
 
-  /**
-   * Crear un nuevo rol
-   */
   async createRole(data: CreateRoleData): Promise<Role> {
-    const response = await apiClient.post<ApiResponse<Role>>(
+    const response = await apiClient.post<Role>(
       ROLE_ENDPOINTS.ROLES,
       data
     );
 
-    if (response.success && response.data) {
-      return response.data;
-    }
-
-    throw new Error(response.message || 'Error al crear rol');
+    return response;
   }
 
-  /**
-   * Actualizar un rol
-   */
   async updateRole(id: number, data: UpdateRoleData): Promise<Role> {
-    const response = await apiClient.patch<ApiResponse<Role>>(
+    const response = await apiClient.patch<Role>(
       `${ROLE_ENDPOINTS.ROLES}${id}/`,
       data
     );
 
-    if (response.success && response.data) {
-      return response.data;
-    }
-
-    throw new Error(response.message || 'Error al actualizar rol');
+    return response;
   }
 
-  /**
-   * Eliminar un rol
-   */
   async deleteRole(id: number): Promise<void> {
-    const response = await apiClient.delete<ApiResponse<null>>(
-      `${ROLE_ENDPOINTS.ROLES}${id}/`
-    );
-
-    if (!response.success) {
-      throw new Error(response.message || 'Error al eliminar rol');
-    }
+    await apiClient.delete(`${ROLE_ENDPOINTS.ROLES}${id}/`);
   }
 
-  /**
-   * Obtener todos los permisos disponibles
-   */
   async getPermissions(): Promise<Permission[]> {
-    const response = await apiClient.get<ApiResponse<Permission[]>>(
+    const response = await apiClient.get<Permission[]>(
       ROLE_ENDPOINTS.PERMISSIONS
     );
 
-    if (response.success && response.data) {
-      return response.data;
-    }
-
-    throw new Error(response.message || 'Error al obtener permisos');
+    return response;
   }
 
-  /**
-   * Asignar permisos a un rol
-   */
   async assignPermissions(roleId: number, permissionIds: number[]): Promise<void> {
-    const endpoint = ROLE_ENDPOINTS.ROLE_PERMISSIONS.replace(':id', roleId.toString());
-    const response = await apiClient.post<ApiResponse<null>>(endpoint, {
+    await apiClient.post(`${ROLE_ENDPOINTS.ROLES}${roleId}/permissions/`, {
       permissions: permissionIds
     });
-
-    if (!response.success) {
-      throw new Error(response.message || 'Error al asignar permisos');
-    }
   }
 
-  /**
-   * Remover permisos de un rol
-   */
   async removePermissions(roleId: number, permissionIds: number[]): Promise<void> {
-    const endpoint = ROLE_ENDPOINTS.ROLE_PERMISSIONS.replace(':id', roleId.toString());
-    const response = await apiClient.delete<ApiResponse<null>>(endpoint, {
+    await apiClient.delete(`${ROLE_ENDPOINTS.ROLES}${roleId}/permissions/`, {
       data: { permissions: permissionIds }
     });
-
-    if (!response.success) {
-      throw new Error(response.message || 'Error al remover permisos');
-    }
   }
 
-  /**
-   * Activar/desactivar rol
-   */
-  async toggleRoleStatus(id: number, isActive: boolean): Promise<void> {
-    const response = await apiClient.patch<ApiResponse<null>>(
+  async toggleRoleStatus(id: number, isActive: boolean): Promise<Role> {
+    const response = await apiClient.patch<Role>(
       `${ROLE_ENDPOINTS.ROLES}${id}/`,
       { is_active: isActive }
     );
 
-    if (!response.success) {
-      throw new Error(response.message || 'Error al cambiar estado del rol');
-    }
+    return response;
   }
 }
 
-// Instancia singleton del servicio de roles
 export const roleService = new RoleService();
-
-// Export default para compatibilidad
 export default roleService;

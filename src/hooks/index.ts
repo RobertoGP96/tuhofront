@@ -1,6 +1,3 @@
-// General hooks
-export * from './general';
-
 // Internal hooks
 export * from './internal';
 

@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import type { TransportProcedure } from '../../types/internal/transport';
-import { getAllTransportProcedures, getTransportProcedure } from '../../services/internal/internal.procedures.api';
+import { internalProceduresService } from '../../services/internal';
 
 export function useTransportProcedures() {
   const { data, isLoading, isError, refetch } = useQuery<TransportProcedure[], Error, TransportProcedure[]>({
     queryKey: ['transport-procedures'],
-    queryFn: () => getAllTransportProcedures().then(r => r.data),
+    queryFn: () => internalProceduresService.getAllTransportProcedures().then(r => r.results),
   });
 
   return {
@@ -20,7 +20,7 @@ export function useTransportProcedure(id?: number) {
   const { data, isLoading, isError, refetch } = useQuery<TransportProcedure, Error, TransportProcedure>({
     queryKey: ['transport-procedure', id],
     enabled: Boolean(id),
-    queryFn: () => getTransportProcedure(id as number).then(r => r.data),
+    queryFn: () => internalProceduresService.getTransportProcedure(id as number),
   });
 
   return {

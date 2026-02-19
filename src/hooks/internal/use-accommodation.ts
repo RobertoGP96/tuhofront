@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import type { AccommodationProcedure } from '../../types/internal/accomodation';
-import { getAllAccommodationProcedures, getAccommodationProcedure } from '../../services/internal/internal.procedures.api';
+import { internalProceduresService } from '../../services/internal';
 
 export function useAccommodationProcedures() {
   const { data, isLoading, isError, refetch } = useQuery<AccommodationProcedure[], Error, AccommodationProcedure[]>({
     queryKey: ['accommodation-procedures'],
-    queryFn: () => getAllAccommodationProcedures().then(r => r.data),
+    queryFn: () => internalProceduresService.getAllAccommodationProcedures().then(r => r.results),
   });
 
   return {
@@ -20,7 +20,7 @@ export function useAccommodationProcedure(id?: number) {
   const { data, isLoading, isError, refetch } = useQuery<AccommodationProcedure, Error, AccommodationProcedure>({
     queryKey: ['accommodation-procedure', id],
     enabled: Boolean(id),
-    queryFn: () => getAccommodationProcedure(id as number).then(r => r.data),
+    queryFn: () => internalProceduresService.getAccommodationProcedure(id as number),
   });
 
   return {

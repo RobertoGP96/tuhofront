@@ -1,10 +1,11 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { PostInterProcedure } from './procedures/PostInterProcedure';
-import { PostNatProcedure } from './procedures/PostNatProcedure';
-import { TitleLegalization } from './procedures/TitleLegalization';
-import { UnderInterProcedure } from './procedures/UnderInterProcedure';
-import { UnderNatProcedure } from './procedures/UnderNatProcedure';
+import { PostInterProcedure } from './TeachingSecretary/procedures/PostInterProcedure';
+import { PostNatProcedure } from './TeachingSecretary/procedures/PostNatProcedure';
+import { TitleLegalization } from './TeachingSecretary/procedures/TitleLegalization';
+import { UnderInterProcedure } from './TeachingSecretary/procedures/UnderInterProcedure';
+import { UnderNatProcedure } from './TeachingSecretary/procedures/UnderNatProcedure';
+
 
 // Main layout component
 const ProcedureLayout = ({ children }: { children: React.ReactNode }) => (
