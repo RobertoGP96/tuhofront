@@ -1,19 +1,18 @@
 import React from 'react';
-import { UhoContactInfo } from './UhoContactInfo';
 import { Social } from './Social';
-import { Logo } from './Logo';
+import { UhoContactInfo } from './UhoContactInfo';
 
 export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
     <footer className="bg-primary-navy text-white mt-auto">
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-12">
+      <div className="max-w-7xl mx-auto md:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
           {/* Logo y Descripción */}
           <div className="flex flex-col gap-4">
             <div className="w-fit">
-              <Logo />
+              <img src="/img/logo/svg/IdUHo-03.svg" width={200} alt="Logo UHo" />
             </div>
             <p className="text-sm text-gray-300 leading-relaxed max-w-sm">
               Universidad de Holguín "Oscar Lucero Moya". 

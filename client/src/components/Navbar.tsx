@@ -1,19 +1,36 @@
-import React, { useState } from 'react';
-import { 
-  Home, 
-  Newspaper, 
-  FileText, 
-  MessageSquare, 
-  Search, 
-  User, 
+import {
   ChevronDown,
+  FileText,
+  Home,
+  LogOut,
+  MessageSquare,
+  Newspaper,
+  Search,
   Settings,
-  LayoutDashboard,
-  LogOut
+  User
 } from 'lucide-react';
-import { NavLink, Link } from 'react-router-dom';
-import { Logo } from './Logo';
+import React from 'react';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { cn } from '../utils';
+import { Logo } from './Logo';
+import { Button } from './ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
+
+interface ProcedureItem {
+  label: string;
+  icon?: string;
+  items?: ProcedureItem[];
+  command?: () => void;
+}
 
 interface NavbarProps {
   role?: 'user' | 'admin';
@@ -21,14 +38,146 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ role = 'user', userName = 'admin@example.com' }) => {
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const proceduresMenuItems = [
+    {
+      label: "Internos",
+      icon: "bx bx-plus bx-sm",
+      items: [
+        { 
+          label: "Alimentacion", 
+          icon: "bx bx-restaurant bx-sm",
+          command: () => { 
+            navigate("/procedures/internal/feeding");
+          }
+        },
+        { 
+          label: "Hospedaje", 
+          icon: "bx bxs-hotel bx-sm",
+          command: () => { 
+            navigate("/procedures/internal/accommodation");
+          }
+        },
+        { 
+          label: "Transporte", 
+          icon: "bx bxs-bus bx-sm",
+          command: () => { 
+            navigate("/procedures/internal/transport");
+          }
+        },
+        { 
+          label: "Mantenimiento", 
+          icon: "bx bxs-wrench bx-sm",
+          command: () => { 
+            navigate("/procedures/internal/maintenance");
+          }
+        },
+      ],
+    },
+    {
+      label: "Secretaría Docente",
+      icon: "bx bx-book bx-sm",
+      items: [
+        {
+          label: "Pregrado",
+          icon: "bx bxs-graduation bx-sm",
+          items: [
+            { 
+              label: "Nacional", 
+              icon: "bx bx-globe bx-sm", 
+              command: () => { 
+                navigate("/procedures/secretary/undergraduate/national");
+              } 
+            },
+            { 
+              label: "Internacional", 
+              icon: "bx bx-send bx-sm", 
+              command: () => { 
+                navigate("/procedures/secretary/undergraduate/international");
+              } 
+            }
+          ]
+        },
+        {
+          label: "Postgrado",
+          icon: "bx bx-briefcase bx-sm",
+          items: [
+            { 
+              label: "Nacional", 
+              icon: "bx bx-globe bx-sm", 
+              command: () => { 
+                navigate("/procedures/secretary/postgraduate/national");
+              } 
+            },
+            { 
+              label: "Internacional", 
+              icon: "bx bx-send bx-sm", 
+              command: () => { 
+                navigate("/procedures/secretary/postgraduate/international");
+              } 
+            }
+          ]
+        },
+        {
+          label: "Legalización de Título",
+          icon: "bx bxs-certification bx-sm",
+          command: () => { 
+              navigate("/procedures/secretary/title-legalization");
+            }
+        }
+      ],
+    },
+    {
+      label: "Locales",
+      icon: "bx bx-desktop bx-sm",
+      items: [
+        {
+          label: "Aulas Especializadas",
+          icon: "bx bx-building bx-sm"
+        },
+        {
+          label: "Laboratorios",
+          icon: "bx bxs-flask bx-sm"
+        },
+      ],
+    },
+  ];
 
   const userMenuItems = [
     { label: 'Inicio', icon: Home, to: '/' },
     { label: 'Noticias', icon: Newspaper, to: '/news' },
-    { label: 'Trámites', icon: FileText, to: '/procedures' },
     { label: 'Contáctenos', icon: MessageSquare, to: '/contact' },
   ];
+
+  const renderProceduresItems = (items: ProcedureItem[]) => {
+    return items.map((item, index) => {
+      if (item.items) {
+        return (
+          <DropdownMenuSub key={index}>
+            <DropdownMenuSubTrigger className="gap-2 cursor-pointer">
+              {item.icon && <i className={cn(item.icon, "text-lg text-gray-400")} />}
+              <span>{item.label}</span>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent className="min-w-[200px]">
+              {renderProceduresItems(item.items)}
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+        );
+      }
+
+      return (
+        <DropdownMenuItem
+          key={index}
+          className="gap-2 cursor-pointer"
+          onClick={item.command}
+        >
+          {item.icon && <i className={cn(item.icon, "text-lg text-gray-400")} />}
+          <span>{item.label}</span>
+        </DropdownMenuItem>
+      );
+    });
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-100 px-4 md:px-8 flex items-center justify-between z-50">
@@ -54,48 +203,69 @@ export const Navbar: React.FC<NavbarProps> = ({ role = 'user', userName = 'admin
               {item.label}
             </NavLink>
           ))}
+          
+          {/* Trámites Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-2 text-gray-500 hover:text-primary-navy hover:bg-gray-50 cursor-pointer"
+              >
+                <FileText size={18} />
+                Trámites
+                <ChevronDown size={14} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="min-w-[200px]">
+              {renderProceduresItems(proceduresMenuItems)}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
       <div className="flex items-center gap-4">
-        <button className="p-2 text-gray-400 hover:text-primary-navy transition-colors">
+        <Button variant="ghost" size="icon" className="text-gray-400 hover:text-primary-navy">
           <Search size={20} />
-        </button>
+        </Button>
 
         <div className="relative">
-          <button 
-            onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-            className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full border border-gray-100 hover:bg-gray-50 transition-all"
-          >
-            <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-primary-navy">
-              <User size={18} />
-            </div>
-            <span className="hidden sm:inline text-xs font-medium text-gray-600 truncate max-w-[120px]">
-              {userName}
-            </span>
-            <ChevronDown size={14} className={cn("text-gray-400 transition-transform", isUserMenuOpen && "rotate-180")} />
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full border border-gray-100 hover:bg-gray-50 cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-primary-navy">
+                  <User size={18} />
+                </div>
+                <span className="hidden sm:inline text-xs font-medium text-gray-600 truncate max-w-[120px]">
+                  {userName}
+                </span>
+                <ChevronDown size={14} className="text-gray-400" />
+              </Button>
+            </DropdownMenuTrigger>
 
-          {isUserMenuOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-lg shadow-lg py-1 z-[60]">
+            <DropdownMenuContent align="end" className="w-48">
               <div className="px-4 py-2 border-b border-gray-50 md:hidden">
                 <p className="text-xs font-semibold text-primary-navy truncate">{userName}</p>
                 <p className="text-[10px] text-gray-400 capitalize">{role}</p>
               </div>
-              <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+              <DropdownMenuItem className="gap-2 cursor-pointer">
                 <User size={16} /> Perfil
-              </button>
+              </DropdownMenuItem>
               {role === 'admin' && (
-                <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+                <DropdownMenuItem className="gap-2 cursor-pointer">
                   <Settings size={16} /> Configuración
-                </button>
+                </DropdownMenuItem>
               )}
-              <hr className="my-1 border-gray-50" />
-              <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors">
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="gap-2 cursor-pointer text-red-500 focus:text-red-600 focus:bg-red-50">
                 <LogOut size={16} /> Cerrar Sesión
-              </button>
-            </div>
-          )}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </nav>

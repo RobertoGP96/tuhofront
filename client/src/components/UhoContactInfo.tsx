@@ -1,5 +1,5 @@
+import { Mail, MapPin, Phone } from 'lucide-react';
 import React from 'react';
-import { MapPin, Phone, Mail } from 'lucide-react';
 
 export const UhoContactInfo: React.FC = () => {
   return (
@@ -8,16 +8,16 @@ export const UhoContactInfo: React.FC = () => {
         Puede encontrarnos en:
       </h2>
       <ul className="w-full flex flex-col justify-start items-start gap-2 text-sm">
-        <li className="w-full flex flex-row justify-start items-center text-gray-600 gap-3">
-          <MapPin size={16} className="text-secondary-lime flex-shrink-0" />
+        <li className="w-full flex flex-row justify-start items-center text-secondary-lime gap-3">
+          <MapPin size={16} className="text-secondary-lime shrink-0" />
           <span>Ave. XX Aniversario. Piedra Blanca. Holguín. Cuba</span>
         </li>
-        <li className="w-full flex flex-row justify-start items-center text-gray-600 gap-3">
-          <Phone size={16} className="text-secondary-lime flex-shrink-0" />
+        <li className="w-full flex flex-row justify-start items-center text-secondary-lime gap-3">
+          <Phone size={16} className="text-secondary-lime shrink-0" />
           <span>+53 24425555</span>
         </li>
-        <li className="w-full flex flex-row justify-start items-center text-gray-600 gap-3">
-          <Mail size={16} className="text-secondary-lime flex-shrink-0" />
+        <li className="w-full flex flex-row justify-start items-center text-secondary-lime gap-3">
+          <Mail size={16} className="text-secondary-lime shrink-0" />
           <span>uho@uho.edu.cu</span>
         </li>
       </ul>
