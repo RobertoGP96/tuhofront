@@ -1,10 +1,18 @@
 import { useState } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import { MainLayout } from './layouts/MainLayout'
+import AdminDashboard from './pages/AdminDashboard'
+import AdminProcedures from './pages/AdminProcedures'
+import Contact from './pages/Contact'
 import Home from './pages/Home'
 import News from './pages/News'
-import Contact from './pages/Contact'
-import AdminDashboard from './pages/AdminDashboard'
+import {
+  PostInterProcedure,
+  PostNatProcedure,
+  TitleLegalization,
+  UnderInterProcedure,
+  UnderNatProcedure
+} from './pages/procedures/teaching-secretary'
 
 function App() {
   const [role, setRole] = useState<'user' | 'admin'>('user');
@@ -32,6 +40,14 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/news" element={<News />} />
           <Route path="/procedures" element={<div className="p-8 text-center text-gray-400">Gestión de Trámites (Próximamente)</div>} />
+          
+          {/* Teaching Secretary Procedures */}
+          <Route path="/procedures/secretary/undergraduate/national" element={<UnderNatProcedure />} />
+          <Route path="/procedures/secretary/undergraduate/international" element={<UnderInterProcedure />} />
+          <Route path="/procedures/secretary/postgraduate/national" element={<PostNatProcedure />} />
+          <Route path="/procedures/secretary/postgraduate/international" element={<PostInterProcedure />} />
+          <Route path="/procedures/secretary/title-legalization" element={<TitleLegalization />} />
+          
           <Route path="/contact" element={<Contact />} />
           <Route path="/profile" element={<div className="p-8 text-center text-gray-400">Mi Perfil (Próximamente)</div>} />
 
@@ -40,7 +56,7 @@ function App() {
             <>
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/users" element={<div className="p-8 text-center text-gray-400">Gestión de Usuarios (Próximamente)</div>} />
-              <Route path="/admin/procedures" element={<div className="p-8 text-center text-gray-400">Control de Trámites (Próximamente)</div>} />
+              <Route path="/admin/procedures" element={<AdminProcedures />} />
               <Route path="/admin/settings" element={<div className="p-8 text-center text-gray-400">Configuración del Sistema (Próximamente)</div>} />
             </>
           ) : (
