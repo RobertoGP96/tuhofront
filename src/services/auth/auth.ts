@@ -1,11 +1,11 @@
 import { apiClient } from '@/lib/client';
 import type {
-    AuthResponse,
-    LoginCredentials,
-    PasswordResetRequest,
-    RegisterData,
-    TokenRefreshResponse,
-    UserProfile as User
+  AuthResponse,
+  LoginCredentials,
+  PasswordResetRequest,
+  RegisterData,
+  TokenRefreshResponse,
+  UserProfile as User
 } from '@/types/user';
 
 // Endpoints de autenticación
@@ -14,7 +14,7 @@ const AUTH_ENDPOINTS = {
   REGISTER: '/v1/auth/register/',
   REFRESH: '/v1/auth/refresh/',
   LOGOUT: '/v1/auth/logout/',
-  PROFILE: '/v1/usuarios/me/',
+  PROFILE: '/v1/users/me/',
   RESET_PASSWORD: '/v1/auth/reset-password/',
   RESET_PASSWORD_CONFIRM: '/v1/auth/reset-password/confirm/',
 } as const;

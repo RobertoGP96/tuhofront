@@ -17,6 +17,9 @@ export * from './department';
 
 // Procedure types
 export * from './procedure';
+export * from './secretary';
 
 // Content types
 export * from './news';
+export * from './notification';
+

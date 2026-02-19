@@ -11,4 +11,5 @@ urlpatterns = [
         path('users/', include('apps.platform.urls.users')),
         path('procedures/', include('apps.platform.urls.procedure')),
     ])),
+
 ]

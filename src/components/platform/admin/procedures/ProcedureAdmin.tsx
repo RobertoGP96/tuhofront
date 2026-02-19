@@ -1,22 +1,16 @@
-import { ArrowLeft, Briefcase, Building2, Plus } from 'lucide-react';
+import { ArrowLeft, ClipboardList, Settings } from 'lucide-react';
 import React, { useState } from 'react';
-import { AreaForm } from './AreaForm';
-import { AreaList } from './AreaList';
-import { DepartmentForm } from './DepartmentForm';
-import { DepartmentList } from './DepartmentList';
+import { ProcedureForm } from './ProcedureForm';
+import { ProcedureList } from './ProcedureList';
+import { ProcedureTypeList } from './ProcedureTypeList';
 
-type StructureTab = 'areas' | 'departments';
-type ViewMode = 'list' | 'create' | 'edit';
+type ProcedureTab = 'requests' | 'catalog';
+type ViewMode = 'list' | 'edit';
 
-export const StructureAdmin: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<StructureTab>('areas');
+export const ProcedureAdmin: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<ProcedureTab>('requests');
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [selectedItem, setSelectedItem] = useState<any>(null);
-
-  const handleCreate = () => {
-    setSelectedItem(null);
-    setViewMode('create');
-  };
 
   const handleEdit = (item: any) => {
     setSelectedItem(item);
@@ -31,6 +25,11 @@ export const StructureAdmin: React.FC = () => {
   const handleSuccess = () => {
     setViewMode('list');
     setSelectedItem(null);
+  };
+
+  const handleViewDetails = (item: any) => {
+      // In a real app, this might navigate to a detail page
+      console.log('Viewing details for:', item);
   };
 
   return (
@@ -50,58 +49,44 @@ export const StructureAdmin: React.FC = () => {
             <div>
               <h1 className="text-3xl font-black text-gray-900 tracking-tight mb-1">
                 {viewMode === 'list' 
-                  ? 'Estructura Organizativa' 
-                  : viewMode === 'create' 
-                    ? `Crear ${activeTab === 'areas' ? 'Área' : 'Departamento'}`
-                    : `Editar ${activeTab === 'areas' ? 'Área' : 'Departamento'}`
+                  ? 'Gestión de Trámites' 
+                  : `Gestionar Trámite #${selectedItem?.follow_number}`
                 }
               </h1>
               <p className="text-gray-500 font-medium">
                 {viewMode === 'list' 
-                  ? 'Gestiona la jerarquía y distribución de la institución.'
-                  : `Completa la información para ${viewMode === 'create' ? 'registrar la nueva unidad' : 'actualizar los datos'}.`
+                  ? 'Supervisa las solicitudes y configura el catálogo institucional.'
+                  : 'Cambia el estado o añade observaciones a la solicitud.'
                 }
               </p>
             </div>
           </div>
-          
-          {viewMode === 'list' && (
-            <button 
-              onClick={handleCreate}
-              className={`flex items-center justify-center gap-2 px-6 py-3 text-white font-bold rounded-2xl transition-all shadow-lg active:scale-95 group ${
-                activeTab === 'areas' ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/25' : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/25'
-              }`}
-            >
-              <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
-              <span>Crear {activeTab === 'areas' ? 'Área' : 'Departamento'}</span>
-            </button>
-          )}
         </div>
 
         {/* Tab Switcher */}
         {viewMode === 'list' && (
           <div className="flex items-center gap-2 mt-8 bg-gray-50 p-1.5 rounded-2xl w-fit border border-gray-100">
             <button
-              onClick={() => setActiveTab('areas')}
+              onClick={() => setActiveTab('requests')}
               className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all ${
-                activeTab === 'areas'
+                activeTab === 'requests'
                   ? 'bg-white text-blue-600 shadow-sm'
                   : 'text-gray-500 hover:text-gray-700 hover:bg-white/50'
               }`}
             >
-              <Building2 className={`w-4 h-4 ${activeTab === 'areas' ? 'animate-bounce' : ''}`} />
-              Áreas
+              <ClipboardList className={`w-4 h-4 ${activeTab === 'requests' ? 'animate-bounce' : ''}`} />
+              Solicitudes
             </button>
             <button
-              onClick={() => setActiveTab('departments')}
+              onClick={() => setActiveTab('catalog')}
               className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all ${
-                activeTab === 'departments'
+                activeTab === 'catalog'
                   ? 'bg-white text-indigo-600 shadow-sm'
                   : 'text-gray-500 hover:text-gray-700 hover:bg-white/50'
               }`}
             >
-              <Briefcase className={`w-4 h-4 ${activeTab === 'departments' ? 'animate-bounce' : ''}`} />
-              Departamentos
+              <Settings className={`w-4 h-4 ${activeTab === 'catalog' ? 'animate-bounce' : ''}`} />
+              Catálogo
             </button>
           </div>
         )}
@@ -111,31 +96,23 @@ export const StructureAdmin: React.FC = () => {
       <div className="flex-1 overflow-y-auto p-8 bg-gray-50/30">
         {viewMode === 'list' ? (
           <>
-            {activeTab === 'areas' ? (
+            {activeTab === 'requests' ? (
               <div className="animate-in fade-in slide-in-from-left-4 duration-500">
-                <AreaList isAdmin={true} onEdit={handleEdit} />
+                <ProcedureList isAdmin={true} onEdit={handleEdit} onView={handleViewDetails} />
               </div>
             ) : (
               <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                <DepartmentList isAdmin={true} onEdit={handleEdit} />
+                <ProcedureTypeList isAdmin={true} onView={handleViewDetails} />
               </div>
             )}
           </>
         ) : (
           <div className="max-w-4xl mx-auto py-4">
-            {activeTab === 'areas' ? (
-              <AreaForm 
-                initialData={selectedItem} 
-                onSuccess={handleSuccess} 
-                onCancel={handleCancel} 
-              />
-            ) : (
-              <DepartmentForm 
-                initialData={selectedItem} 
-                onSuccess={handleSuccess} 
-                onCancel={handleCancel} 
-              />
-            )}
+            <ProcedureForm 
+              initialData={selectedItem} 
+              onSuccess={handleSuccess} 
+              onCancel={handleCancel} 
+            />
           </div>
         )}
       </div>

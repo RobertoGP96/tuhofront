@@ -1,9 +1,9 @@
-import { Avatar } from "primereact/avatar"
-import { Menu } from "primereact/menu"
-import type { MenuItem } from "primereact/menuitem"
-import { useNavigate } from "react-router-dom"
+import { Avatar } from "primereact/avatar";
+import { Menu } from "primereact/menu";
+import type { MenuItem } from "primereact/menuitem";
+import { useNavigate } from "react-router-dom";
 import routes from '../../../routes/paths';
-import "./AsideNav.css"
+import "./AsideNav.css";
 export const AsideNav: React.FC = () => {
         const AdminRouter = useNavigate()
     const items: MenuItem[] = [
@@ -18,7 +18,7 @@ export const AsideNav: React.FC = () => {
                 {
                     label: "Noticias",
                     icon: "pi pi-file-edit",
-                    command: () => { /* placeholder - implement /admin/news when available */ }
+                    command: () => { AdminRouter(routes.admin.news) }
                 },
                 {
                     label: "Usuarios",
@@ -39,6 +39,11 @@ export const AsideNav: React.FC = () => {
                     label: "Estructura",
                     icon: "pi pi-sitemap",
                     command: () => { AdminRouter(routes.admin.structure) }
+                },
+                {
+                    label: "Trámites",
+                    icon: "pi pi-copy",
+                    command: () => { AdminRouter(routes.admin.procedures) }
                 },
             ]
         },{

@@ -67,6 +67,8 @@ export const ROUTES = {
     STRUCTURE: `${ROUTE_SEGMENTS.ADMIN}/structure`,
     ROLES: `${ROUTE_SEGMENTS.ADMIN}/roles`,
     EMAIL: `${ROUTE_SEGMENTS.ADMIN}/email`,
+    NEWS: `${ROUTE_SEGMENTS.ADMIN}${ROUTE_SEGMENTS.NEWS}`,
+    PROCEDURES: `${ROUTE_SEGMENTS.ADMIN}/procedures`,
 
     // Administración interna
     INTERNAL: {
@@ -131,6 +133,8 @@ const routes = {
     roles: `${ROUTE_SEGMENTS.ADMIN}/roles`,
     dashboard: `${ROUTE_SEGMENTS.ADMIN}/dashboard`,
     email: `${ROUTE_SEGMENTS.ADMIN}/email`,
+    news: `${ROUTE_SEGMENTS.ADMIN}${ROUTE_SEGMENTS.NEWS}`,
+    procedures: `${ROUTE_SEGMENTS.ADMIN}/procedures`,
 
     internal: {
       personal: `${ROUTE_SEGMENTS.ADMIN}${ROUTE_SEGMENTS.INTERNAL}/personal`,

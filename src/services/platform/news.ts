@@ -1,10 +1,11 @@
 import { type PaginatedResponse, apiClient } from '@/lib/client';
 import type {
-    CreateNewsData,
-    NewsBase,
-    NewsDetail,
-    NewsListItem,
-    UpdateNewsData
+  CreateNewsData,
+  NewsBase,
+  NewsDetail,
+  NewsFilterOptions,
+  NewsListItem,
+  UpdateNewsData
 } from '@/types/news';
 
 // News API endpoints
@@ -14,19 +15,24 @@ const NEWS_ENDPOINTS = {
   CATEGORIES: '/v1/news/categories/',
 } as const;
 
+
 class NewsService {
   /**
    * Get paginated list of news
    */
   async getNews(
-    page = 1,
-    pageSize = 10,
-    filters: Record<string, any> = {}
+    filters: NewsFilterOptions = {}
   ): Promise<PaginatedResponse<NewsListItem>> {
+    const { page = 1, page_size = 10, ...rest } = filters;
     const params = new URLSearchParams({
       page: page.toString(),
-      page_size: pageSize.toString(),
-      ...filters
+      page_size: page_size.toString(),
+    });
+
+    Object.entries(rest).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        params.append(key, value.toString());
+      }
     });
 
     const response = await apiClient.get<PaginatedResponse<NewsListItem>>(

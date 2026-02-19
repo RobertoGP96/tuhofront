@@ -7,3 +7,7 @@ export * from './internal';
 // Auth hooks
 export { useAuth } from './use-auth';
 export { useProtectedNavigation } from './use-protected-navigation';
+
+// Platform hooks
+export * from '@/hooks/platform';
+

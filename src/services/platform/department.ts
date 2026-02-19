@@ -1,12 +1,13 @@
 import type { PaginatedResponse } from '@/lib/client';
 import { apiClient } from '@/lib/client';
 import type {
-    CreateDepartmentData,
-    Department,
-    DepartmentListItem,
-    DepartmentStats,
-    DepartmentTreeNode,
-    UpdateDepartmentData
+  CreateDepartmentData,
+  Department,
+  DepartmentFilterOptions,
+  DepartmentListItem,
+  DepartmentStats,
+  DepartmentTreeNode,
+  UpdateDepartmentData
 } from '@/types/department';
 
 const DEPARTMENT_ENDPOINTS = {
@@ -20,17 +21,25 @@ class DepartmentService {
    * Get paginated list of departments
    */
   async getDepartments(
-    page = 1,
-    pageSize = 10,
-    search?: string
+    filters: DepartmentFilterOptions = {}
   ): Promise<PaginatedResponse<DepartmentListItem>> {
+    const { page = 1, page_size = 10, search, is_active, parent_id } = filters;
+    
     const params = new URLSearchParams({
       page: page.toString(),
-      page_size: pageSize.toString(),
+      page_size: page_size.toString(),
     });
 
     if (search) {
       params.append('search', search);
+    }
+    
+    if (is_active !== undefined) {
+      params.append('is_active', is_active.toString());
+    }
+
+    if (parent_id) {
+      params.append('parent_department', parent_id);
     }
 
     const response = await apiClient.get<PaginatedResponse<DepartmentListItem>>(

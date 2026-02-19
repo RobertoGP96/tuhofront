@@ -1,11 +1,10 @@
 
-import type {
-  Notification,
-
-  CreateNotificationData,
-  NotificationFilters,
-} from '@/types/platform/platform';
 import { apiClient, type PaginatedResponse } from '@/lib/client';
+import type {
+  CreateNotificationData,
+  Notification,
+  NotificationFilters,
+} from '@/types/notification';
 
 // Endpoints de notificaciones
 const NOTIFICATION_ENDPOINTS = {
@@ -17,23 +16,20 @@ class NotificationService {
    * Obtener lista de notificaciones con filtros y paginación
    */
   async getNotifications(
-    filters?: NotificationFilters,
-    page = 1,
-    pageSize = 20
+    filters: NotificationFilters = {}
   ): Promise<PaginatedResponse<Notification>> {
+    const { page = 1, page_size = 20, ...rest } = filters;
     const params = new URLSearchParams({
       page: page.toString(),
-      page_size: pageSize.toString(),
+      page_size: page_size.toString(),
     });
 
     // Agregar filtros si existen
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
-          params.append(key, value.toString());
-        }
-      });
-    }
+    Object.entries(rest).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        params.append(key, value.toString());
+      }
+    });
 
     const response = await apiClient.get<PaginatedResponse<Notification>>(
       `${NOTIFICATION_ENDPOINTS.NOTIFICATIONS}?${params}`
@@ -46,11 +42,9 @@ class NotificationService {
    * Obtener notificaciones del usuario actual
    */
   async getMyNotifications(
-    filters?: NotificationFilters,
-    page = 1,
-    pageSize = 20
+    filters: NotificationFilters = {}
   ): Promise<PaginatedResponse<Notification>> {
-    return this.getNotifications(filters, page, pageSize);
+    return this.getNotifications(filters);
   }
 
   /**

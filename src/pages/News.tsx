@@ -1,49 +1,69 @@
-import React, { useMemo, useState } from 'react';
-import newsMock from '../mocks/newsMock';
-import NewsCard from '../components/internal/NewsCard';
+import { newsService } from '@/services/platform/news';
+import type { NewsDetail, NewsListItem } from '@/types/news';
+import { Newspaper } from 'lucide-react';
+import React, { useState } from 'react';
+import { NewsDetailView, NewsList } from '../components/platform/news';
 
 export const News: React.FC = () => {
-    const [query, setQuery] = useState('');
-    const [onlyTramites, setOnlyTramites] = useState(true);
+    const [selectedNews, setSelectedNews] = useState<NewsDetail | null>(null);
+    const [viewMode, setViewMode] = useState<'list' | 'detail'>('list');
 
-    const filtered = useMemo(() => {
-        const q = query.trim().toLowerCase();
-        return newsMock
-            .filter((n) => (onlyTramites ? n.tags?.includes('Trámite') ?? false : true))
-            .filter((n) => (q ? (n.title + ' ' + n.summary + ' ' + (n.tags ?? []).join(' ')).toLowerCase().includes(q) : true))
-            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    }, [query, onlyTramites]);
+    const handleViewNews = async (news: NewsListItem) => {
+        try {
+            const detail = await newsService.getNewsDetail(news.id);
+            setSelectedNews(detail);
+            setViewMode('detail');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } catch (error) {
+            console.error('Error fetching news detail:', error);
+        }
+    };
+
+    const handleBackToList = () => {
+        setViewMode('list');
+        setSelectedNews(null);
+    };
 
     return (
-        <section className="flex flex-col gap-6 justify-start items-center pb-10 grow w-full bg-white border-t-2 border-gray-300 py-8 px-[20%]">
-            <article className="w-full">
-                <h1 className="text-2xl font-bold mb-2">Noticias sobre trámites - Universidad de Holguín</h1>
-                <p className="text-sm text-gray-600 mb-4">Aquí encontrarás las novedades y pasos a seguir para tus trámites universitarios.</p>
-
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-                    <div className="flex items-center gap-2">
-                        <input
-                            type="text"
-                            placeholder="Buscar noticias..."
-                            value={query}
-                            onChange={(e) => setQuery(e.target.value)}
-                            className="border border-gray-300 rounded px-3 py-2"
-                        />
-                        <label className="text-sm flex items-center gap-2">
-                            <input type="checkbox" checked={onlyTramites} onChange={(e) => setOnlyTramites(e.target.checked)} />
-                            Mostrar solo trámites
-                        </label>
+        <main className="min-h-screen bg-gray-50/30">
+            {/* Header Section */}
+            <div className="bg-white border-b border-gray-200 pt-12 pb-8 px-6 md:px-[15%]">
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
+                            <Newspaper className="w-6 h-6" />
+                        </div>
+                        <h1 className="text-3xl font-black text-gray-900 tracking-tight">
+                            Portal Informativo UHO
+                        </h1>
                     </div>
-                    <div className="text-sm text-gray-500">Resultados: {filtered.length}</div>
+                    <p className="text-gray-500 max-w-2xl leading-relaxed font-medium">
+                        Mantente actualizado con las últimas noticias, eventos y trámites de la Universidad de Holguín.
+                        Toda la información oficial en un solo lugar.
+                    </p>
                 </div>
+            </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {filtered.map((item) => (
-                        <NewsCard key={item.id} item={item} />
-                    ))}
+            {/* Content Section */}
+            <section className="py-12 px-6 md:px-[15%]">
+                <div className="max-w-7xl mx-auto">
+                    {viewMode === 'list' ? (
+                        <div className="animate-in fade-in duration-700">
+                             <NewsList 
+                                onView={handleViewNews}
+                             />
+                        </div>
+                    ) : (
+                        selectedNews && (
+                            <NewsDetailView 
+                                news={selectedNews} 
+                                onBack={handleBackToList}
+                            />
+                        )
+                    )}
                 </div>
-            </article>
-        </section>
+            </section>
+        </main>
     );
 };
 

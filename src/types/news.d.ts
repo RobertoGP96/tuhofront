@@ -4,12 +4,14 @@
 export type NewsCategory = 
   | 'GENERAL'
   | 'ACADEMIC'
+  | 'ADMINISTRATIVE'
   | 'MANAGEMENT'
   | 'STUDENT'
   | 'CULTURAL'
   | 'SPORTS'
   | 'RESEARCH'
   | 'EXTENSION';
+
 
 /**
  * News status types
@@ -93,3 +95,20 @@ export interface PaginatedNewsResponse {
   previous: string | null;
   results: NewsListItem[];
 }
+
+/**
+ * Filter options for news articles
+ */
+export interface NewsFilterOptions {
+  category?: NewsCategory;
+  status?: NewsStatus;
+  featured?: boolean;
+  search?: string;
+  tag?: string;
+  author?: number;
+  date_from?: string;
+  date_to?: string;
+  page?: number;
+  page_size?: number;
+}
+

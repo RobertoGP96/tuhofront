@@ -1,25 +1,25 @@
-import { apiClient } from '@/lib/client';
 import type { PaginatedResponse } from '@/lib/client';
-import type { FeedingDays, FeedingProcedure } from '@/types/internal/feeding';
+import { apiClient } from '@/lib/client';
 import type { AccommodationProcedure } from '@/types/internal/accomodation';
-import type { TransportProcedure, TransportProcedureType } from '@/types/internal/transport';
-import type { MaintancePriority, MaintanceProcedure, MaintanceProcedureType } from '@/types/internal/mantenice';
+import type { FeedingDays, FeedingProcedure } from '@/types/internal/feeding';
 import type { Area, Department } from '@/types/internal/general';
+import type { MaintancePriority, MaintanceProcedure, MaintanceProcedureType } from '@/types/internal/mantenice';
+import type { TransportProcedure, TransportProcedureType } from '@/types/internal/transport';
 
 // Endpoints base
 const INTERNAL_PROCEDURES_ENDPOINTS = {
-  FEEDING_PROCEDURES: '/v1/feeding-procedures/',
-  ACCOMMODATION_PROCEDURES: '/v1/accommodation-procedures/',
-  TRANSPORT_PROCEDURES: '/v1/transport-procedures/',
-  TRANSPORT_PROCEDURE_TYPES: '/v1/transport-procedure-types/',
-  MAINTANCE_PROCEDURES: '/v1/maintance-procedures/',
-  MAINTANCE_PROCEDURE_TYPES: '/v1/maintance-procedure-types/',
-  MAINTANCE_PRIORITIES: '/v1/maintance-priorities/',
-  GUESTS: '/v1/guests/',
-  FEEDING_DAYS: '/v1/feeding-days/',
-  INTERNAL_DEPARTMENTS: '/v1/internal-departments/',
-  INTERNAL_AREAS: '/v1/internal-areas/',
-  NOTES: '/v1/notes/',
+  FEEDING_PROCEDURES: '/v1/internal/feeding-procedures/',
+  ACCOMMODATION_PROCEDURES: '/v1/internal/accommodation-procedures/',
+  TRANSPORT_PROCEDURES: '/v1/internal/transport-procedures/',
+  TRANSPORT_PROCEDURE_TYPES: '/v1/internal/transport-procedure-types/',
+  MAINTANCE_PROCEDURES: '/v1/internal/maintance-procedures/',
+  MAINTANCE_PROCEDURE_TYPES: '/v1/internal/maintance-procedure-types/',
+  MAINTANCE_PRIORITIES: '/v1/internal/maintance-priorities/',
+  GUESTS: '/v1/internal/guests/',
+  FEEDING_DAYS: '/v1/internal/feeding-days/',
+  INTERNAL_DEPARTMENTS: '/v1/internal/departments/',
+  INTERNAL_AREAS: '/v1/internal/areas/',
+  NOTES: '/v1/internal/notes/',
 } as const;
 
 class InternalProceduresService {

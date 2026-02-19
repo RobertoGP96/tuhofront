@@ -1,15 +1,15 @@
 import type { PaginatedResponse } from '@/lib/client';
 import { apiClient } from '@/lib/client';
 import type {
-    CreateUserData,
-    UpdateUserData,
-    UserProfile
+  CreateUserData,
+  UpdateUserData,
+  UserProfile
 } from '@/types/user';
 
 // Endpoints de usuarios
 const USER_ENDPOINTS = {
-  USERS: '/v1/usuarios/',
-  ME: '/v1/usuarios/me/',
+  USERS: '/v1/users/',
+  ME: '/v1/users/me/',
   LOGIN: '/v1/auth/login/',
 } as const;
 

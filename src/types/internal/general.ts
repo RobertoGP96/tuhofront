@@ -7,15 +7,15 @@ export interface Guest {
   identification: string;
 }
 
-export interface Area {
+export interface InternalArea {
   id: number;
   name: string;
 }
 
-export interface Department {
+export interface InternalDepartment {
   id: number;
   name: string;
-  area: Area | null;
+  area: InternalArea | null;
 }
 
 export type NoteState = 'PENDIENTE' | 'APROBADO' | 'FINALIZADO' | 'CANCELADO' | 'RECHAZADO';
@@ -26,20 +26,19 @@ export interface Note {
   description: string;
 }
 
-export type ProcedureState = NoteState;
+export type InternalProcedureState = NoteState;
 
-export interface Procedure {
+export interface InternalProcedure {
   id?: number;
   user: number | null; // Usuario id
   document?: string | null; // URL o path del archivo
-  state: ProcedureState;
-  department: Department;
-  area: Area;
+  state: InternalProcedureState;
+  department: InternalDepartment;
+  area: InternalArea;
   notes: Note[];
 }
 
-
-export type ProcedureStats = {
+export type InternalProcedureStats = {
   stats: {
     PENDIENTE: number;
     APROBADO: number;

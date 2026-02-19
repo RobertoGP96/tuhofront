@@ -39,7 +39,7 @@ export interface AreaListItem {
  * Area with extended information
  */
 export interface AreaDetail extends Area {
-  parent_area_name: string | null;
+  parent_area_name: number;
   manager_details: {
     id: number;
     full_name: string;

@@ -15,15 +15,19 @@ urlpatterns = [
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     
-   
-    path('platform/',include('apps.platform.urls')),
-    path('notifications/',include('apps.notifications.urls')),
-    path('secretary_doc/', include('apps.secretary_doc.urls')),
-    path('labs/', include('apps.labs.urls')),
-    path('internal/', include('apps.internal.urls')),
-    path('api/v1/auth/', include('apps.platform.urls.auth')),
+    # API v1 Endpoints
+    path('api/v1/', include([
+        path('auth/', include('apps.platform.urls.auth')),
+        path('', include('apps.platform.urls')), # noticias, areas, departments, usuarios, procedures
+        path('notificaciones/', include('apps.notifications.urls')),
+        path('tramites-secretaria/', include('apps.secretary_doc.urls')),
+        path('labs/', include('apps.labs.urls')),
+        path('internal/', include('apps.internal.urls')),
+    ])),
+
     
     #path('atention/',include('atention.urls')),
 ]
+
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

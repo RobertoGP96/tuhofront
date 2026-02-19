@@ -42,6 +42,8 @@ export const lazyAdminComponents = {
   RolesAdmin: lazy(() => import('@/components/platform/admin/rols/Rols').then(m => ({ default: m.RolesAdmin }))),
   DashboardAdmin: lazy(() => import('@/components/platform/admin/dashboard/Dashboard').then(m => ({ default: m.DashboardAdmin }))),
   EmailConfig: lazy(() => import('@/components/platform/admin/config/EmailConfig')),
+  NewsAdmin: lazy(() => import('@/components/platform/admin/news/NewsAdmin').then(m => ({ default: m.NewsAdmin }))),
+  ProceduresAdmin: lazy(() => import('@/components/platform/admin/procedures/ProcedureAdmin').then(m => ({ default: m.ProcedureAdmin }))),
 } as const;
 
 // Componentes internos (para carga dinámica)

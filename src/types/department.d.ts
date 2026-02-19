@@ -17,6 +17,12 @@ export interface Department extends BaseModel {
 }
 
 /**
+ * Detailed information for a department
+ */
+export type DepartmentDetail = Department;
+
+
+/**
  * Department list item (for dropdowns/lists)
  */
 export interface DepartmentListItem {
@@ -67,3 +73,17 @@ export interface CreateDepartmentData {
 export type UpdateDepartmentData = Partial<Omit<CreateDepartmentData, 'code'>> & {
   is_active?: boolean;
 };
+
+/**
+ * Filter options for departments
+ */
+export interface DepartmentFilterOptions {
+  is_active?: boolean;
+  has_manager?: boolean;
+  parent_id?: string;
+  search?: string;
+  sort_by?: 'name' | 'code' | 'manager';
+  sort_order?: 'asc' | 'desc';
+  page?: number;
+  page_size?: number;
+}

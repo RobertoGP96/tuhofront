@@ -1,7 +1,7 @@
-import { Routes, Route } from 'react-router-dom';
-import { Suspense } from 'react';
 import routes from '@/routes/paths';
-import { lazyPages, lazyAdminComponents } from '@/utils/lazy-imports';
+import { lazyAdminComponents, lazyPages } from '@/utils/lazy-imports';
+import { Suspense } from 'react';
+import { Route, Routes } from 'react-router-dom';
 
 // Componente de loading mejorado
 const RouteLoader = () => (
@@ -21,7 +21,7 @@ const {
 } = lazyPages;
 
 const {
-  UsersAdmin, StructureAdmin, RolesAdmin, DashboardAdmin, EmailConfig
+  UsersAdmin, StructureAdmin, RolesAdmin, DashboardAdmin, EmailConfig, NewsAdmin, ProceduresAdmin
 } = lazyAdminComponents;
 
 export const AppRoutes = () => {
@@ -53,6 +53,8 @@ export const AppRoutes = () => {
         <Route path="roles" element={<RolesAdmin />} />
         <Route path="dashboard" element={<DashboardAdmin />} />
         <Route path="email" element={<EmailConfig />} />
+        <Route path="news" element={<NewsAdmin />} />
+        <Route path="procedures" element={<ProceduresAdmin />} />
 
         {/* Rutas de administración interna */}
         <Route path="internal/procedures" element={<InternalAdmin />} />

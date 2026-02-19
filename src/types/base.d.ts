@@ -2,7 +2,7 @@
  * Base interface for all timestamped models
  */
 export interface TimeStampedModel {
-  id: number | string;
+  id: string;
   created_at: string; // ISO 8601 date string
   updated_at: string; // ISO 8601 date string
 }

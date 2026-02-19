@@ -1,11 +1,12 @@
-import { apiClient } from '@/lib/client';
-import type { SecretaryProcedure } from '@/types/sec-doc/procedures';
 import type { PaginatedResponse } from '@/lib/client';
+import { apiClient } from '@/lib/client';
+import type { SecretaryProcedure } from '@/types/secretary';
 
 // Endpoints de trámites
 const PROCEDURE_ENDPOINTS = {
   PROCEDURES: '/v1/tramites-secretaria/',
 } as const;
+
 
 class ProcedureService {
   /**
