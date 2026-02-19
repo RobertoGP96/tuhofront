@@ -24,39 +24,79 @@ class AuthService {
    * Iniciar sesión
    */
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>(
-      AUTH_ENDPOINTS.LOGIN,
-      credentials
-    );
-    
-    if (response.access) {
+    try {
+      const response = await apiClient.post<AuthResponse>(
+        AUTH_ENDPOINTS.LOGIN,
+        credentials,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response?.access) {
+        throw new Error('No se recibió un token de acceso válido');
+      }
+
       // Configurar token en el cliente API
       apiClient.setAuthToken(response.access);
       
-      // Guardar tokens y usuario en localStorage
-      const authData = {
-        user: response.user,
-        token: response.access,
-        refresh: response.refresh
-      };
-      localStorage.setItem('tuhofront_auth', JSON.stringify(authData));
-      
       return response;
+    } catch (error: any) {
+      console.error('Error en login:', error);
+      let errorMessage = 'Error al iniciar sesión';
+      
+      if (error.response) {
+        if (error.response.data) {
+          errorMessage = error.response.data.detail || 
+                        error.response.data.message || 
+                        JSON.stringify(error.response.data);
+        }
+        error.status = error.response.status;
+      } else if (error.request) {
+        errorMessage = 'No se pudo conectar con el servidor';
+      }
+      
+      error.message = errorMessage;
+      throw error;
     }
-    
-    throw new Error('Error al iniciar sesión');
   }
 
   /**
    * Registrar nuevo usuario
    */
   async register(userData: RegisterData): Promise<{ message: string }> {
-    const response = await apiClient.post<{ message: string }>(
-      AUTH_ENDPOINTS.REGISTER,
-      userData
-    );
-    
-    return response;
+    try {
+      const response = await apiClient.post<{ message: string }>(
+        AUTH_ENDPOINTS.REGISTER,
+        userData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      
+      return response;
+    } catch (error: any) {
+      console.error('Error en registro:', error);
+      let errorMessage = 'Error al registrar usuario';
+      
+      if (error.response) {
+        if (error.response.data) {
+          errorMessage = error.response.data.detail || 
+                        error.response.data.message || 
+                        JSON.stringify(error.response.data);
+        }
+        error.status = error.response.status;
+      } else if (error.request) {
+        errorMessage = 'No se pudo conectar con el servidor';
+      }
+      
+      error.message = errorMessage;
+      throw error;
+    }
   }
 
   /**

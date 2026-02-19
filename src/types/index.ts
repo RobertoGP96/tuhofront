@@ -23,3 +23,6 @@ export * from './secretary';
 export * from './news';
 export * from './notification';
 
+// Re-export commonly used types for convenience
+export type { UserProfile as User, UserRole, AuthResponse, LoginCredentials } from './user';
+

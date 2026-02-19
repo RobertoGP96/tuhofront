@@ -1,113 +1,326 @@
-import { Button } from "primereact/button";
-import { IconField } from "primereact/iconfield";
-import { InputIcon } from "primereact/inputicon";
-import { InputText } from "primereact/inputtext";
-import { Message } from "primereact/message";
-import { Password } from "primereact/password";
-import type { FormEvent } from "react";
-import { useState } from "react";
-
-import { NavLink, useNavigate } from "react-router-dom";
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Button, Card, Checkbox, Divider, Form, Input, message, Typography } from 'antd';
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
+import * as yup from "yup";
 import { useAuth } from "../../../context/auth";
 import routes from '../../../routes/paths';
 import "./Login.css";
 
+const { Title, Text } = Typography;
+
+// Schema de validación con Yup
+const loginSchema = yup.object().shape({
+  username: yup
+    .string()
+    .required("El nombre de usuario es requerido")
+    .min(3, "El nombre de usuario debe tener al menos 3 caracteres")
+    .trim(),
+  password: yup
+    .string()
+    .required("La contraseña es requerida")
+    .min(6, "La contraseña debe tener al menos 6 caracteres"),
+  rememberMe: yup.boolean().default(false)
+});
+
+type LoginFormData = yup.InferType<typeof loginSchema>;
+
+// Constantes para el control de intentos de inicio de sesión
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOCKOUT_TIME = 5 * 60 * 1000; // 5 minutos en milisegundos
+const LOCKOUT_STORAGE_KEY = 'login_lockout';
+const ATTEMPTS_STORAGE_KEY = 'login_attempts';
+
 export const LoginForm = () => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const navigate = useNavigate();
-    const { login } = useAuth();
+  const [loginAttempts, setLoginAttempts] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
+  const [lockUntil, setLockUntil] = useState<number | null>(null);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        setError(null);
-        setLoading(true);
+  const { 
+    control,
+    handleSubmit, 
+    formState: { errors, isSubmitting },
+    setValue,
+    watch,
+  } = useForm<LoginFormData>({
+    resolver: yupResolver(loginSchema),
+    mode: 'onChange',
+    defaultValues: {
+      username: '',
+      password: '',
+      rememberMe: false
+    }
+  });
 
-        try {
-            await login({ username, password });
-            // El login fue exitoso, el contexto se actualizó.
-            // Ahora redirigimos.
-            navigate(routes.home || '/');
-        } catch (err: any) {
-            // Manejar errores del backend
-            let errorMessage = 'Error al iniciar sesión. Por favor, verifique sus credenciales.';
-            
-            if (err.response?.data) {
-                const data = err.response.data;
-                // El backend puede devolver 'detail', 'message' o 'response' con 'message'
-                errorMessage = data.detail || data.message || data.response?.message || errorMessage;
-            } else if (err.message) {
-                errorMessage = err.message;
-            }
-            
-            setError(errorMessage);
-        } finally {
-            setLoading(false);
-        }
-    };
+  const password = watch('password', '');
 
-    return <form onSubmit={handleSubmit} className="relative flex flex-col gap-2 justify-center items-start p-10 border-primary/25 border rounded-xl shadow-2xl max-w-[500px] overflow-hidden">
-        <img src="/img/logo/svg/IdUHo-02.svg" width={300} className="aspect-square absolute scale-200 rotate-6 -right-55 -bottom-25 z-0 opacity-45" alt="" />
-        <div className="flex flex-col gap-2 items-start justify-center w-full" >
-            <h1 className="font-bold uppercase text-xl text-primary">Inicio de Sesión</h1>
-            <span className="text-sm font-light text-gray-600">Ingrese su nombre de usuario a continuación para iniciar sesión en su cuenta.</span>
+  // Cargar credenciales guardadas y verificar bloqueo al montar
+  useEffect(() => {
+    // Cargar credenciales guardadas
+    const savedUsername = localStorage.getItem('rememberedUsername');
+    const savedRememberMe = localStorage.getItem('rememberMe') === 'true';
+    
+    if (savedUsername && savedRememberMe) {
+      setValue('username', savedUsername);
+      setValue('rememberMe', true);
+    }
+
+    // Verificar si hay un bloqueo activo
+    const savedLockUntil = localStorage.getItem(LOCKOUT_STORAGE_KEY);
+    const savedAttempts = localStorage.getItem(ATTEMPTS_STORAGE_KEY);
+    
+    if (savedLockUntil) {
+      const lockTime = parseInt(savedLockUntil, 10);
+      if (Date.now() < lockTime) {
+        setIsLocked(true);
+        setLockUntil(lockTime);
+        setLoginAttempts(savedAttempts ? parseInt(savedAttempts, 10) : MAX_LOGIN_ATTEMPTS);
+      } else {
+        // Limpiar bloqueo expirado
+        localStorage.removeItem(LOCKOUT_STORAGE_KEY);
+        localStorage.removeItem(ATTEMPTS_STORAGE_KEY);
+      }
+    } else if (savedAttempts) {
+      setLoginAttempts(parseInt(savedAttempts, 10));
+    }
+  }, [setValue]);
+
+  // Verificar bloqueo periódicamente
+  useEffect(() => {
+    if (!isLocked || !lockUntil) return;
+
+    const lockTimer = setInterval(() => {
+      if (Date.now() > lockUntil) {
+        setIsLocked(false);
+        setLockUntil(null);
+        setLoginAttempts(0);
+        localStorage.removeItem(LOCKOUT_STORAGE_KEY);
+        localStorage.removeItem(ATTEMPTS_STORAGE_KEY);
+        message.success('El bloqueo ha sido levantado. Puede intentar nuevamente.');
+      }
+    }, 1000);
+
+    return () => clearInterval(lockTimer);
+  }, [isLocked, lockUntil]);
+
+  const handleLogin = async (data: LoginFormData) => {
+    if (isLocked) {
+      const timeLeft = Math.ceil(((lockUntil || 0) - Date.now()) / 1000 / 60);
+      message.error(`Demasiados intentos fallidos. Intente nuevamente en ${timeLeft} minuto(s).`);
+      return;
+    }
+
+    try {
+      // Guardar o eliminar credenciales según rememberMe
+      if (data.rememberMe) {
+        localStorage.setItem('rememberedUsername', data.username);
+        localStorage.setItem('rememberMe', 'true');
+      } else {
+        localStorage.removeItem('rememberedUsername');
+        localStorage.removeItem('rememberMe');
+      }
+
+      // Intentar iniciar sesión
+      await login( 
+        data.username.trim(), 
+        data.password 
+    );
+      
+      // Limpiar intentos fallidos después de un inicio de sesión exitoso
+      setLoginAttempts(0);
+      localStorage.removeItem(ATTEMPTS_STORAGE_KEY);
+      localStorage.removeItem(LOCKOUT_STORAGE_KEY);
+      
+      message.success('¡Inicio de sesión exitoso!');
+      
+      // Redirigir a la ruta de origen o a la página principal
+      const redirectTo = searchParams.get('redirectTo') || routes.home || '/';
+      navigate(redirectTo, { replace: true });
+
+    } catch (error: any) {
+      const newLoginAttempts = loginAttempts + 1;
+      setLoginAttempts(newLoginAttempts);
+      localStorage.setItem(ATTEMPTS_STORAGE_KEY, newLoginAttempts.toString());
+
+      const attemptsLeft = MAX_LOGIN_ATTEMPTS - newLoginAttempts;
+      let errorMessage = 'Credenciales incorrectas. Por favor, verifique sus datos.';
+      
+      if (newLoginAttempts >= MAX_LOGIN_ATTEMPTS) {
+        const lockTime = Date.now() + LOCKOUT_TIME;
+        setIsLocked(true);
+        setLockUntil(lockTime);
+        localStorage.setItem(LOCKOUT_STORAGE_KEY, lockTime.toString());
+        errorMessage = `Demasiados intentos fallidos. La cuenta ha sido bloqueada por ${LOCKOUT_TIME / 60000} minutos.`;
+      } else if (attemptsLeft > 0) {
+        errorMessage = `Credenciales incorrectas. Le quedan ${attemptsLeft} intento(s).`;
+      }
+
+      // Extraer mensaje de error de la API si existe
+      if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
+      message.error({
+        content: errorMessage,
+        duration: 5,
+      });
+    }
+  };
+
+  // Calcular tiempo restante de bloqueo
+  const getRemainingLockTime = () => {
+    if (!lockUntil) return 0;
+    return Math.ceil(((lockUntil || 0) - Date.now()) / 1000 / 60);
+  };
+
+  return (
+    <div className="login-container" style={{ maxWidth: '420px', margin: '0 auto', padding: '24px' }}>
+      <Card 
+        hoverable 
+        className="login-card"
+        style={{ borderRadius: '8px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}
+      >
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <img 
+            src="/img/logo/svg/IdUHo-02.svg" 
+            alt="Logo de la aplicación" 
+            style={{ height: '64px', marginBottom: '16px' }} 
+          />
+          <Title level={3} style={{ marginBottom: '8px' }}>Inicio de Sesión</Title>
+          <Text type="secondary">Ingrese sus credenciales para acceder a su cuenta.</Text>
         </div>
-        
-        {error && (
-            <div className="w-full">
-                <Message severity="error" text={error} className="w-full" />
+
+        {searchParams.get('registered') === 'true' && (
+          <div style={{ marginBottom: '16px' }}>
+            <div className="ant-alert ant-alert-success" role="alert">
+              <div className="ant-alert-content">
+                <div className="ant-alert-message">¡Registro exitoso! Por favor inicie sesión.</div>
+              </div>
             </div>
+          </div>
         )}
 
-        <div className="flex flex-col gap-2 w-full">
-            <label htmlFor="useritem" className="text-sm">Nombre de usuario:</label>
-            <IconField iconPosition="left" className="w-full">
-                <InputIcon className="pi pi-user"> </InputIcon>
-                <InputText 
-                    placeholder="su_usuario"
-                    id="useritem" 
-                    className="p-inputtext-sm w-full" 
-                    aria-describedby="useritem-help" 
-                    size="sm"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    disabled={loading}
-                    required
-                    type="text"
+        {isLocked && (
+          <div style={{ marginBottom: '16px' }}>
+            <div className="ant-alert ant-alert-error" role="alert">
+              <div className="ant-alert-content">
+                <div className="ant-alert-message">
+                  Cuenta bloqueada temporalmente. Intente nuevamente en {getRemainingLockTime()} minuto(s).
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <Form
+          name="login"
+          onFinish={handleSubmit(handleLogin)}
+          layout="vertical"
+          size="large"
+          className="login-form"
+        >
+          <Form.Item
+            label="Nombre de usuario"
+            validateStatus={errors.username ? 'error' : ''}
+            help={errors.username?.message}
+          >
+            <Controller
+              name="username"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  prefix={<UserOutlined className="site-form-item-icon" />}
+                  placeholder="Ingrese su nombre de usuario"
+                  disabled={isSubmitting || isLocked}
+                  autoComplete="username"
+                  status={errors.username ? 'error' : ''}
                 />
-            </IconField>
-        </div>
-        <div className="flex flex-col gap-2 w-full mb-3 passw-container">
-            <label htmlFor="password" className="text-sm">Contraseña:</label>
-            <Password 
-                id="password" 
-                inputStyle={{ width: "100%" }} 
-                className="p-inputtext-sm w-full grow" 
-                aria-describedby="password-help" 
-                feedback={false} 
-                tabIndex={1}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-                required
+              )}
             />
-        </div>
-        <Button 
-            className="btn-primary border-0 w-full" 
-            label={loading ? "Iniciando sesión..." : "Iniciar"} 
-            type="submit"
-            disabled={loading}
-            loading={loading}
-        />
-        <div className="flex flex-row gap-1 justify-center items-center">
-            <NavLink to={routes.register}>
-                <p className=" font-bold z-1">
-                    Regístrate
-                </p>
-            </NavLink>
-            <span className="text-sm text-gray-600"> Si no cuentas con la credenciales.</span>
-        </div>
-    </form>
-}
+          </Form.Item>
+
+          <Form.Item
+            label={
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                <span>Contraseña</span>
+                <NavLink to="/forgot-password" style={{ fontSize: '12px' }}>
+                  ¿Olvidó su contraseña?
+                </NavLink>
+              </div>
+            }
+            validateStatus={errors.password ? 'error' : ''}
+            help={errors.password?.message}
+          >
+            <Controller
+              name="password"
+              control={control}
+              render={({ field }) => (
+                <Input.Password
+                  {...field}
+                  prefix={<LockOutlined className="site-form-item-icon" />}
+                  placeholder="Ingrese su contraseña"
+                  disabled={isSubmitting || isLocked}
+                  autoComplete="current-password"
+                  status={errors.password ? 'error' : ''}
+                  visibilityToggle={!isLocked}
+                />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item>
+            <Controller
+              name="rememberMe"
+              control={control}
+              render={({ field: { value, onChange } }) => (
+                <Checkbox 
+                  checked={value}
+                  onChange={(e) => onChange(e.target.checked)}
+                  disabled={isSubmitting || isLocked}
+                >
+                  Recordar mi cuenta
+                </Checkbox>
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item style={{ marginBottom: '16px' }}>
+            <Button 
+              type="primary" 
+              htmlType="submit" 
+              className="login-form-button"
+              block
+              loading={isSubmitting}
+              disabled={isLocked}
+              size="large"
+              style={{ marginTop: '8px' }}
+            >
+              {isSubmitting ? 'Iniciando sesión...' : 'Iniciar sesión'}
+            </Button>
+          </Form.Item>
+
+          <Divider style={{ margin: '16px 0' }}>
+            <Text type="secondary">O</Text>
+          </Divider>
+
+          <div style={{ textAlign: 'center' }}>
+            <Text>
+              ¿No tienes una cuenta?{' '}
+              <NavLink to={routes.register} style={{ fontWeight: 500 }}>
+                Regístrate
+              </NavLink>
+            </Text>
+          </div>
+        </Form>
+      </Card>
+    </div>
+  );
+};

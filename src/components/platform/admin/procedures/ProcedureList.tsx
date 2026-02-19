@@ -1,8 +1,9 @@
 import { useProcedures } from '@/hooks/platform/use-procedures';
 import type { ProcedureFilterOptions, ProcedureListItem } from '@/types/procedure';
-import { AlertCircle, FileText, Filter, Loader2, Search } from 'lucide-react';
+import { AlertCircle, FileText, Filter, LayoutGrid, List, Loader2, Search } from 'lucide-react';
 import React, { useState } from 'react';
 import { ProcedureCard } from './ProcedureCard';
+import { ProcedureRow } from './ProcedureRow';
 
 interface ProcedureListProps {
   isAdmin?: boolean;
@@ -18,8 +19,9 @@ export const ProcedureList: React.FC<ProcedureListProps> = ({
   initialFilters = {},
 }) => {
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(9);
+  const [pageSize, setPageSize] = useState(9);
   const [filters, setFilters] = useState<ProcedureFilterOptions>(initialFilters);
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
   const { 
     data, 
@@ -29,7 +31,7 @@ export const ProcedureList: React.FC<ProcedureListProps> = ({
   } = useProcedures({ page, page_size: pageSize, ...filters });
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilters(prev => ({ ...prev, search: e.target.value }));
+    setFilters((prev: ProcedureFilterOptions) => ({ ...prev, search: e.target.value }));
     setPage(1);
   };
 
@@ -78,11 +80,29 @@ export const ProcedureList: React.FC<ProcedureListProps> = ({
           />
         </div>
         <div className="flex items-center gap-4">
-           <div className="text-xs text-gray-400 font-medium">
+           <div className="text-xs text-gray-400 font-medium hidden sm:block">
              Mostrando <span className="text-gray-900 font-bold">{procedures.length}</span> de <span className="text-gray-900 font-bold">{total}</span> trámites
            </div>
+
+           <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl">
+             <button
+               onClick={() => { setViewMode('grid'); setPageSize(9); }}
+               className={`p-1.5 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+               title="Vista Cuadrícula"
+             >
+               <LayoutGrid className="w-4 h-4" />
+             </button>
+             <button
+               onClick={() => { setViewMode('table'); setPageSize(10); }}
+               className={`p-1.5 rounded-lg transition-all ${viewMode === 'table' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+               title="Vista Lista"
+             >
+               <List className="w-4 h-4" />
+             </button>
+           </div>
+
            <button 
-             className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+             className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors border border-transparent hover:border-gray-200"
            >
              <Filter className="w-4 h-4" />
              Filtrar
@@ -97,7 +117,7 @@ export const ProcedureList: React.FC<ProcedureListProps> = ({
           <h3 className="text-xl font-bold text-gray-400">No se encontraron trámites</h3>
           <p className="text-gray-400 text-sm">Intenta ajustar los filtros de búsqueda.</p>
         </div>
-      ) : (
+      ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {procedures.map((item, index) => (
             <div key={item.id} className="animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-backwards" style={{ animationDelay: `${index * 50}ms` }}>
@@ -109,6 +129,31 @@ export const ProcedureList: React.FC<ProcedureListProps> = ({
               />
             </div>
           ))}
+        </div>
+      ) : (
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="overflow-x-auto">
+            <div className="min-w-[800px]">
+              <div className="flex items-center px-6 py-4 bg-gray-50/50 border-b border-gray-100">
+                <div className="flex-1 min-w-[300px] text-[10px] font-black text-gray-400 uppercase tracking-widest">Procedimiento / Folio</div>
+                <div className="w-32 shrink-0 text-[10px] font-black text-gray-400 uppercase tracking-widest">Estado</div>
+                <div className="w-48 hidden md:block shrink-0 text-[10px] font-black text-gray-400 uppercase tracking-widest">Progreso Actual</div>
+                <div className="w-40 hidden lg:block shrink-0 text-[10px] font-black text-gray-400 uppercase tracking-widest">Archivos / Historial</div>
+                <div className="w-[124px] shrink-0 text-right text-[10px] font-black text-gray-400 uppercase tracking-widest">Acciones</div>
+              </div>
+              <div className="divide-y divide-gray-100">
+                {procedures.map((item) => (
+                  <ProcedureRow
+                    key={item.id}
+                    procedure={item}
+                    isAdmin={isAdmin}
+                    onEdit={onEdit}
+                    onView={onView}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

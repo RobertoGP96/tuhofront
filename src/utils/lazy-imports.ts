@@ -37,7 +37,7 @@ export const lazyPages = {
 
 // Componentes administrativos
 export const lazyAdminComponents = {
-  UsersAdmin: lazy(() => import('@/components/platform/admin/users/Users').then(m => ({ default: m.UsersAdmin }))),
+  UsersAdmin: lazy(() => import('@/components/platform/admin/users/UsersAdmin').then(m => ({ default: m.UsersAdmin }))),
   StructureAdmin: lazy(() => import('@/components/platform/admin/structure/StructureAdmin').then(m => ({ default: m.StructureAdmin }))),
   RolesAdmin: lazy(() => import('@/components/platform/admin/rols/Rols').then(m => ({ default: m.RolesAdmin }))),
   DashboardAdmin: lazy(() => import('@/components/platform/admin/dashboard/Dashboard').then(m => ({ default: m.DashboardAdmin }))),

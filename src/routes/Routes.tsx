@@ -1,7 +1,9 @@
+import { ProceduresManagement } from '@/pages/TeachingSecretary/ProceduresManagement';
 import routes from '@/routes/paths';
 import { lazyAdminComponents, lazyPages } from '@/utils/lazy-imports';
 import { Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
+import { ProtectedRoute } from './ProtectedRoute';
 
 // Componente de loading mejorado
 const RouteLoader = () => (
@@ -24,65 +26,117 @@ const {
   UsersAdmin, StructureAdmin, RolesAdmin, DashboardAdmin, EmailConfig, NewsAdmin, ProceduresAdmin
 } = lazyAdminComponents;
 
+// Componente para rutas de administración protegidas
+const AdminRoutes = () => (
+  <ProtectedRoute requiredRole="ADMIN">
+    <Admin />
+  </ProtectedRoute>
+);
+
 export const AppRoutes = () => {
   return (
     <Suspense fallback={<RouteLoader />}>
       <Routes>
-      <Route path={routes.home} element={<Home />} />
-      <Route path={routes.support} element={<Contact />} />
-      <Route path={routes.news} element={<News />} />
-      
-      {/* Rutas de secretaría */}
-      <Route path={routes.procedures.secretary.detail()} element={<TeachingSecretary />} />
-      <Route path={routes.procedures.secretary.undernat} element={<TeachingSecretary />} />
-      <Route path={routes.procedures.secretary.underinter} element={<TeachingSecretary />} />
-      <Route path={routes.procedures.secretary.postnat} element={<TeachingSecretary />} />
-      <Route path={routes.procedures.secretary.postinter} element={<TeachingSecretary />} />
-      <Route path={routes.procedures.secretary.legaliz} element={<TeachingSecretary />} />
+        {/* Rutas públicas accesibles sin autenticación */}
+        <Route path={routes.home} element={<Home />} />
+        <Route path={routes.support} element={<Contact />} />
+        <Route path={routes.news} element={<News />} />
+        <Route path={routes.login} element={<Login />} />
+        <Route path={routes.register} element={<Register />} />
 
-      <Route path={routes.profile} element={<Profile />} />
-      <Route path={routes.procedures.root} element={<Procedures />} />
+        {/* Rutas de secretaría - accesibles sin autenticación */}
+        <Route path={`${routes.procedures.secretary.root}/*`} element={<TeachingSecretary />}>
+          <Route index element={null} />
+          <Route path="undernat" element={null} />
+          <Route path="underinter" element={null} />
+          <Route path="postnat" element={null} />
+          <Route path="postinter" element={null} />
+          <Route path="legaliz" element={null} />
+          <Route path=":id" element={null} />
+        </Route>
 
-      <Route path={routes.login} element={<Login />} />
-      <Route path={routes.register} element={<Register />} />
+        {/* Rutas protegidas que requieren autenticación */}
+        <Route path={routes.profile} element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } />
+        
+        <Route path={routes.procedures.root} element={
+          <ProtectedRoute>
+            <Procedures />
+          </ProtectedRoute>
+        } />
 
-      <Route path={routes.admin.root} element={<Admin />}>
-        <Route index element={<DashboardAdmin />} />
-        <Route path="users" element={<UsersAdmin />} />
-        <Route path="structure" element={<StructureAdmin />} />
-        <Route path="roles" element={<RolesAdmin />} />
-        <Route path="dashboard" element={<DashboardAdmin />} />
-        <Route path="email" element={<EmailConfig />} />
-        <Route path="news" element={<NewsAdmin />} />
-        <Route path="procedures" element={<ProceduresAdmin />} />
+        {/* Rutas de administración - requieren rol ADMIN */}
+        <Route path={routes.admin.root} element={<AdminRoutes />}>
+          <Route index element={<DashboardAdmin />} />
+          <Route path="users" element={<UsersAdmin />} />
+          <Route path="structure" element={<StructureAdmin />} />
+          <Route path="roles" element={<RolesAdmin />} />
+          <Route path="dashboard" element={<DashboardAdmin />} />
+          <Route path="email" element={<EmailConfig />} />
+          <Route path="news" element={<NewsAdmin />} />
+          <Route path="procedures" element={<ProceduresAdmin />} />
 
-        {/* Rutas de administración interna */}
-        <Route path="internal/procedures" element={<InternalAdmin />} />
-        <Route path="internal/personal" element={<InternalAdmin />} />
-        <Route path="internal/config" element={<InternalConfig />} />
+          {/* Rutas de administración interna */}
+          <Route path="internal/procedures" element={<InternalAdmin />} />
+          <Route path="internal/personal" element={<InternalAdmin />} />
+          <Route path="internal/config" element={<InternalConfig />} />
 
-        {/* Rutas de administración de secretaría */}
-        <Route path="secretary/procedures" element={<TeachingSecretary />} />
-        <Route path="secretary/personal" element={<UsersAdmin />} />
-        <Route path="secretary/config" element={<InternalConfig />} />
-      </Route>
+          {/* Rutas de administración de secretaría */}
+          <Route path="secretary/procedures" element={<ProceduresManagement />} />
+          <Route path="secretary/personal" element={<UsersAdmin />} />
+          <Route path="secretary/config" element={<InternalConfig />} />
+        </Route>
 
-      <Route path={routes.internalAdmin()} element={<InternalAdmin />} />
-      <Route path={routes.myProcedures} element={<MyProcedures />} />
+        {/* Rutas protegidas para administración interna - requieren rol ADMIN o STAFF */}
+        <Route path={routes.internalAdmin()} element={
+          <ProtectedRoute requiredRole={['ADMIN', 'STAFF']}>
+            <InternalAdmin />
+          </ProtectedRoute>
+        } />
+        
+        <Route path={routes.myProcedures} element={
+          <ProtectedRoute>
+            <MyProcedures />
+          </ProtectedRoute>
+        } />
 
-      {/* Layout base para sección interna */}
-      <Route path={routes.procedures.internal.root} element={<InternalLayout />}>
-        <Route index element={<InternalConfig />} />
-        <Route path="config" element={<InternalConfig />} />
-        {/* Rutas de procedimientos internos como rutas anidadas dentro del layout */}
-        <Route path="procedures/feeding" element={<Feeding />} />
-        <Route path="procedures/transport" element={<Transport />} />
-        <Route path="procedures/maintenance" element={<Maintenance />} />
-        <Route path="procedures/accommodation" element={<Accommodation />} />
-      </Route>
+        {/* Layout base para sección interna - requiere rol INTERNAL o superior */}
+        <Route path={routes.procedures.internal.root} element={
+          <ProtectedRoute requiredRole={['ADMIN', 'STAFF', 'INTERNAL']}>
+            <InternalLayout />
+          </ProtectedRoute>
+        }>
+          <Route index element={<InternalConfig />} />
+          <Route path="config" element={<InternalConfig />} />
+          {/* Rutas de procedimientos internos como rutas anidadas dentro del layout */}
+          <Route path="procedures/feeding" element={<Feeding />} />
+          <Route path="procedures/transport" element={<Transport />} />
+          <Route path="procedures/maintenance" element={<Maintenance />} />
+          <Route path="procedures/accommodation" element={<Accommodation />} />
+        </Route>
 
-      {/* Ruta fallback para páginas no encontradas - DEBE SER LA ÚLTIMA */}
-      <Route path="*" element={<NotFound />} />
+        {/* Ruta fallback para páginas no encontradas - DEBE SER LA ÚLTIMA */}
+        {/* Ruta para usuarios no autorizados */}
+        <Route path="/unauthorized" element={
+          <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <div className="text-center p-8 bg-white rounded-lg shadow-lg max-w-md w-full">
+              <h1 className="text-2xl font-bold text-red-600 mb-4">Acceso no autorizado</h1>
+              <p className="text-gray-700 mb-6">No tienes permiso para acceder a esta página.</p>
+              <button 
+                onClick={() => window.location.href = routes.home}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+              >
+                Volver al inicio
+              </button>
+            </div>
+          </div>
+        } />
+        
+        {/* Ruta 404 */}
+        <Route path="*" element={<NotFound />} />
 
       </Routes>
     </Suspense>

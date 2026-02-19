@@ -8,7 +8,7 @@ export type UserRole =
   | 'STUDENT'
   | 'PROFESSOR'
   | 'STAFF'
-  | 'EXTERNAL';
+  | 'INTERNAL';
 
 /**
  * User gender types
@@ -46,6 +46,7 @@ export interface UserProfile extends UserBase {
   gender: UserGender | null;
   profile_picture: string | null; // URL to profile picture
   bio: string | null;
+  user_type: UserRole; // User role (ADMIN, STUDENT, PROFESSOR, etc.)
   
   // Academic information
   student_id: string | null;
@@ -54,7 +55,6 @@ export interface UserProfile extends UserBase {
   academic_year: number | null;
   
   // Additional user metadata
-  user_type: UserRole;
   is_verified: boolean;
   email_verified: boolean;
   phone_verified: boolean;

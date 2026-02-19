@@ -27,9 +27,9 @@ export const Social = () => {
     return <div className="flex flex-col gap-2 items-start justify-start">
         <h2 className="w-full uppercase text-xl text-primary font-bold text-start">Redes:</h2>
         <div className="flex flex-row gap-3 justify-between items-center pl-2">
-            {socialitems.map((e) =>{
-                return <SocialChip item={e} />
-            })}
+            {socialitems.map((item, index) => (
+                <SocialChip key={`social-${index}-${item.label}`} item={item} />
+            ))}
         </div>
     </div>
 }

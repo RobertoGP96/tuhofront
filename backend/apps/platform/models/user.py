@@ -100,6 +100,7 @@ class User(AbstractUser):
             ('PROFESOR', _('Profesor')),
             ('TRABAJADOR', _('Trabajador')),
             ('EXTERNO', _('Externo')),
+            ('ADMIN', _('Admin')),
         ],
         default='ESTUDIANTE',
         verbose_name=_("Tipo de usuario"),

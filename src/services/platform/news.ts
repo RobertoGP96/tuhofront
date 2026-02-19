@@ -15,7 +15,9 @@ const NEWS_ENDPOINTS = {
   CATEGORIES: '/v1/news/categories/',
 } as const;
 
-
+/**
+ * Servicio de noticias
+ */
 class NewsService {
   /**
    * Get paginated list of news
@@ -35,18 +37,38 @@ class NewsService {
       }
     });
 
-    const response = await apiClient.get<PaginatedResponse<NewsListItem>>(
-      `${NEWS_ENDPOINTS.NEWS}?${params}`
-    );
-    return response;
+    // Usar fetch directamente para evitar el envío del token de autenticación
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}${NEWS_ENDPOINTS.NEWS}?${params}`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'same-origin',
+    });
+    
+    if (!response.ok) {
+      throw new Error('Error al cargar las noticias');
+    }
+    
+    return response.json();
   }
 
   /**
    * Get a single news item by slug or ID
    */
   async getNewsDetail(identifier: string | number): Promise<NewsDetail> {
-    const response = await apiClient.get<NewsDetail>(`${NEWS_ENDPOINTS.NEWS}${identifier}/`);
-    return response;
+    // Usar fetch directamente para evitar el envío del token de autenticación
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}${NEWS_ENDPOINTS.NEWS}${identifier}/`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'same-origin',
+    });
+    
+    if (!response.ok) {
+      throw new Error('Error al cargar el detalle de la noticia');
+    }
+    
+    return response.json();
   }
 
   /**
@@ -118,10 +140,19 @@ class NewsService {
    * Get featured news
    */
   async getFeaturedNews(limit = 3): Promise<NewsListItem[]> {
-    const response = await apiClient.get<NewsListItem[]>(
-      `${NEWS_ENDPOINTS.FEATURED}?limit=${limit}`
-    );
-    return response;
+    // Usar fetch directamente para evitar el envío del token de autenticación
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}${NEWS_ENDPOINTS.FEATURED}?limit=${limit}`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'same-origin',
+    });
+    
+    if (!response.ok) {
+      throw new Error('Error al cargar las noticias destacadas');
+    }
+    
+    return response.json();
   }
 
   /**
