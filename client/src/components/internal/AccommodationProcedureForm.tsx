@@ -1,13 +1,13 @@
+import { Calendar, Hotel, Plus, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Calendar, Plus, Trash2, Hotel } from 'lucide-react';
 import { toast } from 'sonner';
 import { accommodationService } from '../../services/internal.service';
-import type { AccommodationProcedureForm, Guest, FeedingDays } from '../../types/internal.types';
+import type { AccommodationProcedureForm, FeedingDays, Guest } from '../../types/internal.types';
+import { Button } from '../ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 interface AccommodationProcedureFormProps {
   onSuccess?: () => void;
@@ -143,7 +143,8 @@ export function AccommodationProcedureForm({ onSuccess, onCancel }: Accommodatio
 
   return (
     <div className="w-full max-w-4xl mx-auto py-8 px-4">
-      <Card className="shadow-2xl shadow-primary-navy/5 border-gray-100 rounded-3xl overflow-hidden">
+      <form onSubmit={onSubmit}>
+        <Card className="shadow-2xl shadow-primary-navy/5 border-gray-100 rounded-3xl overflow-hidden">
         <CardHeader className="bg-primary-navy p-8 text-white">
           <div className="flex items-center gap-4 mb-2">
             <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-md">
@@ -225,7 +226,7 @@ export function AccommodationProcedureForm({ onSuccess, onCancel }: Accommodatio
               <textarea
                 id="description"
                 rows={4}
-                className="flex min-h-[80px] w-full rounded-xl border border-gray-100 bg-gray-50/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex min-h-20 w-full rounded-xl border border-gray-100 bg-gray-50/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 placeholder="Describa los detalles de la solicitud de alojamiento..."
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
@@ -405,19 +406,10 @@ export function AccommodationProcedureForm({ onSuccess, onCancel }: Accommodatio
             ))}
           </div>
 
-          {/* Botones */}
-          <div className="flex justify-end gap-4 pt-4">
-            {onCancel && (
-              <Button type="button" variant="outline" onClick={onCancel}>
-                Cancelar
-              </Button>
-            )}
-            <Button type="submit" disabled={isSubmitting} className="bg-primary-navy hover:bg-primary-navy/90 text-white px-6 font-bold uppercase text-[10px] tracking-widest shadow-lg shadow-primary-navy/20 hover:shadow-primary-navy/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300">
-              {isSubmitting ? 'Enviando...' : 'Enviar Solicitud'}
-            </Button>
           </div>
-        </form>
-      </CardContent>
-    </Card>
+        </CardContent>
+        </Card>
+      </form>
+    </div>
   );
 };

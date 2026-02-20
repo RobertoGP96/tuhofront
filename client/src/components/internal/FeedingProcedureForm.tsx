@@ -334,18 +334,18 @@ export function FeedingProcedureForm({ onSuccess, onCancel }: FeedingProcedureFo
           </div>
 
           {/* Botones */}
-          <div className="flex justify-end gap-4 pt-4">
+          <div className="pt-6 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-4">
             {onCancel && (
-              <Button type="button" variant="outline" onClick={onCancel}>
+              <Button type="button" variant="outline" onClick={onCancel} className="w-full md:w-auto px-6 py-3 rounded-2xl font-bold uppercase tracking-widest border-gray-200 hover:bg-gray-50">
                 Cancelar
               </Button>
             )}
-            <Button type="submit" disabled={isSubmitting} className="bg-primary-navy hover:bg-primary-navy/90 text-white px-6 font-bold uppercase text-[10px] tracking-widest shadow-lg shadow-primary-navy/20 hover:shadow-primary-navy/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300">
+            <Button type="submit" disabled={isSubmitting} className="w-full md:w-auto bg-primary-navy hover:bg-primary-navy/90 text-white px-10 py-6 rounded-2xl font-bold uppercase tracking-widest shadow-xl shadow-primary-navy/20 active:scale-95 transition-all">
               {isSubmitting ? 'Enviando...' : 'Enviar Solicitud'}
             </Button>
           </div>
         </CardContent>
-      </Card>
+        </Card>
       </form>
     </div>
 
