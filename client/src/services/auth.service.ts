@@ -4,28 +4,20 @@ import type { AuthResponse, User, RegisterData } from '../types/auth.types';
 
 export const authService = {
   async register(data: RegisterData): Promise<void> {
-    const formData = new FormData();
-    formData.append('username', data.username);
-    formData.append('email', data.email);
-    formData.append('password', data.password);
-    formData.append('password_confirm', data.password_confirm);
-    formData.append('first_name', data.first_name);
-    formData.append('last_name', data.last_name);
-    formData.append('id_card', data.id_card);
-    if (data.phone) formData.append('phone', data.phone);
-    if (data.workplace) formData.append('workplace', data.workplace);
-    if (data.date_of_birth) formData.append('date_of_birth', data.date_of_birth);
+    const payload = {
+      username: String(data.username),
+      email: String(data.email),
+      password: String(data.password),
+      password_confirm: String(data.password_confirm),
+      first_name: String(data.first_name),
+      last_name: String(data.last_name),
+      id_card: String(data.id_card),
+      phone: data.phone ? String(data.phone) : '',
+      workplace: data.workplace ? String(data.workplace) : '',
+      date_of_birth: data.date_of_birth ? String(data.date_of_birth) : '',
+    };
     
-    console.log('FormData entries:');
-    for (const [key, value] of formData.entries()) {
-      console.log(`  ${key}: ${value}`);
-    }
-    
-    await apiClient.post('/users/', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      }
-    });
+    await apiClient.post('/users/', payload);
   },
 
   async login(username: string, password: string): Promise<AuthResponse> {

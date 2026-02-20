@@ -74,7 +74,6 @@ const RegisterPage: React.FC = () => {
 
     setIsLoading(true);
     try {
-      console.log('Form data before submit:', formData);
       await authService.register(formData);
       navigate('/login', { state: { message: 'Registro exitoso. Por favor, inicie sesión.' } });
     } catch (err: unknown) {

@@ -111,7 +111,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 "message": _(
                     "Usuario creado exitosamente. Revisa tu email para activar la cuenta."
                 ),
-                "user": UsuarioDetailSerializer(user).data,
+                "user": UserDetailSerializer(user).data,
             },
             status=status.HTTP_201_CREATED,
         )
