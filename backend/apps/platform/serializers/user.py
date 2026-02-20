@@ -13,6 +13,7 @@ class UserBaseSerializer(serializers.ModelSerializer):
     age = serializers.IntegerField(read_only=True)
     is_verified = serializers.BooleanField(read_only=True)
     carnet_masked = serializers.CharField(source='get_carnet_masked', read_only=True)
+    role = serializers.SerializerMethodField()
     
     class Meta:
         model = User
@@ -20,9 +21,15 @@ class UserBaseSerializer(serializers.ModelSerializer):
             'id', 'username', 'email', 'first_name', 'last_name',
             'full_name', 'id_card', 'phone', 'address', 'date_of_birth',
             'user_type', 'workplace', 'age', 'is_verified', 'carnet_masked',
-            'email_verified', 'phone_verified', 'is_active', 'date_joined'
+            'email_verified', 'phone_verified', 'is_active', 'date_joined',
+            'role', 'is_staff'
         ]
         read_only_fields = ['id', 'date_joined']
+    
+    def get_role(self, obj):
+        if obj.is_staff or obj.is_superuser:
+            return 'ADMIN'
+        return 'USER'
 
 
 class UserListSerializer(serializers.ModelSerializer):

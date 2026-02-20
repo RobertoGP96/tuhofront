@@ -10,6 +10,6 @@ export const useAuth = () => {
     isLoading,
     login,
     logout,
-    isAdmin: user?.role === 'admin',
+    isAdmin: user?.role === 'ADMIN' || user?.is_staff === true,
   };
 };

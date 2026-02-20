@@ -13,7 +13,8 @@ export interface User {
   date_of_birth?: string;
   user_type?: UserType;
   workplace?: string;
-  role: 'admin' | 'user';
+  role?: 'ADMIN' | 'USER';
+  is_staff?: boolean;
 }
 
 export interface RegisterData {
@@ -32,11 +33,12 @@ export interface RegisterData {
 }
 
 export const USER_TYPE_OPTIONS: { value: UserType; label: string }[] = [
-  { value: 'EXTERNO', label: 'Usuario Externo' },
+  { value: 'EXTERNO', label: 'Externo' },
   { value: 'ESTUDIANTE', label: 'Estudiante' },
   { value: 'PROFESOR', label: 'Profesor' },
   { value: 'TRABAJADOR', label: 'Trabajador' },
   { value: 'SECRETARIA_DOCENTE', label: 'Secretaría Docente' },
+  { value: 'ADMIN', label: 'Administrador' },
 ];
 
 export interface AuthResponse {

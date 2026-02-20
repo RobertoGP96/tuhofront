@@ -8,6 +8,7 @@ import {
   Newspaper,
   Search,
   Settings,
+  Shield,
   User
 } from 'lucide-react';
 import React from 'react';
@@ -42,7 +43,7 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ role: propsRole }) => {
   const navigate = useNavigate();
   const { user, isAdmin, logout, isAuthenticated } = useAuth();
-  const role = propsRole || (isAdmin ? 'admin' : 'user');
+  const role = propsRole || (isAdmin ? 'ADMIN' : 'USUARIO');
   const userName = user?.username || user?.email || 'Invitado';
 
   const proceduresMenuItems = [
@@ -260,10 +261,15 @@ export const Navbar: React.FC<NavbarProps> = ({ role: propsRole }) => {
                 <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate('/profile')}>
                   <User size={16} /> Perfil
                 </DropdownMenuItem>
-                {role === 'admin' && (
-                  <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate('/admin/settings')}>
-                    <Settings size={16} /> Configuración
-                  </DropdownMenuItem>
+                {role === 'ADMIN' && (
+                  <>
+                    <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate('/admin/dashboard')}>
+                      <Shield size={16} /> Administración
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate('/admin/settings')}>
+                      <Settings size={16} /> Configuración
+                    </DropdownMenuItem>
+                  </>
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem 
