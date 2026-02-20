@@ -4,7 +4,7 @@ import type { AuthResponse, User } from '../types/auth.types';
 
 export const authService = {
   async login(username: string, password: string): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>('/token/', {
+    const response = await apiClient.post<AuthResponse>('/auth/login/', {
       username,
       password,
     });
