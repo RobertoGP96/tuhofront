@@ -1,14 +1,14 @@
 import {
-    ChevronDown,
-    FileText,
-    Home,
-    LogIn,
-    LogOut,
-    MessageSquare,
-    Newspaper,
-    Search,
-    Settings,
-    User
+  ChevronDown,
+  FileText,
+  Home,
+  LogIn,
+  LogOut,
+  MessageSquare,
+  Newspaper,
+  Search,
+  Settings,
+  User
 } from 'lucide-react';
 import React from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
@@ -16,14 +16,14 @@ import { cn } from '../utils';
 import { Logo } from './Logo';
 import { Button } from './ui/button';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 
 interface ProcedureItem {
@@ -43,7 +43,7 @@ export const Navbar: React.FC<NavbarProps> = ({ role: propsRole }) => {
   const navigate = useNavigate();
   const { user, isAdmin, logout, isAuthenticated } = useAuth();
   const role = propsRole || (isAdmin ? 'admin' : 'user');
-  const userName = user?.email || user?.username || 'Invitado';
+  const userName = user?.username || user?.email || 'Invitado';
 
   const proceduresMenuItems = [
     {
@@ -164,7 +164,7 @@ export const Navbar: React.FC<NavbarProps> = ({ role: propsRole }) => {
               {item.icon && <i className={cn(item.icon, "text-lg text-gray-400")} />}
               <span>{item.label}</span>
             </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent className="min-w-[200px]">
+            <DropdownMenuSubContent className="min-w-50">
               {renderProceduresItems(item.items)}
             </DropdownMenuSubContent>
           </DropdownMenuSub>
@@ -222,7 +222,7 @@ export const Navbar: React.FC<NavbarProps> = ({ role: propsRole }) => {
                 <ChevronDown size={14} />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="min-w-[200px]">
+            <DropdownMenuContent align="start" className="min-w-50">
               {renderProceduresItems(proceduresMenuItems)}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -238,19 +238,18 @@ export const Navbar: React.FC<NavbarProps> = ({ role: propsRole }) => {
           <div className="relative">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full border border-gray-100 hover:bg-gray-50 cursor-pointer"
+                <div
+                  
+                  className="flex items-center gap-2 pl-2 pr-1 py-2 rounded-full border border-gray-100 hover:bg-gray-50 cursor-pointer"
                 >
                   <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-primary-navy">
                     <User size={18} />
                   </div>
-                  <span className="hidden sm:inline text-xs font-medium text-gray-600 truncate max-w-[120px]">
+                  <span className="hidden sm:inline text-xs font-medium text-gray-600 truncate max-w-30">
                     {userName}
                   </span>
                   <ChevronDown size={14} className="text-gray-400" />
-                </Button>
+                </div>
               </DropdownMenuTrigger>
 
               <DropdownMenuContent align="end" className="w-48">

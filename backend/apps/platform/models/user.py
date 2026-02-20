@@ -100,9 +100,10 @@ class User(AbstractUser):
             ('PROFESOR', _('Profesor')),
             ('TRABAJADOR', _('Trabajador')),
             ('EXTERNO', _('Externo')),
+            ('SECRETARIA_DOCENTE', _('Secretaría Docente')),
             ('ADMIN', _('Admin')),
         ],
-        default='ESTUDIANTE',
+        default='EXTERNO',
         verbose_name=_("Tipo de usuario"),
         help_text=_("Categoría del usuario en el sistema universitario")
     )

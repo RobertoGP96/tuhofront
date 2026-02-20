@@ -1,9 +1,9 @@
 
-import { ArrowRight, Lock, Mail, User, UserCheck, UserPlus, Phone, IdCard, Building, Calendar } from 'lucide-react';
+import { ArrowRight, Building, Calendar, IdCard, Lock, Mail, Phone, User, UserCheck, UserPlus, Users } from 'lucide-react';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../services/auth.service';
-import type { RegisterData } from '../types/auth.types';
+import { USER_TYPE_OPTIONS, type RegisterData } from '../types/auth.types';
 
 const RegisterPage: React.FC = () => {
   const [formData, setFormData] = useState<RegisterData>({
@@ -15,12 +15,13 @@ const RegisterPage: React.FC = () => {
     phone: '',
     password: '',
     password_confirm: '',
+    user_type: 'EXTERNO',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     if (errors[name]) {
@@ -233,6 +234,25 @@ const RegisterPage: React.FC = () => {
                     value={formData.workplace}
                     onChange={handleChange}
                   />
+                </div>
+
+                <div className="relative group/input">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Users className="h-5 w-5 text-gray-400 group-focus-within/input:text-primary-navy transition-colors" />
+                  </div>
+                  <select
+                    name="user_type"
+                    required
+                    className="block w-full pl-11 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-primary-navy focus:outline-none focus:ring-2 focus:ring-primary-navy/20 focus:border-primary-navy transition-all"
+                    value={formData.user_type}
+                    onChange={handleChange}
+                  >
+                    {USER_TYPE_OPTIONS.map(option => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="relative group/input">

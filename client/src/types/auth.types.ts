@@ -1,4 +1,6 @@
 
+export type UserType = 'ESTUDIANTE' | 'PROFESOR' | 'TRABAJADOR' | 'EXTERNO' | 'SECRETARIA_DOCENTE' | 'ADMIN';
+
 export interface User {
   id: number;
   username: string;
@@ -9,7 +11,7 @@ export interface User {
   phone?: string;
   address?: string;
   date_of_birth?: string;
-  user_type?: string;
+  user_type?: UserType;
   workplace?: string;
   role: 'admin' | 'user';
 }
@@ -25,9 +27,17 @@ export interface RegisterData {
   phone?: string;
   address?: string;
   date_of_birth?: string;
-  user_type?: string;
+  user_type?: UserType;
   workplace?: string;
 }
+
+export const USER_TYPE_OPTIONS: { value: UserType; label: string }[] = [
+  { value: 'EXTERNO', label: 'Usuario Externo' },
+  { value: 'ESTUDIANTE', label: 'Estudiante' },
+  { value: 'PROFESOR', label: 'Profesor' },
+  { value: 'TRABAJADOR', label: 'Trabajador' },
+  { value: 'SECRETARIA_DOCENTE', label: 'Secretaría Docente' },
+];
 
 export interface AuthResponse {
   access: string;
