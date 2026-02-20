@@ -1,13 +1,13 @@
 import {
-  ChevronDown,
-  FileText,
-  Home,
-  LogOut,
-  MessageSquare,
-  Newspaper,
-  Search,
-  Settings,
-  User
+    ChevronDown,
+    FileText,
+    Home,
+    LogOut,
+    MessageSquare,
+    Newspaper,
+    Search,
+    Settings,
+    User
 } from 'lucide-react';
 import React from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
@@ -15,14 +15,14 @@ import { cn } from '../utils';
 import { Logo } from './Logo';
 import { Button } from './ui/button';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+    DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 
 interface ProcedureItem {
@@ -32,13 +32,17 @@ interface ProcedureItem {
   command?: () => void;
 }
 
+import { useAuth } from '../hooks/useAuth';
+
 interface NavbarProps {
   role?: 'user' | 'admin';
-  userName?: string;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ role = 'user', userName = 'admin@example.com' }) => {
+export const Navbar: React.FC<NavbarProps> = ({ role: propsRole }) => {
   const navigate = useNavigate();
+  const { user, isAdmin, logout, isAuthenticated } = useAuth();
+  const role = propsRole || (isAdmin ? 'admin' : 'user');
+  const userName = user?.email || user?.username || 'Invitado';
 
   const proceduresMenuItems = [
     {
@@ -229,44 +233,60 @@ export const Navbar: React.FC<NavbarProps> = ({ role = 'user', userName = 'admin
           <Search size={20} />
         </Button>
 
-        <div className="relative">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full border border-gray-100 hover:bg-gray-50 cursor-pointer"
-              >
-                <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-primary-navy">
-                  <User size={18} />
-                </div>
-                <span className="hidden sm:inline text-xs font-medium text-gray-600 truncate max-w-[120px]">
-                  {userName}
-                </span>
-                <ChevronDown size={14} className="text-gray-400" />
-              </Button>
-            </DropdownMenuTrigger>
+        {isAuthenticated ? (
+          <div className="relative">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full border border-gray-100 hover:bg-gray-50 cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-primary-navy">
+                    <User size={18} />
+                  </div>
+                  <span className="hidden sm:inline text-xs font-medium text-gray-600 truncate max-w-[120px]">
+                    {userName}
+                  </span>
+                  <ChevronDown size={14} className="text-gray-400" />
+                </Button>
+              </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end" className="w-48">
-              <div className="px-4 py-2 border-b border-gray-50 md:hidden">
-                <p className="text-xs font-semibold text-primary-navy truncate">{userName}</p>
-                <p className="text-[10px] text-gray-400 capitalize">{role}</p>
-              </div>
-              <DropdownMenuItem className="gap-2 cursor-pointer">
-                <User size={16} /> Perfil
-              </DropdownMenuItem>
-              {role === 'admin' && (
-                <DropdownMenuItem className="gap-2 cursor-pointer">
-                  <Settings size={16} /> Configuración
+              <DropdownMenuContent align="end" className="w-48">
+                <div className="px-4 py-2 border-b border-gray-50 md:hidden">
+                  <p className="text-xs font-semibold text-primary-navy truncate">{userName}</p>
+                  <p className="text-[10px] text-gray-400 capitalize">{role}</p>
+                </div>
+                <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate('/profile')}>
+                  <User size={16} /> Perfil
                 </DropdownMenuItem>
-              )}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="gap-2 cursor-pointer text-red-500 focus:text-red-600 focus:bg-red-50">
-                <LogOut size={16} /> Cerrar Sesión
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+                {role === 'admin' && (
+                  <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate('/admin/settings')}>
+                    <Settings size={16} /> Configuración
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  className="gap-2 cursor-pointer text-red-500 focus:text-red-600 focus:bg-red-50"
+                  onClick={() => {
+                    logout();
+                    navigate('/');
+                  }}
+                >
+                  <LogOut size={16} /> Cerrar Sesión
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        ) : (
+          <Button 
+            size="sm" 
+            className="rounded-full bg-primary-navy hover:bg-primary-navy/90 text-white"
+            onClick={() => navigate('/login')}
+          >
+            Iniciar Sesión
+          </Button>
+        )}
       </div>
     </nav>
   );

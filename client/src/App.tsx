@@ -1,43 +1,40 @@
-import { useState } from 'react'
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
+import { useAuth } from './hooks/useAuth'
 import { MainLayout } from './layouts/MainLayout'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminProcedures from './pages/AdminProcedures'
 import Contact from './pages/Contact'
 import Home from './pages/Home'
+import Login from './pages/Login'
 import News from './pages/News'
+import Register from './pages/Register'
 import {
-  PostInterProcedure,
-  PostNatProcedure,
-  TitleLegalization,
-  UnderInterProcedure,
-  UnderNatProcedure
+    PostInterProcedure,
+    PostNatProcedure,
+    TitleLegalization,
+    UnderInterProcedure,
+    UnderNatProcedure
 } from './pages/procedures/teaching-secretary'
 
 function App() {
-  const [role, setRole] = useState<'user' | 'admin'>('user');
+  const { isAdmin, isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a]">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
+      </div>
+    );
+  }
 
   return (
     <Router>
-      <MainLayout role={role}>
-        <div className="mb-8 flex items-center gap-2 bg-gray-100 p-1 rounded-lg w-fit">
-          <button 
-            onClick={() => setRole('user')}
-            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${role === 'user' ? 'bg-white text-primary-navy shadow-sm' : 'text-gray-500 hover:text-primary-navy'}`}
-          >
-            Modo Usuario
-          </button>
-          <button 
-            onClick={() => setRole('admin')}
-            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${role === 'admin' ? 'bg-white text-primary-navy shadow-sm' : 'text-gray-500 hover:text-primary-navy'}`}
-          >
-            Modo Admin
-          </button>
-        </div>
-
+      <MainLayout role={isAdmin ? 'admin' : 'user'}>
         <Routes>
           {/* Public/User Routes */}
           <Route path="/" element={<Home />} />
+          <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" replace />} />
+          <Route path="/register" element={!isAuthenticated ? <Register /> : <Navigate to="/" replace />} />
           <Route path="/news" element={<News />} />
           <Route path="/procedures" element={<div className="p-8 text-center text-gray-400">Gestión de Trámites (Próximamente)</div>} />
           
@@ -52,16 +49,21 @@ function App() {
           <Route path="/profile" element={<div className="p-8 text-center text-gray-400">Mi Perfil (Próximamente)</div>} />
 
           {/* Admin Routes */}
-          {role === 'admin' ? (
-            <>
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/admin/users" element={<div className="p-8 text-center text-gray-400">Gestión de Usuarios (Próximamente)</div>} />
-              <Route path="/admin/procedures" element={<AdminProcedures />} />
-              <Route path="/admin/settings" element={<div className="p-8 text-center text-gray-400">Configuración del Sistema (Próximamente)</div>} />
-            </>
-          ) : (
-            <Route path="/admin/*" element={<Navigate to="/" replace />} />
-          )}
+          <Route
+            path="/admin/*"
+            element={
+              isAdmin ? (
+                <Routes>
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="users" element={<div className="p-8 text-center text-gray-400">Gestión de Usuarios (Próximamente)</div>} />
+                  <Route path="procedures" element={<AdminProcedures />} />
+                  <Route path="settings" element={<div className="p-8 text-center text-gray-400">Configuración del Sistema (Próximamente)</div>} />
+                </Routes>
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,16 +1,16 @@
-import React from 'react';
-import { Navbar } from '../components/Navbar';
-import { MobileNav } from '../components/MobileNav';
-import { Footer } from '../components/Footer';
-import { 
-  LayoutDashboard, 
-  Users, 
-  Settings, 
+import {
+  ChevronRight,
   FileCheck,
-  ChevronRight
+  LayoutDashboard,
+  Settings,
+  Users
 } from 'lucide-react';
+import React from 'react';
+import { Footer } from '../components/Footer';
+import { MobileNav } from '../components/MobileNav';
+import { Navbar } from '../components/Navbar';
 import { NavItem } from '../components/NavItem';
-import { cn } from '../utils';
+
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -47,10 +47,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children, role = 'user' 
         )}
 
         {/* Main Content */}
-        <main className={cn(
-          "flex-1 flex flex-col w-full",
-          isAdmin ? "bg-white" : "bg-white"
-        )}>
+        <main className='w-full'>
           {/* Optional breadcrumbs or header for content */}
           {isAdmin && (
             <div className="px-4 md:px-8 py-4 border-b border-gray-50 flex items-center gap-2 text-xs text-gray-400">
@@ -60,7 +57,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children, role = 'user' 
             </div>
           )}
           
-          <div className="flex-1 p-4 md:p-8">
+          <div className="flex-1">
             {children}
           </div>
         </main>
