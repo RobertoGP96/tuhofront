@@ -8,12 +8,16 @@ import Home from './pages/Home'
 import Login from './pages/Login'
 import News from './pages/News'
 import Register from './pages/Register'
+import { AccommodationProcedurePage } from './pages/procedures/internal/AccommodationProcedurePage'
+import { FeedingProcedurePage } from './pages/procedures/internal/FeedingProcedurePage'
+import { MaintenanceProcedurePage } from './pages/procedures/internal/MaintenanceProcedurePage'
+import { TransportProcedurePage } from './pages/procedures/internal/TransportProcedurePage'
 import {
-    PostInterProcedure,
-    PostNatProcedure,
-    TitleLegalization,
-    UnderInterProcedure,
-    UnderNatProcedure
+  PostInterProcedure,
+  PostNatProcedure,
+  TitleLegalization,
+  UnderInterProcedure,
+  UnderNatProcedure
 } from './pages/procedures/teaching-secretary'
 
 function App() {
@@ -44,6 +48,12 @@ function App() {
           <Route path="/procedures/secretary/postgraduate/national" element={<PostNatProcedure />} />
           <Route path="/procedures/secretary/postgraduate/international" element={<PostInterProcedure />} />
           <Route path="/procedures/secretary/title-legalization" element={<TitleLegalization />} />
+          
+          {/* Internal Procedures */}
+          <Route path="/procedures/internal/feeding" element={<FeedingProcedurePage />} />
+          <Route path="/procedures/internal/accommodation" element={<AccommodationProcedurePage />} />
+          <Route path="/procedures/internal/transport" element={<TransportProcedurePage />} />
+          <Route path="/procedures/internal/maintenance" element={<MaintenanceProcedurePage />} />
           
           <Route path="/contact" element={<Contact />} />
           <Route path="/profile" element={<div className="p-8 text-center text-gray-400">Mi Perfil (Próximamente)</div>} />
