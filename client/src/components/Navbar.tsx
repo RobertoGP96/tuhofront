@@ -2,6 +2,7 @@ import {
     ChevronDown,
     FileText,
     Home,
+    LogIn,
     LogOut,
     MessageSquare,
     Newspaper,
@@ -281,10 +282,11 @@ export const Navbar: React.FC<NavbarProps> = ({ role: propsRole }) => {
         ) : (
           <Button 
             size="sm" 
-            className="rounded-full bg-primary-navy hover:bg-primary-navy/90 text-white"
+            className="rounded-full bg-primary-navy hover:bg-primary-navy/90 text-white px-6 font-bold uppercase text-[10px] tracking-widest shadow-lg shadow-primary-navy/20 hover:shadow-primary-navy/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 flex items-center gap-2 border border-primary-navy"
             onClick={() => navigate('/login')}
           >
-            Iniciar Sesión
+            <LogIn size={14} className="text-secondary-lime" />
+            Acceder
           </Button>
         )}
       </div>
