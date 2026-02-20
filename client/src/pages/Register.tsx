@@ -1,59 +1,107 @@
 
-import { ArrowRight, Lock, Mail, User, UserCheck, UserPlus } from 'lucide-react';
+import { ArrowRight, Lock, Mail, User, UserCheck, UserPlus, Phone, IdCard, Building, Calendar } from 'lucide-react';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { authService } from '../services/auth.service';
+import type { RegisterData } from '../types/auth.types';
 
 const RegisterPage: React.FC = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<RegisterData>({
     username: '',
     email: '',
     first_name: '',
     last_name: '',
+    id_card: '',
+    phone: '',
     password: '',
-    confirm_password: '',
+    password_confirm: '',
   });
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.username || formData.username.length < 3) {
+      newErrors.username = 'El nombre de usuario debe tener al menos 3 caracteres';
+    }
+
+    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Ingrese un correo electrónico válido';
+    }
+
+    if (!formData.first_name || formData.first_name.trim().length < 2) {
+      newErrors.first_name = 'Ingrese su nombre(s)';
+    }
+
+    if (!formData.last_name || formData.last_name.trim().length < 2) {
+      newErrors.last_name = 'Ingrese sus apellidos';
+    }
+
+    if (!formData.id_card || formData.id_card.length < 9) {
+      newErrors.id_card = 'Ingrese un número de carnet válido (9 dígitos)';
+    }
+
+    if (!formData.password || formData.password.length < 8) {
+      newErrors.password = 'La contraseña debe tener al menos 8 caracteres';
+    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
+      newErrors.password = 'La contraseña debe contener mayúsculas, minúsculas y números';
+    }
+
+    if (formData.password !== formData.password_confirm) {
+      newErrors.password_confirm = 'Las contraseñas no coinciden';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     
-    if (formData.password !== formData.confirm_password) {
-      setError('Las contraseñas no coinciden');
+    if (!validateForm()) {
       return;
     }
 
     setIsLoading(true);
-    // In a real scenario, call authService.register
     try {
-      // await authService.register(formData);
-      // For now, simulate success
-      setTimeout(() => {
-        setIsLoading(false);
-        navigate('/login', { state: { message: 'Registro exitoso. Por favor, inicie sesión.' } });
-      }, 1500);
+      console.log('Form data before submit:', formData);
+      await authService.register(formData);
+      navigate('/login', { state: { message: 'Registro exitoso. Por favor, inicie sesión.' } });
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { detail?: string } } };
-      setError(error.response?.data?.detail || 'Error al registrar usuario.');
+      const error = err as { response?: { data?: Record<string, string[]> } };
+      const responseData = error.response?.data;
+      
+      if (responseData) {
+        const fieldErrors: Record<string, string> = {};
+        Object.keys(responseData).forEach(key => {
+          const messages = responseData[key];
+          if (Array.isArray(messages)) {
+            fieldErrors[key] = messages[0];
+          }
+        });
+        setErrors(fieldErrors);
+      } else {
+        setErrors({ general: 'Error al registrar usuario. Intente de nuevo.' });
+      }
+    } finally {
       setIsLoading(false);
     }
   };
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4 bg-accent/30 py-12">
-      <div className="w-full max-w-2xl space-y-8">
-        {/* Card */}
+      <div className="w-full max-w-3xl space-y-8">
         <div className="bg-white rounded-4xl shadow-2xl shadow-primary-navy/5 border border-gray-100 p-8 md:p-12 relative overflow-hidden group">
-          {/* Subtle Decorative Element */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-secondary-lime/10 rounded-bl-full -mr-16 -mt-16 transition-all duration-700 group-hover:scale-110" />
           
           <div className="relative">
@@ -70,9 +118,11 @@ const RegisterPage: React.FC = () => {
             </div>
 
             <form className="space-y-6" onSubmit={handleSubmit}>
-              {error && (
+              {(errors.general || Object.keys(errors).length > 0) && (
                 <div className="p-4 bg-red-50 border border-red-100 rounded-2xl animate-in fade-in slide-in-from-top-2 duration-300">
-                  <p className="text-sm text-red-600 text-center font-semibold">{error}</p>
+                  <p className="text-sm text-red-600 text-center font-semibold">
+                    {errors.general || 'Por favor, corrija los errores indicados'}
+                  </p>
                 </div>
               )}
 
@@ -85,11 +135,29 @@ const RegisterPage: React.FC = () => {
                     name="username"
                     type="text"
                     required
-                    className="block w-full pl-11 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-primary-navy placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-navy/20 focus:border-primary-navy transition-all"
-                    placeholder="Nombre de Usuario"
+                    className={`block w-full pl-11 pr-4 py-4 bg-gray-50 border rounded-2xl text-primary-navy placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-navy/20 focus:border-primary-navy transition-all ${errors.username ? 'border-red-300' : 'border-gray-100'}`}
+                    placeholder="Nombre de Usuario *"
                     value={formData.username}
                     onChange={handleChange}
                   />
+                  {errors.username && <p className="text-xs text-red-500 mt-1">{errors.username}</p>}
+                </div>
+
+                <div className="relative group/input">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <IdCard className="h-5 w-5 text-gray-400 group-focus-within/input:text-primary-navy transition-colors" />
+                  </div>
+                  <input
+                    name="id_card"
+                    type="text"
+                    required
+                    maxLength={11}
+                    className={`block w-full pl-11 pr-4 py-4 bg-gray-50 border rounded-2xl text-primary-navy placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-navy/20 focus:border-primary-navy transition-all ${errors.id_card ? 'border-red-300' : 'border-gray-100'}`}
+                    placeholder="Carnet de Identidad *"
+                    value={formData.id_card}
+                    onChange={handleChange}
+                  />
+                  {errors.id_card && <p className="text-xs text-red-500 mt-1">{errors.id_card}</p>}
                 </div>
 
                 <div className="relative group/input">
@@ -100,9 +168,24 @@ const RegisterPage: React.FC = () => {
                     name="email"
                     type="email"
                     required
-                    className="block w-full pl-11 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-primary-navy placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-navy/20 focus:border-primary-navy transition-all"
-                    placeholder="Correo Institucional"
+                    className={`block w-full pl-11 pr-4 py-4 bg-gray-50 border rounded-2xl text-primary-navy placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-navy/20 focus:border-primary-navy transition-all ${errors.email ? 'border-red-300' : 'border-gray-100'}`}
+                    placeholder="Correo Institucional *"
                     value={formData.email}
+                    onChange={handleChange}
+                  />
+                  {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
+                </div>
+
+                <div className="relative group/input">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Phone className="h-5 w-5 text-gray-400 group-focus-within/input:text-primary-navy transition-colors" />
+                  </div>
+                  <input
+                    name="phone"
+                    type="tel"
+                    className="block w-full pl-11 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-primary-navy placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-navy/20 focus:border-primary-navy transition-all"
+                    placeholder="Teléfono (opcional)"
+                    value={formData.phone}
                     onChange={handleChange}
                   />
                 </div>
@@ -115,11 +198,12 @@ const RegisterPage: React.FC = () => {
                     name="first_name"
                     type="text"
                     required
-                    className="block w-full pl-11 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-primary-navy placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-navy/20 focus:border-primary-navy transition-all"
-                    placeholder="Nombre(s)"
+                    className={`block w-full pl-11 pr-4 py-4 bg-gray-50 border rounded-2xl text-primary-navy placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-navy/20 focus:border-primary-navy transition-all ${errors.first_name ? 'border-red-300' : 'border-gray-100'}`}
+                    placeholder="Nombre(s) *"
                     value={formData.first_name}
                     onChange={handleChange}
                   />
+                  {errors.first_name && <p className="text-xs text-red-500 mt-1">{errors.first_name}</p>}
                 </div>
 
                 <div className="relative group/input">
@@ -130,9 +214,38 @@ const RegisterPage: React.FC = () => {
                     name="last_name"
                     type="text"
                     required
-                    className="block w-full pl-11 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-primary-navy placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-navy/20 focus:border-primary-navy transition-all"
-                    placeholder="Apellidos"
+                    className={`block w-full pl-11 pr-4 py-4 bg-gray-50 border rounded-2xl text-primary-navy placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-navy/20 focus:border-primary-navy transition-all ${errors.last_name ? 'border-red-300' : 'border-gray-100'}`}
+                    placeholder="Apellidos *"
                     value={formData.last_name}
+                    onChange={handleChange}
+                  />
+                  {errors.last_name && <p className="text-xs text-red-500 mt-1">{errors.last_name}</p>}
+                </div>
+
+                <div className="relative group/input">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Building className="h-5 w-5 text-gray-400 group-focus-within/input:text-primary-navy transition-colors" />
+                  </div>
+                  <input
+                    name="workplace"
+                    type="text"
+                    className="block w-full pl-11 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-primary-navy placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-navy/20 focus:border-primary-navy transition-all"
+                    placeholder="Centro de Trabajo (opcional)"
+                    value={formData.workplace}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="relative group/input">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Calendar className="h-5 w-5 text-gray-400 group-focus-within/input:text-primary-navy transition-colors" />
+                  </div>
+                  <input
+                    name="date_of_birth"
+                    type="date"
+                    className="block w-full pl-11 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-primary-navy placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-navy/20 focus:border-primary-navy transition-all"
+                    placeholder="Fecha de Nacimiento (opcional)"
+                    value={formData.date_of_birth}
                     onChange={handleChange}
                   />
                 </div>
@@ -145,11 +258,12 @@ const RegisterPage: React.FC = () => {
                     name="password"
                     type="password"
                     required
-                    className="block w-full pl-11 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-primary-navy placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-navy/20 focus:border-primary-navy transition-all"
-                    placeholder="Contraseña"
+                    className={`block w-full pl-11 pr-4 py-4 bg-gray-50 border rounded-2xl text-primary-navy placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-navy/20 focus:border-primary-navy transition-all ${errors.password ? 'border-red-300' : 'border-gray-100'}`}
+                    placeholder="Contraseña *"
                     value={formData.password}
                     onChange={handleChange}
                   />
+                  {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password}</p>}
                 </div>
 
                 <div className="relative group/input">
@@ -157,14 +271,15 @@ const RegisterPage: React.FC = () => {
                     <Lock className="h-5 w-5 text-gray-400 group-focus-within/input:text-primary-navy transition-colors" />
                   </div>
                   <input
-                    name="confirm_password"
+                    name="password_confirm"
                     type="password"
                     required
-                    className="block w-full pl-11 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-primary-navy placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-navy/20 focus:border-primary-navy transition-all"
-                    placeholder="Confirmar Contraseña"
-                    value={formData.confirm_password}
+                    className={`block w-full pl-11 pr-4 py-4 bg-gray-50 border rounded-2xl text-primary-navy placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-navy/20 focus:border-primary-navy transition-all ${errors.password_confirm ? 'border-red-300' : 'border-gray-100'}`}
+                    placeholder="Confirmar Contraseña *"
+                    value={formData.password_confirm}
                     onChange={handleChange}
                   />
+                  {errors.password_confirm && <p className="text-xs text-red-500 mt-1">{errors.password_confirm}</p>}
                 </div>
               </div>
 
@@ -211,7 +326,6 @@ const RegisterPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Footer for Register */}
         <p className="text-center text-gray-400 text-sm font-medium">
           &copy; {new Date().getFullYear()} Universidad de Holguín. Todos los derechos reservados.
         </p>

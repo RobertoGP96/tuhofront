@@ -105,17 +105,12 @@ class UserCreateSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         """Crear usuario con contraseña hasheada"""
-        # Remover password_confirm antes de crear
         validated_data.pop('password_confirm')
         
-        # Extraer password
         password = validated_data.pop('password')
         
-        # Crear usuario
-        user = User.objects.create(**validated_data)
-        user.set_password(password)
+        user = User.objects.create_user(**validated_data, password=password)
         
-        # Generar token de activación
         user.generate_activation_token()
         
         return user
