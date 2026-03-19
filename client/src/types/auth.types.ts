@@ -1,5 +1,7 @@
 
-export type UserType = 'ESTUDIANTE' | 'PROFESOR' | 'TRABAJADOR' | 'EXTERNO' | 'SECRETARIA_DOCENTE' | 'ADMIN';
+export type UserRole = 'ADMIN' | 'SECRETARIA_DOCENTE' | 'PROFESOR' | 'TRABAJADOR' | 'ESTUDIANTE' | 'EXTERNO';
+
+export type UserType = UserRole;
 
 export interface User {
   id: number;
@@ -11,10 +13,14 @@ export interface User {
   phone?: string;
   address?: string;
   date_of_birth?: string;
-  user_type?: UserType;
+  user_type?: UserRole;
   workplace?: string;
   role?: 'ADMIN' | 'USER';
   is_staff?: boolean;
+  is_active?: boolean;
+  email_verified?: boolean;
+  phone_verified?: boolean;
+  date_joined?: string;
 }
 
 export interface RegisterData {

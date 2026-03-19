@@ -139,13 +139,25 @@ export const Navbar: React.FC<NavbarProps> = ({ role: propsRole }) => {
       icon: "bx bx-desktop bx-sm",
       items: [
         {
+          label: "Todos los Locales",
+          icon: "bx bx-building bx-sm",
+          command: () => { navigate("/locals"); }
+        },
+        {
           label: "Aulas Especializadas",
-          icon: "bx bx-building bx-sm"
+          icon: "bx bx-building bx-sm",
+          command: () => { navigate("/locals?type=AULA"); }
         },
         {
           label: "Laboratorios",
-          icon: "bx bxs-flask bx-sm"
+          icon: "bx bxs-flask bx-sm",
+          command: () => { navigate("/locals?type=LABORATORIO"); }
         },
+        ...(isAuthenticated ? [{
+          label: "Mis Reservas",
+          icon: "bx bx-calendar bx-sm",
+          command: () => { navigate("/locals/my-reservations"); }
+        }] : []),
       ],
     },
   ];

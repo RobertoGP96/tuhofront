@@ -45,6 +45,15 @@ export const authService = {
     return response.data;
   },
 
+  async updateProfile(userId: string, data: Partial<User>): Promise<User> {
+    const response = await apiClient.patch<User>(`/users/${userId}/`, data);
+    return response.data;
+  },
+
+  async changePassword(data: { old_password: string; new_password: string }): Promise<void> {
+    await apiClient.post('/users/change_password/', data);
+  },
+
   setStoredUser(user: User) {
     localStorage.setItem('user', JSON.stringify(user));
   },

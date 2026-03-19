@@ -1,3 +1,20 @@
+// Admin procedure state (full workflow)
+export type InternalProcedureState =
+  | 'BORRADOR'
+  | 'ENVIADO'
+  | 'EN_PROCESO'
+  | 'REQUIERE_INFO'
+  | 'APROBADO'
+  | 'RECHAZADO'
+  | 'FINALIZADO';
+
+// Discriminator for the 4 internal procedure types
+export type InternalProcedureType =
+  | 'feeding'
+  | 'accommodation'
+  | 'transport'
+  | 'maintenance';
+
 // Base types for internal procedures
 export interface BaseProcedure {
   id: number;
@@ -7,6 +24,15 @@ export interface BaseProcedure {
   updated_at: string;
   notes?: Note[];
   username?: string;
+}
+
+// Admin-facing base (uses full workflow state + username read-only)
+export interface AdminBaseProcedure {
+  id: number;
+  user: number;
+  username: string;
+  state: InternalProcedureState;
+  created_at: string;
 }
 
 export interface Note {
@@ -149,4 +175,54 @@ export interface Area {
   id: number;
   name: string;
   department: number | Department;
+}
+
+// ---- Admin-facing procedure models (full workflow state) ----
+
+export interface AdminFeedingProcedure extends AdminBaseProcedure {
+  feeding_type: 'RESTAURANT' | 'HOTELITO';
+  start_day: string;
+  end_day: string;
+  description: string;
+  amount: number;
+}
+
+export interface AdminAccommodationProcedure extends AdminBaseProcedure {
+  accommodation_type: 'HOTEL' | 'POSGRADO';
+  start_day: string;
+  end_day: string;
+  description: string;
+  guests: number[];
+}
+
+export interface AdminTransportProcedure extends AdminBaseProcedure {
+  procedure_type: number | TransportProcedureType;
+  departure_time: string;
+  return_time: string;
+  departure_place: string;
+  return_place: string;
+  passengers: number;
+  round_trip: boolean;
+  plate?: string;
+}
+
+export interface AdminMaintenanceProcedure extends AdminBaseProcedure {
+  description: string;
+  picture?: string;
+  procedure_type: number | MaintanceProcedureType;
+  priority: number | MaintancePriority;
+}
+
+export interface InternalStats {
+  total: number;
+  by_state: Partial<Record<InternalProcedureState, number>>;
+}
+
+export interface AdminProcedureUpdatePayload {
+  state?: InternalProcedureState;
+}
+
+export interface InternalNoteCreatePayload {
+  procedure: number;
+  content: string;
 }

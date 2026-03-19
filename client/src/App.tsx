@@ -1,8 +1,18 @@
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
+import { RoleGuard } from './components/RoleGuard'
 import { useAuth } from './hooks/useAuth'
 import { MainLayout } from './layouts/MainLayout'
 import AdminDashboard from './pages/AdminDashboard'
+import AdminUsers from './pages/AdminUsers'
+import AdminAreas from './pages/AdminAreas'
+import AdminNews from './pages/AdminNews'
+import AdminLocals from './pages/AdminLocals'
+import AdminSettings from './pages/AdminSettings'
+import Profile from './pages/Profile'
 import AdminProcedures from './pages/AdminProcedures'
+import AdminInternalProcedures from './pages/AdminInternalProcedures'
+import MyProcedures from './pages/MyProcedures'
+import ProcedureDetail from './pages/ProcedureDetail'
 import Contact from './pages/Contact'
 import Home from './pages/Home'
 import Login from './pages/Login'
@@ -19,14 +29,22 @@ import {
   UnderInterProcedure,
   UnderNatProcedure
 } from './pages/procedures/teaching-secretary'
+import SecretaryDashboard from './pages/SecretaryDashboard'
+import SecretaryProcedures from './pages/SecretaryProcedures'
+import NotFound from './pages/NotFound'
+import Forbidden from './pages/Forbidden'
+import LocalsCatalog from './pages/locals/LocalsCatalog'
+import LocalDetail from './pages/locals/LocalDetail'
+import ReservationForm from './pages/locals/ReservationForm'
+import MyReservations from './pages/locals/MyReservations'
 
 function App() {
   const { isAdmin, isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a]">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
+      <div className="flex min-h-screen items-center justify-center bg-primary-navy">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 text-secondary-lime border-secondary-lime border-t-transparent"></div>
       </div>
     );
   }
@@ -40,43 +58,165 @@ function App() {
           <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" replace />} />
           <Route path="/register" element={!isAuthenticated ? <Register /> : <Navigate to="/" replace />} />
           <Route path="/news" element={<News />} />
-          <Route path="/procedures" element={<div className="p-8 text-center text-gray-400">Gestión de Trámites (Próximamente)</div>} />
-          
-          {/* Teaching Secretary Procedures */}
-          <Route path="/procedures/secretary/undergraduate/national" element={<UnderNatProcedure />} />
-          <Route path="/procedures/secretary/undergraduate/international" element={<UnderInterProcedure />} />
-          <Route path="/procedures/secretary/postgraduate/national" element={<PostNatProcedure />} />
-          <Route path="/procedures/secretary/postgraduate/international" element={<PostInterProcedure />} />
-          <Route path="/procedures/secretary/title-legalization" element={<TitleLegalization />} />
-          
-          {/* Internal Procedures */}
-          <Route path="/procedures/internal/feeding" element={<FeedingProcedurePage />} />
-          <Route path="/procedures/internal/accommodation" element={<AccommodationProcedurePage />} />
-          <Route path="/procedures/internal/transport" element={<TransportProcedurePage />} />
-          <Route path="/procedures/internal/maintenance" element={<MaintenanceProcedurePage />} />
-          
+          {/* Procedure Detail — must come before /procedures to ensure explicit match */}
+          <Route
+            path="/procedures/:id"
+            element={
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN']}>
+                <ProcedureDetail />
+              </RoleGuard>
+            }
+          />
+          <Route
+            path="/procedures"
+            element={
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN']}>
+                <MyProcedures />
+              </RoleGuard>
+            }
+          />
+
+          {/* Teaching Secretary Procedures — accessible by all authenticated users */}
+          <Route
+            path="/procedures/secretary/undergraduate/national"
+            element={
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN']}>
+                <UnderNatProcedure />
+              </RoleGuard>
+            }
+          />
+          <Route
+            path="/procedures/secretary/undergraduate/international"
+            element={
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN']}>
+                <UnderInterProcedure />
+              </RoleGuard>
+            }
+          />
+          <Route
+            path="/procedures/secretary/postgraduate/national"
+            element={
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN']}>
+                <PostNatProcedure />
+              </RoleGuard>
+            }
+          />
+          <Route
+            path="/procedures/secretary/postgraduate/international"
+            element={
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN']}>
+                <PostInterProcedure />
+              </RoleGuard>
+            }
+          />
+          <Route
+            path="/procedures/secretary/title-legalization"
+            element={
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN']}>
+                <TitleLegalization />
+              </RoleGuard>
+            }
+          />
+
+          {/* Internal Procedures — PROFESOR, TRABAJADOR, ADMIN only */}
+          <Route
+            path="/procedures/internal/feeding"
+            element={
+              <RoleGuard roles={['PROFESOR', 'TRABAJADOR', 'ADMIN']}>
+                <FeedingProcedurePage />
+              </RoleGuard>
+            }
+          />
+          <Route
+            path="/procedures/internal/accommodation"
+            element={
+              <RoleGuard roles={['PROFESOR', 'TRABAJADOR', 'ADMIN']}>
+                <AccommodationProcedurePage />
+              </RoleGuard>
+            }
+          />
+          <Route
+            path="/procedures/internal/transport"
+            element={
+              <RoleGuard roles={['PROFESOR', 'TRABAJADOR', 'ADMIN']}>
+                <TransportProcedurePage />
+              </RoleGuard>
+            }
+          />
+          <Route
+            path="/procedures/internal/maintenance"
+            element={
+              <RoleGuard roles={['PROFESOR', 'TRABAJADOR', 'ADMIN']}>
+                <MaintenanceProcedurePage />
+              </RoleGuard>
+            }
+          />
+
+          {/* Locals — public catalog; reserve & my-reservations before :id to match first */}
+          <Route path="/locals" element={<LocalsCatalog />} />
+          <Route
+            path="/locals/reserve"
+            element={
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN']}>
+                <ReservationForm />
+              </RoleGuard>
+            }
+          />
+          <Route
+            path="/locals/my-reservations"
+            element={
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN']}>
+                <MyReservations />
+              </RoleGuard>
+            }
+          />
+          <Route path="/locals/:id" element={<LocalDetail />} />
+
           <Route path="/contact" element={<Contact />} />
-          <Route path="/profile" element={<div className="p-8 text-center text-gray-400">Mi Perfil (Próximamente)</div>} />
+          <Route
+            path="/profile"
+            element={
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN']}>
+                <Profile />
+              </RoleGuard>
+            }
+          />
+
+          {/* Secretary Management Panel — SECRETARIA_DOCENTE and ADMIN only */}
+          <Route
+            path="/secretary/*"
+            element={
+              <RoleGuard roles={['SECRETARIA_DOCENTE', 'ADMIN']}>
+                <Routes>
+                  <Route index element={<SecretaryDashboard />} />
+                  <Route path="procedures" element={<SecretaryProcedures />} />
+                </Routes>
+              </RoleGuard>
+            }
+          />
 
           {/* Admin Routes */}
           <Route
             path="/admin/*"
             element={
-              isAdmin ? (
+              <RoleGuard roles={['ADMIN']}>
                 <Routes>
                   <Route index element={<AdminDashboard />} />
-                  <Route path="users" element={<div className="p-8 text-center text-gray-400">Gestión de Usuarios (Próximamente)</div>} />
+                  <Route path="users" element={<AdminUsers />} />
                   <Route path="procedures" element={<AdminProcedures />} />
-                  <Route path="settings" element={<div className="p-8 text-center text-gray-400">Configuración del Sistema (Próximamente)</div>} />
+                  <Route path="internal" element={<AdminInternalProcedures />} />
+                  <Route path="areas" element={<AdminAreas />} />
+                  <Route path="news" element={<AdminNews />} />
+                  <Route path="locals" element={<AdminLocals />} />
+                  <Route path="settings" element={<AdminSettings />} />
                 </Routes>
-              ) : (
-                <Navigate to="/login" replace />
-              )
+              </RoleGuard>
             }
           />
 
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          {/* Error pages */}
+          <Route path="/forbidden" element={<Forbidden />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </MainLayout>
     </Router>
