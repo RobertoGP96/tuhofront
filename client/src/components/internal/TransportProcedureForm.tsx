@@ -5,9 +5,11 @@ import { transportService } from '../../services/internal.service';
 import type { TransportProcedureForm, TransportProcedureType } from '../../types/internal.types';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Checkbox } from '../ui/checkbox';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Textarea } from '../ui/textarea';
 
 interface TransportProcedureFormProps {
   onSuccess?: () => void;
@@ -176,12 +178,10 @@ export function TransportProcedureForm({ onSuccess, onCancel }: TransportProcedu
               <div className="space-y-2">
                 <Label className="text-xs font-bold uppercase text-gray-500">Tipo de Viaje</Label>
                 <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     id="round_trip"
                     checked={formData.round_trip}
-                    onChange={(e) => handleInputChange('round_trip', e.target.checked)}
-                    className="rounded border-gray-300"
+                    onCheckedChange={(checked) => handleInputChange('round_trip', !!checked)}
                   />
                   <Label htmlFor="round_trip" className="text-sm">Viaje redondo</Label>
                 </div>
@@ -294,10 +294,10 @@ export function TransportProcedureForm({ onSuccess, onCancel }: TransportProcedu
               {/* Descripción */}
               <div className="space-y-2">
                 <Label htmlFor="description" className="text-xs font-bold uppercase text-gray-500">Descripción Detallada</Label>
-                <textarea
+                <Textarea
                   id="description"
                   rows={4}
-                  className="flex min-h-20 w-full rounded-xl border border-gray-100 bg-gray-50/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-xl border-gray-100 bg-gray-50/50"
                   placeholder="Describa los detalles de la solicitud de transporte..."
                   value={formData.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}

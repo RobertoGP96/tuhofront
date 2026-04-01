@@ -19,7 +19,7 @@ export type InternalProcedureType =
 export interface BaseProcedure {
   id: number;
   user: number;
-  state: 'P' | 'A' | 'R'; // Pending, Approved, Rejected
+  state: InternalProcedureState;
   created_at: string;
   updated_at: string;
   notes?: Note[];

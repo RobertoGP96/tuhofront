@@ -20,7 +20,13 @@ export const useAuth = () => {
     isTrabajador: userRole === 'TRABAJADOR',
     isEstudiante: userRole === 'ESTUDIANTE',
     isExterno: userRole === 'EXTERNO',
+    isGestorInterno: userRole === 'GESTOR_INTERNO',
+    isGestorTramites: userRole === 'GESTOR_TRAMITES',
+    isGestorReservas: userRole === 'GESTOR_RESERVAS',
     canAccessInternal: isStaff || userRole === 'ADMIN' || userRole === 'PROFESOR' || userRole === 'TRABAJADOR',
     canManageSecretary: isStaff || userRole === 'ADMIN' || userRole === 'SECRETARIA_DOCENTE',
+    canManageInternal: isStaff || userRole === 'ADMIN' || userRole === 'GESTOR_INTERNO',
+    canManageTramites: isStaff || userRole === 'ADMIN' || userRole === 'GESTOR_TRAMITES',
+    canManageReservas: isStaff || userRole === 'ADMIN' || userRole === 'GESTOR_RESERVAS',
   };
 };

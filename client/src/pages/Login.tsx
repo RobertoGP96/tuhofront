@@ -18,8 +18,21 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     setError('');
     try {
-      await login(username, password);
-      navigate(from, { replace: true });
+      const user = await login(username, password);
+      const redirectMap: Record<string, string> = {
+        ADMIN: '/admin',
+        SECRETARIA_DOCENTE: '/secretary',
+        GESTOR_INTERNO: '/gestor-interno',
+        GESTOR_TRAMITES: '/gestor-tramites',
+        GESTOR_RESERVAS: '/gestor-reservas',
+      };
+      const isSystemAdmin = user?.role === 'ADMIN' || user?.is_staff;
+      const destination = from !== '/'
+        ? from
+        : isSystemAdmin
+          ? '/admin'
+          : (user?.user_type ? redirectMap[user.user_type] ?? '/' : '/');
+      navigate(destination, { replace: true });
     } catch (err: unknown) {
       const error = err as { response?: { data?: { detail?: string } } };
       setError(error.response?.data?.detail || 'Error al iniciar sesión. Por favor, intente de nuevo.');
@@ -100,9 +113,9 @@ const LoginPage: React.FC = () => {
                 </div>
 
                 <div className="text-sm">
-                  <a href="#" className="font-bold text-primary-navy hover:text-secondary-lime transition-colors">
+                  <Link to="/forgot-password" className="font-bold text-primary-navy hover:text-secondary-lime transition-colors">
                     ¿Olvidó su contraseña?
-                  </a>
+                  </Link>
                 </div>
               </div>
 

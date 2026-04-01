@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AlertCircle, CheckCircle, Clock, FileText, Globe, GraduationCap } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -13,30 +12,10 @@ import {
   TableHeader as ShadcnTableHeader,
   TableRow as ShadcnTableRow,
 } from '@/components/ui/table';
-import { cn } from '@/lib/utils';
 import { secretaryAdminService } from '../services/secretary-admin.service';
 import type { SecretaryStats } from '../services/secretary-admin.service';
 import type { SecretaryDocProcedure } from '../types/secretary-doc.types';
-
-const STATE_LABELS: Record<string, string> = {
-  BORRADOR: 'Borrador',
-  ENVIADO: 'Enviado',
-  EN_PROCESO: 'En Proceso',
-  REQUIERE_INFO: 'Requiere Info',
-  APROBADO: 'Aprobado',
-  RECHAZADO: 'Rechazado',
-  FINALIZADO: 'Finalizado',
-};
-
-const STATE_COLORS: Record<string, string> = {
-  BORRADOR: 'bg-gray-100 text-gray-700 border-gray-200',
-  ENVIADO: 'bg-blue-100 text-blue-700 border-blue-200',
-  EN_PROCESO: 'bg-amber-100 text-amber-700 border-amber-200',
-  REQUIERE_INFO: 'bg-orange-100 text-orange-700 border-orange-200',
-  APROBADO: 'bg-green-100 text-green-700 border-green-200',
-  RECHAZADO: 'bg-red-100 text-red-700 border-red-200',
-  FINALIZADO: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-};
+import { StateBadge } from '@/components/StateBadge';
 
 const STUDY_TYPE_LABELS: Record<string, string> = {
   PREGRADO: 'Pregrado',
@@ -54,16 +33,6 @@ function formatDate(iso: string): string {
     month: 'short',
     day: 'numeric',
   });
-}
-
-function StateBadge({ state }: { state: string }) {
-  const colorClass = STATE_COLORS[state] ?? 'bg-gray-100 text-gray-700 border-gray-200';
-  const label = STATE_LABELS[state] ?? state;
-  return (
-    <Badge variant="outline" className={cn('font-medium', colorClass)}>
-      {label}
-    </Badge>
-  );
 }
 
 interface StatCardProps {

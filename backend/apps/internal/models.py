@@ -6,10 +6,10 @@ class Guest(models.Model):
     SEX_CHOICES = [("M", "MASCULINO"), ("F", "FEMENINO")]
     name = models.CharField(max_length=100)
     sex = models.CharField(max_length=1, choices=SEX_CHOICES)
-    identification = models.CharField(max_length=11)
+    identification = models.CharField(max_length=11, db_index=True)
 
 class FeedingDays(models.Model):
-    date = models.DateField(verbose_name=_("Fecha"), help_text=_("Fecha del día de alimentación"))
+    date = models.DateField(db_index=True, verbose_name=_("Fecha"), help_text=_("Fecha del día de alimentación"))
     breakfast = models.IntegerField(default=0, verbose_name=_("Desayunos"), help_text=_("Cantidad de desayunos"))
     lunch = models.IntegerField(default=0, verbose_name=_("Almuerzos"), help_text=_("Cantidad de almuerzos"))
     dinner = models.IntegerField(default=0, verbose_name=_("Cenas"), help_text=_("Cantidad de cenas"))

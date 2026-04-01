@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Textarea } from '../ui/textarea';
 
 interface AccommodationProcedureFormProps {
   onSuccess?: () => void;
@@ -80,6 +81,8 @@ export function AccommodationProcedureForm({ onSuccess, onCancel }: Accommodatio
     }
     if (!formData.end_day) {
       newErrors.end_day = 'Este campo es requerido';
+    } else if (formData.start_day && formData.end_day <= formData.start_day) {
+      newErrors.end_day = 'La fecha de fin debe ser posterior a la de inicio';
     }
     if (!formData.description) {
       newErrors.description = 'Este campo es requerido';
@@ -223,10 +226,10 @@ export function AccommodationProcedureForm({ onSuccess, onCancel }: Accommodatio
             {/* Descripción */}
             <div className="space-y-2">
               <Label htmlFor="description" className="text-xs font-bold uppercase text-gray-500">Descripción Detallada</Label>
-              <textarea
+              <Textarea
                 id="description"
                 rows={4}
-                className="flex min-h-20 w-full rounded-xl border border-gray-100 bg-gray-50/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-xl border-gray-100 bg-gray-50/50"
                 placeholder="Describa los detalles de la solicitud de alojamiento..."
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
@@ -406,6 +409,18 @@ export function AccommodationProcedureForm({ onSuccess, onCancel }: Accommodatio
             ))}
           </div>
 
+          </div>
+
+          {/* Botones */}
+          <div className="pt-6 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-4">
+            {onCancel && (
+              <Button type="button" variant="outline" onClick={onCancel} className="w-full md:w-auto px-6 py-3 rounded-2xl font-bold uppercase tracking-widest border-gray-200 hover:bg-gray-50">
+                Cancelar
+              </Button>
+            )}
+            <Button type="submit" disabled={isSubmitting} className="w-full md:w-auto bg-primary-navy hover:bg-primary-navy/90 text-white px-10 py-6 rounded-2xl font-bold uppercase tracking-widest shadow-xl shadow-primary-navy/20 active:scale-95 transition-all">
+              {isSubmitting ? 'Enviando...' : 'Enviar Solicitud'}
+            </Button>
           </div>
         </CardContent>
         </Card>

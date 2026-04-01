@@ -6,7 +6,9 @@
       "Bash(xargs wc:*)",
       "Bash(npm run:*)",
       "Bash(npx tsc:*)",
-      "Bash(xargs grep:*)"
+      "Bash(xargs grep:*)",
+      "Bash(xargs ls:*)",
+      "Bash(wc -l /d/Projects/tuhofront/client/src/pages/admin-internal/*.tsx)"
     ]
   }
 }

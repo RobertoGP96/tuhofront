@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Textarea } from '../ui/textarea';
 
 interface MaintenanceProcedureFormProps {
   onSuccess?: () => void;
@@ -229,10 +230,10 @@ export function MaintenanceProcedureForm({ onSuccess, onCancel }: MaintenancePro
               {/* Descripción del Problema */}
               <div className="space-y-2">
                 <Label htmlFor="description" className="text-xs font-bold uppercase text-gray-500">Descripción del Problema</Label>
-                <textarea
+                <Textarea
                   id="description"
                   rows={6}
-                  className="flex min-h-[120px] w-full rounded-xl border border-gray-100 bg-gray-50/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-xl border-gray-100 bg-gray-50/50 min-h-[120px]"
                   placeholder="Describa detalladamente el problema o mantenimiento requerido..."
                   value={formData.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}

@@ -47,6 +47,7 @@ export interface NewsItem {
   title: string;
   slug: string;
   category: NewsCategory;
+  header_image: string | null;
   summary: string | null;
   body: string;
   is_published: boolean;
@@ -150,13 +151,13 @@ export const platformService = {
     return response.data;
   },
 
-  async updateNews(id: number, payload: Partial<NewsPayload>): Promise<NewsItem> {
-    const response = await apiClient.patch<NewsItem>(`/news/${id}/`, payload);
+  async updateNews(slug: string, payload: Partial<NewsPayload>): Promise<NewsItem> {
+    const response = await apiClient.patch<NewsItem>(`/news/${slug}/`, payload);
     return response.data;
   },
 
-  async deleteNews(id: number): Promise<void> {
-    await apiClient.delete(`/news/${id}/`);
+  async deleteNews(slug: string): Promise<void> {
+    await apiClient.delete(`/news/${slug}/`);
   },
 
   // Transport Procedure Types

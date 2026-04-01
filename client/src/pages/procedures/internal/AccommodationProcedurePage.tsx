@@ -5,11 +5,11 @@ export function AccommodationProcedurePage() {
   const navigate = useNavigate();
 
   const handleSuccess = () => {
-    navigate('/procedures');
+    navigate('/procedures/internals');
   };
 
   const handleCancel = () => {
-    navigate('/procedures');
+    navigate('/procedures/internals');
   };
 
   return (

@@ -96,7 +96,7 @@ class News(TimeStampedModel, StatusMixin):
     summary = models.CharField(
         max_length=300,
         blank=True,
-        null=True,
+        default='',
         verbose_name=_("Summary"),
         help_text=_("Brief news summary (maximum 300 characters)"),
     )

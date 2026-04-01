@@ -1,7 +1,11 @@
 import React from 'react';
-import { Network, FileText, CloudUpload, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Network, FileText, CloudUpload, ChevronRight, BookOpen, Building2, Newspaper } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 const Home: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+
   return (
     <section className="flex flex-col gap-0 items-center pb-20 grow w-full bg-white -mt-8 -mx-8 w-[calc(100%+4rem)]">
       {/* Hero Section */}
@@ -97,6 +101,54 @@ const Home: React.FC = () => {
           </li>
         </ul>
       </article>
+
+      {isAuthenticated && (
+        <article className="py-12 w-full bg-primary-navy/5">
+          <div className="max-w-6xl mx-auto px-4 md:px-8">
+            <h2 className="text-center text-xl font-black text-primary-navy uppercase tracking-wide mb-8">
+              Acceso <span className="text-secondary-lime">Rápido</span>
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <Link
+                to="/procedures"
+                className="group flex items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-secondary-lime/40 transition-all"
+              >
+                <div className="p-3 bg-primary-navy/5 rounded-xl group-hover:bg-secondary-lime/20 transition-colors">
+                  <BookOpen size={22} className="text-primary-navy" />
+                </div>
+                <div>
+                  <p className="font-bold text-primary-navy text-sm">Mis Trámites</p>
+                  <p className="text-xs text-gray-400">Ver y gestionar solicitudes</p>
+                </div>
+              </Link>
+              <Link
+                to="/locals"
+                className="group flex items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-secondary-lime/40 transition-all"
+              >
+                <div className="p-3 bg-primary-navy/5 rounded-xl group-hover:bg-secondary-lime/20 transition-colors">
+                  <Building2 size={22} className="text-primary-navy" />
+                </div>
+                <div>
+                  <p className="font-bold text-primary-navy text-sm">Reservar Local</p>
+                  <p className="text-xs text-gray-400">Aulas, laboratorios y espacios</p>
+                </div>
+              </Link>
+              <Link
+                to="/news"
+                className="group flex items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-secondary-lime/40 transition-all"
+              >
+                <div className="p-3 bg-primary-navy/5 rounded-xl group-hover:bg-secondary-lime/20 transition-colors">
+                  <Newspaper size={22} className="text-primary-navy" />
+                </div>
+                <div>
+                  <p className="font-bold text-primary-navy text-sm">Noticias</p>
+                  <p className="text-xs text-gray-400">Anuncios y publicaciones</p>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </article>
+      )}
     </section>
   );
 };

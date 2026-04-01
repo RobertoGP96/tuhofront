@@ -14,15 +14,14 @@ import {
 } from "@/components/ui/select";
 import { useAuth } from "@/hooks/useAuth";
 import { secretaryDocService } from "@/services/secretary-doc.service";
-import { useToast } from "@/components/ui/use-toast";
-import { FileText, GraduationCap, User, Loader2 } from "lucide-react";
+import { toast } from 'sonner';
+import { ArrowLeft, FileText, GraduationCap, User, Loader2 } from "lucide-react";
 import type { StudyType, InterestType, SecretaryDocProcedureForm } from "@/types/secretary-doc.types";
 
 export const PostNatProcedure = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+const [isLoading, setIsLoading] = useState(false);
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 50 }, (_, i) => (currentYear - i).toString());
 
@@ -72,17 +71,10 @@ export const PostNatProcedure = () => {
         phone: formData.phone || '',
       });
       
-      toast({
-        title: "Trámite enviado",
-        description: "Su solicitud de postgrado nacional ha sido enviada exitosamente.",
-      });
-      navigate('/procedimientos');
+      toast.success("Trámite enviado — Su solicitud ha sido enviada exitosamente.");
+      navigate('/procedures');
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Hubo un problema al enviar el trámite. Intente de nuevo.",
-        variant: "destructive",
-      });
+      toast.error("Hubo un problema al enviar el trámite. Intente de nuevo.");
     } finally {
       setIsLoading(false);
     }
@@ -90,6 +82,12 @@ export const PostNatProcedure = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto py-8 px-4">
+      <div className="mb-4">
+        <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="gap-2 text-gray-500 hover:text-primary-navy">
+          <ArrowLeft size={16} />
+          Volver
+        </Button>
+      </div>
       <Card className="shadow-2xl shadow-primary-navy/5 border-gray-100 rounded-3xl overflow-hidden">
         <CardHeader className="bg-primary-navy p-8 text-white">
           <div className="flex items-center gap-4 mb-2">

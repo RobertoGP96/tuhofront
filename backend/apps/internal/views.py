@@ -78,12 +78,17 @@ class FeedingDaysRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
 class FeedingProcedureListCreateView(ListCreateAPIView):
     """
     Listar todos los trámites de alimentación o crear uno nuevo.
-    
+
     GET: Retorna lista de solicitudes de alimentación
     POST: Crea una nueva solicitud de alimentación
     """
-    queryset = FeedingProcedure.objects.all()
     serializer_class = FeedingProcedureSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_staff or getattr(user, 'user_type', '') == 'ADMIN':
+            return FeedingProcedure.objects.all()
+        return FeedingProcedure.objects.filter(user=user)
 
 @extend_schema(
     tags=['Feeding Procedures - Trámites de Alimentación']
@@ -101,12 +106,17 @@ class FeedingProcedureRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
 class AccommodationProcedureListCreateView(ListCreateAPIView):
     """
     Listar todos los trámites de hospedaje o crear uno nuevo.
-    
+
     GET: Retorna lista de solicitudes de hospedaje
     POST: Crea una nueva solicitud de hospedaje
     """
-    queryset = AccommodationProcedure.objects.all()
     serializer_class = AccommodationProcedureSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_staff or getattr(user, 'user_type', '') == 'ADMIN':
+            return AccommodationProcedure.objects.all()
+        return AccommodationProcedure.objects.filter(user=user)
 
 @extend_schema(
     tags=['Accommodation Procedures - Trámites de Hospedaje']
@@ -142,12 +152,17 @@ class TransportProcedureTypeRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIVi
 class TransportProcedureListCreateView(ListCreateAPIView):
     """
     Listar todos los trámites de transporte o crear uno nuevo.
-    
+
     GET: Retorna lista de solicitudes de transporte
     POST: Crea una nueva solicitud de transporte
     """
-    queryset = TransportProcedure.objects.all()
     serializer_class = TransportProcedureSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_staff or getattr(user, 'user_type', '') == 'ADMIN':
+            return TransportProcedure.objects.all()
+        return TransportProcedure.objects.filter(user=user)
 
 @extend_schema(
     tags=['Transport Procedures - Trámites de Transporte']
@@ -201,12 +216,17 @@ class MaintancePriorityRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
 class MaintanceProcedureListCreateView(ListCreateAPIView):
     """
     Listar todos los trámites de mantenimiento o crear uno nuevo.
-    
+
     GET: Retorna lista de solicitudes de mantenimiento
     POST: Crea una nueva solicitud de mantenimiento
     """
-    queryset = MaintanceProcedure.objects.all()
     serializer_class = MaintanceProcedureSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_staff or getattr(user, 'user_type', '') == 'ADMIN':
+            return MaintanceProcedure.objects.all()
+        return MaintanceProcedure.objects.filter(user=user)
 
 @extend_schema(
     tags=['Maintenance Procedures - Trámites de Mantenimiento']
@@ -375,11 +395,11 @@ def get_procedure_stats(request):
         state = procedure.state
         stats[state] = stats.get(state, 0) + 1
 
-    # Ordenar los estados según el orden deseado
-    ordered_states = ['PENDIENTE', 'APROBADO', 'CANCELADO', 'RECHAZADO', 'FINALIZADO']
-    ordered_stats = {state: stats.get(state, 0) for state in ordered_states}
+    valid_states = ['BORRADOR', 'ENVIADO', 'EN_PROCESO', 'REQUIERE_INFO', 'APROBADO', 'RECHAZADO', 'FINALIZADO']
+    by_state = {state: stats.get(state, 0) for state in valid_states}
+    total = sum(by_state.values())
 
-    return Response({"stats": ordered_stats}, status=status.HTTP_200_OK)
+    return Response({"total": total, "by_state": by_state}, status=status.HTTP_200_OK)
 
 # PDF
 

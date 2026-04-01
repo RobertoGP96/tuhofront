@@ -1,4 +1,3 @@
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -10,43 +9,17 @@ import {
   TableHeader as ShadcnTableHeader,
   TableRow as ShadcnTableRow,
 } from '@/components/ui/table';
-import { cn } from '@/lib/utils';
-import { AlertCircle, BedDouble, Building2, Bus, CheckCircle, Clock, FileText, Newspaper, Settings, Utensils, Users, Wrench } from 'lucide-react';
+import { AlertCircle, BedDouble, Building2, Bus, CheckCircle, Clock, FileText, GraduationCap, Newspaper, Settings, Utensils, Users, Wrench } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { adminService } from '../services/admin.service';
 import type { AdminProcedure, AdminStats } from '../services/admin.service';
+import { localsService } from '../services/locals.service';
+import { secretaryAdminService } from '../services/secretary-admin.service';
+import type { SecretaryStats } from '../services/secretary-admin.service';
 import type { User } from '../types/auth.types';
-
-
-const STATE_LABELS: Record<string, string> = {
-  BORRADOR: 'Borrador',
-  ENVIADO: 'Enviado',
-  EN_PROCESO: 'En Proceso',
-  REQUIERE_INFO: 'Requiere Info',
-  APROBADO: 'Aprobado',
-  RECHAZADO: 'Rechazado',
-  FINALIZADO: 'Finalizado',
-};
-
-const STATE_COLORS: Record<string, string> = {
-  BORRADOR: 'bg-gray-100 text-gray-700 border-gray-200',
-  ENVIADO: 'bg-blue-100 text-blue-700 border-blue-200',
-  EN_PROCESO: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-  REQUIERE_INFO: 'bg-orange-100 text-orange-700 border-orange-200',
-  APROBADO: 'bg-green-100 text-green-700 border-green-200',
-  RECHAZADO: 'bg-red-100 text-red-700 border-red-200',
-  FINALIZADO: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-};
-
-const USER_TYPE_LABELS: Record<string, string> = {
-  ADMIN: 'Administrador',
-  SECRETARIA_DOCENTE: 'Secretaría Docente',
-  PROFESOR: 'Profesor',
-  TRABAJADOR: 'Trabajador',
-  ESTUDIANTE: 'Estudiante',
-  EXTERNO: 'Externo',
-};
+import { USER_TYPE_LABELS } from '@/lib/constants';
+import { StateBadge } from '@/components/StateBadge';
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('es-ES', {
@@ -54,16 +27,6 @@ function formatDate(iso: string) {
     month: 'short',
     day: 'numeric',
   });
-}
-
-function StateBadge({ state }: { state: string }) {
-  const colorClass = STATE_COLORS[state] ?? 'bg-gray-100 text-gray-700 border-gray-200';
-  const label = STATE_LABELS[state] ?? state;
-  return (
-    <Badge variant="outline" className={cn('font-medium', colorClass)}>
-      {label}
-    </Badge>
-  );
 }
 
 interface StatCard {
@@ -143,6 +106,11 @@ export default function AdminDashboard() {
   const [usersLoading, setUsersLoading] = useState(true);
   const [usersError, setUsersError] = useState<string | null>(null);
 
+  const [pendingReservations, setPendingReservations] = useState(0);
+  const [reservationsLoading, setReservationsLoading] = useState(true);
+  const [secretaryStats, setSecretaryStats] = useState<SecretaryStats | null>(null);
+  const [secretaryLoading, setSecretaryLoading] = useState(true);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -185,9 +153,35 @@ export default function AdminDashboard() {
       }
     }
 
+    async function fetchReservations() {
+      setReservationsLoading(true);
+      try {
+        const data = await localsService.getPendingReservations();
+        if (!cancelled) setPendingReservations(data.length);
+      } catch {
+        if (!cancelled) setPendingReservations(0);
+      } finally {
+        if (!cancelled) setReservationsLoading(false);
+      }
+    }
+
+    async function fetchSecretaryStats() {
+      setSecretaryLoading(true);
+      try {
+        const data = await secretaryAdminService.getStats();
+        if (!cancelled) setSecretaryStats(data);
+      } catch {
+        if (!cancelled) setSecretaryStats(null);
+      } finally {
+        if (!cancelled) setSecretaryLoading(false);
+      }
+    }
+
     fetchStats();
     fetchProcedures();
     fetchUsers();
+    fetchReservations();
+    fetchSecretaryStats();
 
     return () => {
       cancelled = true;
@@ -243,6 +237,34 @@ export default function AdminDashboard() {
             isLoading={statsLoading}
           />
         ))}
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <StatsCard
+          label="Reservas Pendientes"
+          value={pendingReservations}
+          icon={<Building2 size={20} />}
+          isLoading={reservationsLoading}
+        />
+        <StatsCard
+          label="Trámites Secretaría"
+          value={safeNum(secretaryStats?.total_tramites)}
+          icon={<GraduationCap size={20} />}
+          isLoading={secretaryLoading}
+        />
+        {secretaryStats?.por_tipo_estudio && secretaryStats.por_tipo_estudio.length > 0 && (
+          <div className="p-4 bg-white border border-gray-100 rounded-xl shadow-sm">
+            <p className="text-xs text-gray-400 uppercase font-bold mb-3">Desglose Secretaría</p>
+            <div className="space-y-2">
+              {secretaryStats.por_tipo_estudio.map((item) => (
+                <div key={item.study_type} className="flex justify-between text-sm">
+                  <span className="text-gray-500">{item.study_type === 'PREGRADO' ? 'Pregrado' : 'Posgrado'}</span>
+                  <span className="font-bold text-primary-navy">{item.total}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -330,6 +352,42 @@ export default function AdminDashboard() {
           <p className="text-xs text-gray-500">Tipos de transporte, mantenimiento y prioridades</p>
           <p className="text-xs text-blue-600 font-medium group-hover:underline">
             Configurar sistema &rarr;
+          </p>
+        </Link>
+
+        <Link
+          to="/admin/locals"
+          className="group flex flex-col gap-3 rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
+        >
+          <div className="flex items-center gap-2 text-primary-navy">
+            <Building2 size={18} className="opacity-70" />
+            <span className="text-sm font-semibold uppercase tracking-wide text-gray-400">
+              Reservas
+            </span>
+          </div>
+          {pendingReservations > 0 && (
+            <p className="text-xs text-amber-600 font-medium">
+              {pendingReservations} pendiente{pendingReservations !== 1 ? 's' : ''}
+            </p>
+          )}
+          <p className="text-xs text-blue-600 font-medium group-hover:underline">
+            Ver reservas &rarr;
+          </p>
+        </Link>
+
+        <Link
+          to="/secretary/procedures"
+          className="group flex flex-col gap-3 rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
+        >
+          <div className="flex items-center gap-2 text-primary-navy">
+            <GraduationCap size={18} className="opacity-70" />
+            <span className="text-sm font-semibold uppercase tracking-wide text-gray-400">
+              Secretaría
+            </span>
+          </div>
+          <p className="text-xs text-gray-500">Trámites de secretaría docente</p>
+          <p className="text-xs text-blue-600 font-medium group-hover:underline">
+            Gestionar trámites &rarr;
           </p>
         </Link>
       </div>

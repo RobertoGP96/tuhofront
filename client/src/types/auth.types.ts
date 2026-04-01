@@ -1,5 +1,5 @@
 
-export type UserRole = 'ADMIN' | 'SECRETARIA_DOCENTE' | 'PROFESOR' | 'TRABAJADOR' | 'ESTUDIANTE' | 'EXTERNO';
+export type UserRole = 'ADMIN' | 'SECRETARIA_DOCENTE' | 'PROFESOR' | 'TRABAJADOR' | 'ESTUDIANTE' | 'EXTERNO' | 'GESTOR_INTERNO' | 'GESTOR_TRAMITES' | 'GESTOR_RESERVAS';
 
 export type UserType = UserRole;
 
@@ -44,6 +44,9 @@ export const USER_TYPE_OPTIONS: { value: UserType; label: string }[] = [
   { value: 'PROFESOR', label: 'Profesor' },
   { value: 'TRABAJADOR', label: 'Trabajador' },
   { value: 'SECRETARIA_DOCENTE', label: 'Secretaría Docente' },
+  { value: 'GESTOR_INTERNO', label: 'Gestor de Trámites Internos' },
+  { value: 'GESTOR_TRAMITES', label: 'Gestor de Trámites' },
+  { value: 'GESTOR_RESERVAS', label: 'Gestor de Reservas' },
   { value: 'ADMIN', label: 'Administrador' },
 ];
 

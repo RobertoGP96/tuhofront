@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { ChevronLeft, ChevronRight, FileText, Settings } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -29,31 +28,16 @@ import {
   TableHeader as ShadcnTableHeader,
   TableRow as ShadcnTableRow,
 } from '@/components/ui/table';
-import { cn } from '@/lib/utils';
 import { secretaryAdminService } from '../services/secretary-admin.service';
 import type { SecretaryDocProcedure } from '../types/secretary-doc.types';
+import { STATE_LABELS, VALID_TRANSITIONS } from '@/lib/constants';
+import { StateBadge } from '@/components/StateBadge';
 
 // ---- Constants ----
 
-const STATE_LABELS: Record<string, string> = {
+const STATE_LABELS_WITH_ALL: Record<string, string> = {
   ALL: 'Todos los estados',
-  BORRADOR: 'Borrador',
-  ENVIADO: 'Enviado',
-  EN_PROCESO: 'En Proceso',
-  REQUIERE_INFO: 'Requiere Info',
-  APROBADO: 'Aprobado',
-  RECHAZADO: 'Rechazado',
-  FINALIZADO: 'Finalizado',
-};
-
-const STATE_BADGE_CLASSES: Record<string, string> = {
-  BORRADOR: 'bg-gray-100 text-gray-700 border-gray-200',
-  ENVIADO: 'bg-blue-100 text-blue-700 border-blue-200',
-  EN_PROCESO: 'bg-amber-100 text-amber-700 border-amber-200',
-  REQUIERE_INFO: 'bg-orange-100 text-orange-700 border-orange-200',
-  APROBADO: 'bg-green-100 text-green-700 border-green-200',
-  RECHAZADO: 'bg-red-100 text-red-700 border-red-200',
-  FINALIZADO: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+  ...STATE_LABELS,
 };
 
 const STUDY_TYPE_OPTIONS = [
@@ -68,14 +52,7 @@ const VISIBILITY_OPTIONS = [
   { value: 'INTERNACIONAL', label: 'Internacional' },
 ];
 
-const ALL_STATES = Object.keys(STATE_LABELS).filter((k) => k !== 'ALL');
-
-const VALID_TRANSITIONS: Partial<Record<string, string[]>> = {
-  ENVIADO: ['EN_PROCESO'],
-  EN_PROCESO: ['APROBADO', 'RECHAZADO', 'REQUIERE_INFO'],
-  REQUIERE_INFO: ['EN_PROCESO'],
-  APROBADO: ['FINALIZADO'],
-};
+const ALL_STATES = Object.keys(STATE_LABELS_WITH_ALL).filter((k) => k !== 'ALL');
 
 const PAGE_SIZE = 20;
 
@@ -96,16 +73,6 @@ function getProcedureTypeLabel(proc: SecretaryDocProcedure): string {
 }
 
 // ---- Sub-components ----
-
-function StateBadge({ state }: { state: string }) {
-  const colorClass = STATE_BADGE_CLASSES[state] ?? 'bg-gray-100 text-gray-700 border-gray-200';
-  const label = STATE_LABELS[state] ?? state;
-  return (
-    <Badge variant="outline" className={cn('font-medium', colorClass)}>
-      {label}
-    </Badge>
-  );
-}
 
 function TableSkeleton() {
   return (
@@ -269,6 +236,7 @@ function ManageSecretaryDialog({
 
 export default function SecretaryProcedures() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const [procedures, setProcedures] = useState<SecretaryDocProcedure[]>([]);
   const [total, setTotal] = useState(0);
@@ -378,10 +346,10 @@ export default function SecretaryProcedures() {
             <SelectValue placeholder="Filtrar por estado" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">{STATE_LABELS.ALL}</SelectItem>
+            <SelectItem value="ALL">{STATE_LABELS_WITH_ALL.ALL}</SelectItem>
             {ALL_STATES.map((state) => (
               <SelectItem key={state} value={state}>
-                {STATE_LABELS[state]}
+                {STATE_LABELS_WITH_ALL[state]}
               </SelectItem>
             ))}
           </SelectContent>
@@ -421,7 +389,11 @@ export default function SecretaryProcedures() {
                 </ShadcnTableRow>
               ) : (
                 procedures.map((proc) => (
-                  <ShadcnTableRow key={proc.id} className="group">
+                  <ShadcnTableRow
+                    key={proc.id}
+                    className="group cursor-pointer hover:bg-gray-50/80"
+                    onClick={() => navigate(`/secretary/procedures/${proc.id}`)}
+                  >
                     <ShadcnTableCell className="pl-6 font-medium text-gray-800">
                       {proc.full_name}
                     </ShadcnTableCell>
@@ -442,7 +414,7 @@ export default function SecretaryProcedures() {
                         variant="ghost"
                         size="sm"
                         className="h-8 gap-1 text-primary-navy hover:bg-blue-50"
-                        onClick={() => handleManage(proc)}
+                        onClick={(e) => { e.stopPropagation(); handleManage(proc); }}
                       >
                         <Settings size={14} />
                         Gestionar

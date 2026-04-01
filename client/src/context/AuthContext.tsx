@@ -4,7 +4,7 @@ import { authService } from '../services/auth.service';
 import type { AuthState } from '../types/auth.types';
 
 interface AuthContextType extends AuthState {
-  login: (username: string, password: string) => Promise<void>;
+  login: (username: string, password: string) => Promise<import('../types/auth.types').User>;
   logout: () => void;
 }
 
@@ -48,6 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading: false,
       });
       authService.setStoredUser(response.user);
+      return response.user;
     } catch (error) {
       setState(prev => ({ ...prev, isLoading: false }));
       throw error;

@@ -1,5 +1,10 @@
 import apiClient from '../lib/api-client';
-import type { SecretaryDocProcedure, ProcedureListResponse } from '../types/secretary-doc.types';
+import type {
+  SecretaryDocProcedure,
+  ProcedureListResponse,
+  SeguimientoTramite,
+  Documento,
+} from '../types/secretary-doc.types';
 
 const BASE_URL = '/tramites-secretaria';
 
@@ -61,5 +66,19 @@ export const secretaryAdminService = {
 
   async changeState(id: number, data: ChangeStateData): Promise<void> {
     await apiClient.post(`${BASE_URL}/tramites/${id}/cambiar_estado/`, { estado: data.estado });
+  },
+
+  async getSeguimientos(id: number): Promise<SeguimientoTramite[]> {
+    const response = await apiClient.get<SeguimientoTramite[]>(
+      `${BASE_URL}/seguimientos/?tramite=${id}`,
+    );
+    return response.data;
+  },
+
+  async getDocumentos(id: number): Promise<Documento[]> {
+    const response = await apiClient.get<Documento[]>(
+      `${BASE_URL}/documentos/?tramite=${id}`,
+    );
+    return response.data;
   },
 };

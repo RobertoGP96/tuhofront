@@ -3,10 +3,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { feedingService } from '@/services/internal.service';
 import type { FeedingDays, FeedingProcedureForm } from '@/types/internal.types';
 import { Calendar, Plus, Trash2, Utensils } from 'lucide-react';
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 
 interface FeedingProcedureFormProps {
   onSuccess?: () => void;
@@ -86,7 +88,7 @@ export function FeedingProcedureForm({ onSuccess, onCancel }: FeedingProcedureFo
     e.preventDefault();
     
     if (!validateForm()) {
-      alert('Por favor, corrija los errores en el formulario');
+      toast.error('Por favor, corrija los errores en el formulario');
       return;
     }
 
@@ -103,8 +105,8 @@ export function FeedingProcedureForm({ onSuccess, onCancel }: FeedingProcedureFo
       };
 
       await feedingService.create(procedureData);
-      
-      alert('Solicitud de alimentación creada exitosamente');
+
+      toast.success('Solicitud de alimentación creada exitosamente');
 
       setFormData({
         feeding_type: 'RESTAURANT',
@@ -120,7 +122,7 @@ export function FeedingProcedureForm({ onSuccess, onCancel }: FeedingProcedureFo
       onSuccess?.();
     } catch (error) {
       console.error('Error creating feeding procedure:', error);
-      alert('No se pudo crear la solicitud. Intente nuevamente');
+      toast.error('No se pudo crear la solicitud. Intente nuevamente');
     } finally {
       setIsSubmitting(false);
     }
@@ -223,10 +225,10 @@ export function FeedingProcedureForm({ onSuccess, onCancel }: FeedingProcedureFo
             {/* Descripción */}
             <div className="space-y-2">
               <Label htmlFor="description" className="text-xs font-bold uppercase text-gray-500">Descripción Detallada</Label>
-              <textarea
+              <Textarea
                 id="description"
                 rows={4}
-                className="flex min-h-[80px] w-full rounded-xl border border-gray-100 bg-gray-50/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-xl border-gray-100 bg-gray-50/50"
                 placeholder="Describa los detalles de la solicitud de alimentación..."
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
