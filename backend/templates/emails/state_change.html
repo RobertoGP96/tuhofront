@@ -1,0 +1,21 @@
+{% extends "emails/base.html" %}
+{% block title %}Actualización de tu {{ resource_name }}{% endblock %}
+{% block content %}
+  <h2 style="margin-top:0;">Hola {{ user.get_full_name|default:user.username }},</h2>
+  <p>Tu <strong>{{ resource_name }}</strong> (#{{ procedure.pk }}) cambió de estado.</p>
+  <table style="width:100%;border-collapse:collapse;margin:16px 0;">
+    {% if old_state %}
+    <tr><td style="padding:8px 0;color:#6b7280;">Estado anterior</td><td style="padding:8px 0;"><strong>{{ old_state }}</strong></td></tr>
+    {% endif %}
+    <tr><td style="padding:8px 0;color:#6b7280;">Estado actual</td><td style="padding:8px 0;color:#1e40af;"><strong>{{ new_state }}</strong></td></tr>
+    {% if reason %}
+    <tr><td style="padding:8px 0;color:#6b7280;vertical-align:top;">Motivo</td><td style="padding:8px 0;">{{ reason }}</td></tr>
+    {% endif %}
+  </table>
+  {% if action_url %}
+  <p style="margin:24px 0;">
+    <a href="{{ action_url }}" style="display:inline-block;background:#1e40af;color:#fff;padding:10px 20px;text-decoration:none;border-radius:6px;">Ver detalles</a>
+  </p>
+  {% endif %}
+  <p style="color:#6b7280;font-size:13px;">Si tienes preguntas, contacta a la secretaría correspondiente.</p>
+{% endblock %}

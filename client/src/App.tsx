@@ -42,6 +42,9 @@ import LocalsCatalog from './pages/locals/LocalsCatalog'
 import LocalDetail from './pages/locals/LocalDetail'
 import ReservationForm from './pages/locals/ReservationForm'
 import MyReservations from './pages/locals/MyReservations'
+import Tracking from './pages/Tracking'
+import VerifyDocument from './pages/VerifyDocument'
+import Activate from './pages/Activate'
 
 function App() {
   const { isAdmin, isAuthenticated, isLoading, userRole, isGestorInterno, isGestorTramites, isGestorReservas, isSecretaria } = useAuth();
@@ -65,6 +68,11 @@ function App() {
           <Route path="/news" element={<News />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/confirm" element={<ResetPasswordConfirm />} />
+          {/* Nuevas rutas públicas: tracking, verificación de documentos, activación */}
+          <Route path="/tracking" element={<Tracking />} />
+          <Route path="/verify" element={<VerifyDocument />} />
+          <Route path="/verify/:code" element={<VerifyDocument />} />
+          <Route path="/activate" element={<Activate />} />
           {/* My Internal Procedures — must come before /procedures/:id */}
           <Route
             path="/procedures/internals"

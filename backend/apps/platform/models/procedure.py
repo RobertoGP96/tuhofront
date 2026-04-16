@@ -60,7 +60,7 @@ class Procedure(FollowNumberMixin):
         blank=True,
         null=True,
         verbose_name=_("Observaciones"),
-        help_text=_("Observaciones o comentarios adicionales"),
+        help_text=_("Observaciones o comentarios adicionales. Cuando el estado es RECHAZADO, este campo debe contener el motivo del rechazo."),
     )
 
     deadline = models.DateTimeField(

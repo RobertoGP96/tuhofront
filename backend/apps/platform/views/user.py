@@ -1,385 +1,395 @@
-from rest_framework import viewsets, status, permissions
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from django.db.models import Q, Count
-from django.utils.translation import gettext_lazy as _
-from django.shortcuts import get_object_or_404
 from datetime import datetime, timedelta
+
+from django.conf import settings
+from django.db.models import Count, Q
+from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework import permissions, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle
+from rest_framework.views import APIView
+
+from apps.audit.services import log_event
+from apps.notifications.services import notify
 
 from ..models.user import User
-from ..serializers.user import (
-    UserListSerializer,
-    UserDetailSerializer,
-    UserCreateSerializer,
-    UserUpdateSerializer,
-    ChangePasswordSerializer,
-    ActivateAccountSerializer,
-    VerifyPhoneSerializer,
-    ResetPasswordSerializer,
-    ResetPasswordConfirmSerializer,
-    UserStaffSerializer,
-    BulkUserActionSerializer,
-    UserStatsSerializer,
-)
 from ..permissions import IsOwnerOrStaff, IsStaffUser
+from ..serializers.user import (
+    ActivateAccountSerializer,
+    BulkUserActionSerializer,
+    ChangePasswordSerializer,
+    ResetPasswordConfirmSerializer,
+    ResetPasswordSerializer,
+    UserCreateSerializer,
+    UserDetailSerializer,
+    UserListSerializer,
+    UserStaffSerializer,
+    UserStatsSerializer,
+    UserUpdateSerializer,
+    VerifyPhoneSerializer,
+)
+
+
+class RegisterThrottle(ScopedRateThrottle):
+    scope = 'register'
+
+
+class PasswordResetThrottle(ScopedRateThrottle):
+    scope = 'password_reset'
+
+
+def _build_activation_url(token: str) -> str:
+    frontend = getattr(settings, 'FRONTEND_URL', '').rstrip('/')
+    return f'{frontend}/activate?token={token}' if frontend else f'/activate?token={token}'
+
+
+def _build_reset_url(token: str) -> str:
+    frontend = getattr(settings, 'FRONTEND_URL', '').rstrip('/')
+    return f'{frontend}/reset-password?token={token}' if frontend else f'/reset-password?token={token}'
+
+
+def _send_activation_email(user) -> None:
+    if not user.email:
+        return
+    token = user.generate_activation_token()
+    notify(
+        user,
+        subject='Activa tu cuenta en TUho',
+        body=f'Hola {user.get_full_name() or user.username}, usa este enlace para activar tu cuenta: {_build_activation_url(token)}',
+        tipo='SYSTEM',
+        prioridad='HIGH',
+        email_template='emails/account_activation.html',
+        email_context={
+            'user': user,
+            'activation_url': _build_activation_url(token),
+            'institution_name': getattr(settings, 'INSTITUTION_NAME', 'Universidad'),
+            'expires_hours': 48,
+        },
+    )
+
+
+def _send_reset_email(user) -> None:
+    if not user.email:
+        return
+    token = user.generate_activation_token()
+    notify(
+        user,
+        subject='Restablece tu contraseña en TUho',
+        body=f'Hola {user.get_full_name() or user.username}, restablece tu contraseña aquí: {_build_reset_url(token)}',
+        tipo='SYSTEM',
+        prioridad='HIGH',
+        email_template='emails/password_reset.html',
+        email_context={
+            'user': user,
+            'reset_url': _build_reset_url(token),
+            'institution_name': getattr(settings, 'INSTITUTION_NAME', 'Universidad'),
+            'expires_hours': 2,
+        },
+    )
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet para gestión completa de usuarios.
-
-    Endpoints:
-    - GET /usuarios/ - Listar usuarios
-    - POST /usuarios/ - Crear usuario
-    - GET /usuarios/{id}/ - Detalle de usuario
-    - PUT/PATCH /usuarios/{id}/ - Actualizar usuario
-    - DELETE /usuarios/{id}/ - Eliminar usuario
-    - POST /usuarios/{id}/change_password/ - Cambiar contraseña
-    - POST /usuarios/activate/ - Activar cuenta
-    - GET /usuarios/me/ - Usuario actual
-    """
+    """Gestión completa de usuarios."""
 
     queryset = User.objects.all()
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = [
-        "user_type",
-        "is_active",
-        "is_staff",
-        "email_verified",
-        "phone_verified",
-    ]
-    search_fields = ["username", "email", "first_name", "last_name", "id_card"]
-    ordering_fields = ["date_joined", "username", "email", "user_type"]
-    ordering = ["-date_joined"]
+    filterset_fields = ['user_type', 'is_active', 'is_staff', 'email_verified', 'phone_verified']
+    search_fields = ['username', 'email', 'first_name', 'last_name', 'id_card']
+    ordering_fields = ['date_joined', 'username', 'email', 'user_type']
+    ordering = ['-date_joined']
 
     def get_serializer_class(self):
-        """Retorna el serializer apropiado según la acción"""
-        if self.action == "list":
+        if self.action == 'list':
             return UserListSerializer
-        elif self.action == "create":
+        if self.action == 'create':
             return UserCreateSerializer
-        elif self.action in ["update", "partial_update"]:
+        if self.action in ['update', 'partial_update']:
             return UserUpdateSerializer
-        elif self.action == "change_password":
+        if self.action == 'change_password':
             return ChangePasswordSerializer
-        elif self.action == "activate":
+        if self.action == 'activate':
             return ActivateAccountSerializer
-        elif self.action == "verify_phone":
+        if self.action == 'verify_phone':
             return VerifyPhoneSerializer
         return UserDetailSerializer
 
     def get_permissions(self):
-        """Permisos según la acción"""
-        if self.action == "create":
+        if self.action == 'create':
             return [permissions.AllowAny()]
-        elif self.action in ["update", "partial_update", "change_password"]:
+        if self.action in ['update', 'partial_update', 'change_password']:
             return [IsOwnerOrStaff()]
-        elif self.action in ["destroy", "bulk_actions"]:
+        if self.action in ['destroy', 'bulk_actions']:
             return [IsStaffUser()]
-        elif self.action == "me":
-            return [permissions.IsAuthenticated()]
+        if self.action in ['activate', 'resend_activation']:
+            return [permissions.AllowAny()]
         return [permissions.IsAuthenticated()]
 
-    def get_queryset(self):
-        """Filtra queryset según permisos del usuario"""
-        user = self.request.user
+    def get_throttles(self):
+        if self.action == 'create':
+            return [RegisterThrottle()]
+        return super().get_throttles()
 
+    def get_queryset(self):
+        user = self.request.user
         if not user.is_authenticated:
             return User.objects.none()
-
-        # Staff puede ver todos los usuarios
         if user.is_staff:
             return User.objects.all()
-
-        # Usuarios normales solo pueden ver su propio perfil
         return User.objects.filter(id=user.id)
 
     def create(self, request, *args, **kwargs):
-        """Crear nuevo usuario"""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
-        # Aquí se podría enviar email de activación
-        # send_activation_email(user)
+        # Por defecto los nuevos usuarios no están activos hasta validar email
+        if user.is_active:
+            user.is_active = False
+            user.save(update_fields=['is_active'])
+
+        _send_activation_email(user)
+        log_event(
+            action='create',
+            resource=user,
+            description=f'Usuario registrado: {user.username}',
+        )
 
         return Response(
             {
-                "message": _(
-                    "Usuario creado exitosamente. Revisa tu email para activar la cuenta."
-                ),
-                "user": UserDetailSerializer(user).data,
+                'message': _('Usuario creado. Revisa tu email para activar la cuenta.'),
+                'user': UserDetailSerializer(user).data,
             },
             status=status.HTTP_201_CREATED,
         )
 
-    @action(detail=False, methods=["get"])
+    @action(detail=False, methods=['get'])
     def me(self, request):
-        """Obtiene el perfil del usuario autenticado"""
         serializer = UserDetailSerializer(request.user)
         return Response(serializer.data)
 
-    @action(detail=True, methods=["post"])
+    @action(detail=True, methods=['post'])
     def change_password(self, request, pk=None):
-        """Cambiar contraseña del usuario"""
         user = self.get_object()
-        serializer = ChangePasswordSerializer(
-            data=request.data, context={"request": request}
-        )
-
+        serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
-            user.set_password(serializer.validated_data["new_password"])
+            user.set_password(serializer.validated_data['new_password'])
             user.save()
-
-            return Response({"message": _("Contraseña actualizada exitosamente.")})
-
+            log_event(action='update', resource=user, description='Cambio de contraseña')
+            return Response({'message': _('Contraseña actualizada exitosamente.')})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=["post"])
+    @action(detail=False, methods=['post'], permission_classes=[permissions.AllowAny])
     def activate(self, request):
-        """Activar cuenta con token"""
         serializer = ActivateAccountSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        if serializer.is_valid():
-            token = serializer.validated_data["activation_token"]
+        token = serializer.validated_data['activation_token']
+        try:
             user = User.objects.get(activation_token=token)
-            user.activate_account()
+        except User.DoesNotExist:
+            return Response({'error': _('Token inválido o expirado.')}, status=status.HTTP_400_BAD_REQUEST)
 
-            return Response({"message": _("Cuenta activada exitosamente.")})
+        user.activate_account()
+        log_event(action='user_activation', resource=user, description='Cuenta activada vía email')
+        return Response({'message': _('Cuenta activada exitosamente.')})
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=True, methods=["post"])
+    @action(detail=True, methods=['post'])
     def verify_phone(self, request, pk=None):
-        """Verificar número de teléfono"""
         user = self.get_object()
         serializer = VerifyPhoneSerializer(data=request.data)
-
         if serializer.is_valid():
-            # Aquí iría la lógica de verificación con código SMS
-            # verify_phone_code(user, serializer.validated_data['verification_code'])
-
             user.verify_phone()
-
-            return Response({"message": _("Teléfono verificado exitosamente.")})
-
+            return Response({'message': _('Teléfono verificado exitosamente.')})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=["post"])
-    def resend_activation(self, request, pk=None):
-        """Reenviar email de activación"""
-        user = self.get_object()
-
+    @action(detail=False, methods=['post'], permission_classes=[permissions.AllowAny], throttle_classes=[RegisterThrottle])
+    def resend_activation(self, request):
+        """Reenviar email de activación dado un email."""
+        email = request.data.get('email', '').strip().lower()
+        if not email:
+            return Response({'error': _('Debe proporcionar un email.')}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user = User.objects.get(email__iexact=email)
+        except User.DoesNotExist:
+            # Respuesta genérica para no revelar existencia de cuentas
+            return Response({'message': _('Si el email existe, se ha enviado la activación.')})
         if user.is_active:
-            return Response(
-                {"error": _("Esta cuenta ya está activada.")},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        token = user.generate_activation_token()
-        # Aquí se enviaría el email
-        # send_activation_email(user, token)
-
-        return Response({"message": _("Email de activación reenviado.")})
+            return Response({'message': _('Si el email existe, se ha enviado la activación.')})
+        _send_activation_email(user)
+        return Response({'message': _('Si el email existe, se ha enviado la activación.')})
 
 
 class PasswordResetView(APIView):
-    """Vista para solicitar reseteo de contraseña"""
-
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [PasswordResetThrottle]
 
     def post(self, request):
         serializer = ResetPasswordSerializer(data=request.data)
-
-        if serializer.is_valid():
-            email = serializer.validated_data["email"]
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        email = serializer.validated_data['email']
+        try:
             user = User.objects.get(email__iexact=email)
-
-            # Generar token de reseteo
-            token = user.generate_activation_token()
-
-            # Aquí se enviaría el email con el token
-            # send_password_reset_email(user, token)
-
-            return Response(
-                {
-                    "message": _(
-                        "Se ha enviado un email con instrucciones para resetear tu contraseña."
-                    )
-                }
-            )
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            _send_reset_email(user)
+            log_event(action='password_reset', resource=user, description='Solicitud de reset')
+        except User.DoesNotExist:
+            pass  # respuesta genérica
+        return Response({'message': _('Si el email existe, se ha enviado instrucciones.')})
 
 
 class PasswordResetConfirmView(APIView):
-    """Vista para confirmar reseteo de contraseña"""
-
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [PasswordResetThrottle]
 
     def post(self, request):
         serializer = ResetPasswordConfirmSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        token = serializer.validated_data['token']
+        try:
+            user = User.objects.get(activation_token=token)
+        except User.DoesNotExist:
+            return Response({'error': _('Token inválido o expirado.')}, status=status.HTTP_400_BAD_REQUEST)
 
-        if serializer.is_valid():
-            token = serializer.validated_data["token"]
-
-            try:
-                user = User.objects.get(activation_token=token)
-                user.set_password(serializer.validated_data["new_password"])
-                user.activation_token = None
-                user.save()
-
-                return Response({"message": _("Contraseña actualizada exitosamente.")})
-            except User.DoesNotExist:
-                return Response(
-                    {"error": _("Token inválido o expirado.")},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        user.set_password(serializer.validated_data['new_password'])
+        user.activation_token = None
+        user.save()
+        log_event(action='password_reset', resource=user, description='Contraseña restablecida')
+        return Response({'message': _('Contraseña actualizada exitosamente.')})
 
 
 class UserStaffViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet para gestión de usuarios por parte del staff.
-    Incluye funcionalidades administrativas avanzadas.
-    """
+    """Gestión avanzada de usuarios por staff."""
 
     queryset = User.objects.all()
     serializer_class = UserStaffSerializer
     permission_classes = [IsStaffUser]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ["user_type", "is_active", "is_staff", "email_verified"]
-    search_fields = ["username", "email", "first_name", "last_name", "id_card"]
-    ordering_fields = ["date_joined", "username", "last_login"]
-    ordering = ["-date_joined"]
+    filterset_fields = ['user_type', 'is_active', 'is_staff', 'email_verified']
+    search_fields = ['username', 'email', 'first_name', 'last_name', 'id_card']
+    ordering_fields = ['date_joined', 'username', 'last_login']
+    ordering = ['-date_joined']
 
-    @action(detail=False, methods=["post"])
+    @action(detail=False, methods=['post'])
     def bulk_actions(self, request):
-        """Acciones en lote sobre usuarios"""
         serializer = BulkUserActionSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        if serializer.is_valid():
-            user_ids = serializer.validated_data["user_ids"]
-            action_type = serializer.validated_data["action"]
+        user_ids = serializer.validated_data['user_ids']
+        action_type = serializer.validated_data['action']
 
-            users = User.objects.filter(id__in=user_ids)
+        users = User.objects.filter(id__in=user_ids).exclude(id=request.user.id)
 
-            # Prevenir que se modifiquen a sí mismos
-            users = users.exclude(id=request.user.id)
+        message = None
+        audit_action = None
+        if action_type == 'activate':
+            users.update(is_active=True)
+            audit_action = 'user_activation'
+            message = _('Usuarios activados exitosamente.')
+        elif action_type == 'deactivate':
+            users.update(is_active=False)
+            audit_action = 'user_deactivation'
+            message = _('Usuarios desactivados exitosamente.')
+        elif action_type == 'verify_email':
+            users.update(email_verified=True)
+            audit_action = 'update'
+            message = _('Emails verificados exitosamente.')
+        elif action_type == 'delete':
+            count = users.count()
+            ids = list(users.values_list('id', flat=True))
+            users.delete()
+            audit_action = 'delete'
+            message = _(f'{count} usuarios eliminados exitosamente.')
+            log_event(
+                action=audit_action,
+                resource_type='platform.User',
+                resource_id=','.join(str(x) for x in ids),
+                description='Eliminación masiva de usuarios',
+                metadata={'count': count, 'ids': [str(x) for x in ids]},
+            )
+            return Response({'message': message})
 
-            if action_type == "activate":
-                users.update(is_active=True)
-                message = _("Usuarios activados exitosamente.")
-            elif action_type == "deactivate":
-                users.update(is_active=False)
-                message = _("Usuarios desactivados exitosamente.")
-            elif action_type == "verify_email":
-                users.update(email_verified=True)
-                message = _("Emails verificados exitosamente.")
-            elif action_type == "delete":
-                count = users.count()
-                users.delete()
-                message = _(f"{count} usuarios eliminados exitosamente.")
+        if audit_action:
+            log_event(
+                action=audit_action,
+                resource_type='platform.User',
+                resource_id='bulk',
+                description=f'Acción masiva: {action_type}',
+                metadata={'action': action_type, 'count': users.count()},
+            )
 
-            return Response({"message": message})
+        return Response({'message': message})
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=False, methods=["get"])
+    @action(detail=False, methods=['get'])
     def statistics(self, request):
-        """Estadísticas de usuarios"""
         total_users = User.objects.count()
         active_users = User.objects.filter(is_active=True).count()
-        verified_users = User.objects.filter(
-            email_verified=True, phone_verified=True
-        ).count()
-
-        # Usuarios por tipo
+        verified_users = User.objects.filter(email_verified=True, phone_verified=True).count()
         users_by_type = dict(
-            User.objects.values("user_type")
-            .annotate(count=Count("id"))
-            .values_list("user_type", "count")
+            User.objects.values('user_type').annotate(count=Count('id')).values_list('user_type', 'count')
         )
-
-        # Registros recientes (últimos 30 días)
         thirty_days_ago = datetime.now() - timedelta(days=30)
-        recent_registrations = User.objects.filter(
-            date_joined__gte=thirty_days_ago
-        ).count()
+        recent_registrations = User.objects.filter(date_joined__gte=thirty_days_ago).count()
 
         stats = {
-            "total_users": total_users,
-            "active_users": active_users,
-            "inactive_users": total_users - active_users,
-            "verified_users": verified_users,
-            "users_by_type": users_by_type,
-            "recent_registrations": recent_registrations,
+            'total_users': total_users,
+            'active_users': active_users,
+            'inactive_users': total_users - active_users,
+            'verified_users': verified_users,
+            'users_by_type': users_by_type,
+            'recent_registrations': recent_registrations,
         }
-
         serializer = UserStatsSerializer(stats)
         return Response(serializer.data)
 
-    @action(detail=True, methods=["post"])
+    @action(detail=True, methods=['post'])
     def force_activate(self, request, pk=None):
-        """Activar usuario sin token (solo staff)"""
         user = self.get_object()
         user.activate_account()
+        log_event(action='user_activation', resource=user, description='Activación forzada por admin')
+        return Response({'message': _('Usuario activado exitosamente.')})
 
-        return Response({"message": _("Usuario activado exitosamente.")})
-
-    @action(detail=True, methods=["post"])
+    @action(detail=True, methods=['post'])
     def reset_password_admin(self, request, pk=None):
-        """Resetear contraseña de usuario (solo staff)"""
         user = self.get_object()
-        new_password = request.data.get("new_password")
-
+        new_password = request.data.get('new_password')
         if not new_password:
-            return Response(
-                {"error": _("Debe proporcionar una nueva contraseña.")},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
+            return Response({'error': _('Debe proporcionar una nueva contraseña.')}, status=status.HTTP_400_BAD_REQUEST)
         user.set_password(new_password)
         user.save()
+        log_event(action='password_reset', resource=user, description='Reset por admin')
+        return Response({'message': _('Contraseña actualizada exitosamente.')})
 
-        return Response({"message": _("Contraseña actualizada exitosamente.")})
-
-    @action(detail=True, methods=["get"])
+    @action(detail=True, methods=['get'])
     def activity_log(self, request, pk=None):
-        """Obtener log de actividad del usuario"""
+        """Retorna las últimas 100 entradas de audit log del usuario."""
         user = self.get_object()
-
-        # Aquí iría la lógica para obtener el historial de actividad
-        # desde un modelo de auditoría si existiera
-
-        return Response(
-            {
-                "user_id": user.id,
-                "last_login": user.last_login,
-                "date_joined": user.date_joined,
-                "is_active": user.is_active,
-                # 'activity_log': []  # Implementar según necesidad
-            }
-        )
+        from apps.audit.models import AuditLog
+        from apps.audit.serializers import AuditLogSerializer
+        logs = AuditLog.objects.filter(user=user).order_by('-created_at')[:100]
+        return Response({
+            'user_id': user.id,
+            'last_login': user.last_login,
+            'date_joined': user.date_joined,
+            'is_active': user.is_active,
+            'activity_log': AuditLogSerializer(logs, many=True).data,
+        })
 
 
 class UserSearchView(APIView):
-    """Vista para búsqueda avanzada de usuarios"""
-
     permission_classes = [IsStaffUser]
 
     def get(self, request):
-        """Búsqueda avanzada de usuarios"""
-        query = request.query_params.get("q", "")
-        user_type = request.query_params.get("user_type", "")
-        is_active = request.query_params.get("is_active", "")
+        query = request.query_params.get('q', '')
+        user_type = request.query_params.get('user_type', '')
+        is_active = request.query_params.get('is_active', '')
 
         users = User.objects.all()
-
         if query:
             users = users.filter(
                 Q(username__icontains=query)
@@ -388,15 +398,10 @@ class UserSearchView(APIView):
                 | Q(last_name__icontains=query)
                 | Q(id_card__icontains=query)
             )
-
         if user_type:
             users = users.filter(user_type=user_type)
-
         if is_active:
-            users = users.filter(is_active=is_active.lower() == "true")
+            users = users.filter(is_active=is_active.lower() == 'true')
 
-        serializer = UserListSerializer(
-            users[:50], many=True
-        )  # Limitar a 50 resultados
-
-        return Response({"count": users.count(), "results": serializer.data})
+        serializer = UserListSerializer(users[:50], many=True)
+        return Response({'count': users.count(), 'results': serializer.data})

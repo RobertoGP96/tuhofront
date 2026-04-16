@@ -1,0 +1,30 @@
+{% extends "documents/base.html" %}
+{% block content %}
+  <h1>{{ document.title }}</h1>
+
+  <h2>Datos del solicitante</h2>
+  <div class="field"><span class="label">Nombre:</span> <span class="value">{{ user_full_name|default:"—" }}</span></div>
+  <div class="field"><span class="label">Usuario:</span> <span class="value">{{ user.username|default:"—" }}</span></div>
+  <div class="field"><span class="label">Correo:</span> <span class="value">{{ user.email|default:"—" }}</span></div>
+
+  <h2>Datos del trámite</h2>
+  <div class="field"><span class="label">Número:</span> <span class="value code">{{ tracking_code|default:procedure.pk }}</span></div>
+  <div class="field"><span class="label">Tipo:</span> <span class="value">{{ resource_name }}</span></div>
+  <div class="field"><span class="label">Estado:</span> <span class="value">{{ procedure.get_state_display }}</span></div>
+  <div class="field"><span class="label">Creado:</span> <span class="value">{{ procedure.created_at|date:"d/m/Y H:i" }}</span></div>
+  {% if procedure.observation %}
+  <div class="field"><span class="label">Observaciones:</span> <span class="value">{{ procedure.observation }}</span></div>
+  {% endif %}
+
+  {% if extra_fields %}
+  <h2>Detalles adicionales</h2>
+  {% for k, v in extra_fields.items %}
+    <div class="field"><span class="label">{{ k }}:</span> <span class="value">{{ v }}</span></div>
+  {% endfor %}
+  {% endif %}
+
+  <p style="margin-top: 24px;">
+    Por la presente se hace constar la solicitud arriba detallada, procesada en el Sistema Integral de Gestión
+    Universitaria TUho de la {{ institution_name }}.
+  </p>
+{% endblock %}

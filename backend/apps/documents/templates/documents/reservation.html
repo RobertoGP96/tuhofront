@@ -1,0 +1,28 @@
+{% extends "documents/base.html" %}
+{% block content %}
+  <h1>Confirmación de Reserva de Local</h1>
+
+  <h2>Datos del solicitante</h2>
+  <div class="field"><span class="label">Nombre:</span> <span class="value">{{ user_full_name|default:"—" }}</span></div>
+  <div class="field"><span class="label">Correo:</span> <span class="value">{{ reservation.responsible_email }}</span></div>
+  <div class="field"><span class="label">Teléfono:</span> <span class="value">{{ reservation.responsible_phone }}</span></div>
+
+  <h2>Datos de la reserva</h2>
+  <div class="field"><span class="label">Local:</span> <span class="value">{{ reservation.local.name }} ({{ reservation.local.code }})</span></div>
+  <div class="field"><span class="label">Tipo de local:</span> <span class="value">{{ reservation.local.get_local_type_display }}</span></div>
+  <div class="field"><span class="label">Capacidad:</span> <span class="value">{{ reservation.local.capacity }} personas</span></div>
+  <div class="field"><span class="label">Asistentes esperados:</span> <span class="value">{{ reservation.expected_attendees }}</span></div>
+  <div class="field"><span class="label">Inicio:</span> <span class="value">{{ reservation.start_time|date:"d/m/Y H:i" }}</span></div>
+  <div class="field"><span class="label">Fin:</span> <span class="value">{{ reservation.end_time|date:"d/m/Y H:i" }}</span></div>
+  <div class="field"><span class="label">Propósito:</span> <span class="value">{{ reservation.get_purpose_display }}</span></div>
+  <div class="field"><span class="label">Detalle:</span> <span class="value">{{ reservation.purpose_detail }}</span></div>
+  <div class="field"><span class="label">Estado:</span> <span class="value">{{ reservation.get_state_display }}</span></div>
+  {% if reservation.approved_at %}
+  <div class="field"><span class="label">Aprobada:</span> <span class="value">{{ reservation.approved_at|date:"d/m/Y H:i" }} — {{ reservation.approved_by.get_full_name|default:reservation.approved_by.username }}</span></div>
+  {% endif %}
+
+  <p style="margin-top: 24px;">
+    La presente constituye el documento oficial de confirmación de la reserva. Preséntelo el día del evento como
+    respaldo del uso autorizado del espacio.
+  </p>
+{% endblock %}

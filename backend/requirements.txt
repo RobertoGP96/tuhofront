@@ -1,4 +1,4 @@
-asgiref==3.7.2
+asgiref>=3.7
 diff-match-patch==20230430
 distlib==0.3.8
 
@@ -8,9 +8,9 @@ platformdirs==4.2.2
 psycopg2==2.9.9
 python-dotenv==1.0.1
 setuptools<81
-sqlparse==0.4.4
+sqlparse>=0.5
 tablib==3.5.0
-tzdata==2024.1
+tzdata
 virtualenv==20.26.2
 whitenoise==6.6.0
 
@@ -27,28 +27,48 @@ djangorestframework==3.15.1
 djangorestframework-simplejwt>=5.3.2
 
 # Autenticación y Seguridad
-django-cors-headers>=4.3.0  # Para CORS si tienes frontend separado
+django-axes<7.0
+django-ratelimit>=4.1.0
 
 # Base de datos
-psycopg2-binary>=2.9.0  # PostgreSQL
-# mysqlclient>=2.2.0  # MySQL (descomentar si usas MySQL)
+psycopg2-binary>=2.9.0
 
 # Validación y utilidades
-phonenumbers>=8.13.0  # Validación de teléfonos
+phonenumbers>=8.13.0
 python-dateutil>=2.8.0
+python-magic-bin>=0.4.14; platform_system == "Windows"
+python-magic>=0.4.27; platform_system != "Windows"
 
-# Email
-django-templated-mail>=1.1.1  # Templates para emails (opcional)
+# Email y templates
+django-templated-mail>=1.1.1
 
 # Documentación API
-drf-spectacular>=0.27.0  # OpenAPI/Swagger (recomendado)
-# drf-yasg>=1.21.0  # Alternativa para Swagger (descomentar si prefieres esta)
+drf-spectacular>=0.27.0
+
+# PDF Generation
+weasyprint>=60.0
+reportlab>=4.0.0
+qrcode[pil]>=7.4.2
+
+# Export XLSX
+openpyxl>=3.1.0
+
+# Tareas asíncronas
+celery>=5.3.0
+redis>=5.0.0
+
+# Backups
+django-dbbackup<5.0
+
+# Recurrencias calendario
+icalendar>=5.0.0
 
 # Testing
 pytest>=7.4.0
 pytest-django>=4.5.0
-factory-boy>=3.3.0  # Para crear datos de prueba
-faker>=19.0.0  # Generar datos falsos
+pytest-cov>=4.1.0
+factory-boy>=3.3.0
+faker>=19.0.0
 
 # Desarrollo
 django-debug-toolbar>=4.2.0
@@ -56,12 +76,8 @@ ipython>=8.12.0
 
 # Producción
 gunicorn>=21.2.0
-python-decouple>=3.8  # Para variables de entorno
-whitenoise>=6.5.0  # Servir archivos estáticos
-
-# Celery (opcional, para tareas asíncronas)
-# celery>=5.3.0
-# redis>=5.0.0
+python-decouple>=3.8
+whitenoise>=6.5.0
 
 # Monitoreo (opcional)
 # sentry-sdk>=1.32.0

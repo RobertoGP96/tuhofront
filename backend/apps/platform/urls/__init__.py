@@ -10,6 +10,6 @@ urlpatterns = [
         path('departments/', include('apps.platform.urls.department')),
         path('users/', include('apps.platform.urls.users')),
         path('procedures/', include('apps.platform.urls.procedure')),
+        path('reports/', include('apps.platform.urls.reports')),
     ])),
-
 ]

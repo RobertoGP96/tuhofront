@@ -523,3 +523,16 @@ class ReservationHistory(models.Model):
 
     def __str__(self):
         return f"{self.reservation.local.code} - {self.action} - {self.timestamp.strftime('%d/%m/%Y %H:%M')}"
+
+
+# ============================================================================
+# MODELOS EXTENDIDOS (equipamiento, recurrencia, check-in)
+# ============================================================================
+# Importados después de las definiciones principales para evitar ciclos
+from .models_extensions import (  # noqa: E402,F401
+    Equipment,
+    LocalEquipment,
+    ReservationEquipmentRequest,
+    ReservationSeries,
+    ReservationCheckIn,
+)
