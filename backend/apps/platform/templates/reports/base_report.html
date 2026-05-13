@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>{{ report_title|default:"Reporte" }} — {{ institution_short_name }}</title>
+<style>
+  /* ---- Open Sans (igual que la plataforma) ---- */
+  @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800;900&display=swap');
+
+  @page {
+    size: A4;
+    margin: 18mm 14mm 22mm 14mm;
+    @bottom-left {
+      content: "{{ institution_short_name }} · Generado el {{ generated_at }}";
+      font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+      font-size: 8.5pt;
+      color: #94A3B8;
+    }
+    @bottom-right {
+      content: "Página " counter(page) " de " counter(pages);
+      font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+      font-size: 8.5pt;
+      color: #94A3B8;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+    font-size: 10pt;
+    color: #243757; /* foreground */
+    background: #FFFFFF;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---- Header con el logo (mismo bloque navy de la plataforma) ---- */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: #FFFFFF;
+    border: 1px solid #F3F4F6;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    margin-bottom: 16px;
+    border-top: 4px solid #A3C221; /* acento institucional lime */
+  }
+  .header .brand {
+    background: #243757; /* navy */
+    border-radius: 6px;
+    padding: 8px 12px;
+    min-width: 60px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .header .brand img {
+    max-height: 36px;
+    width: auto;
+    display: block;
+  }
+  .header .meta { flex: 1; }
+  .header h1 {
+    margin: 0;
+    font-size: 15pt;
+    font-weight: 900;
+    color: #243757;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    line-height: 1.15;
+  }
+  .header .institution {
+    font-size: 9.5pt;
+    color: #475569;
+    margin-top: 3px;
+    font-weight: 600;
+  }
+  .header .subtitle {
+    font-size: 8.5pt;
+    color: #64748B;
+    margin-top: 4px;
+  }
+  .header .subtitle strong { color: #243757; font-weight: 700; }
+
+  /* ---- Filter pills (igual que badges de la plataforma) ---- */
+  .filters {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .filter-pill {
+    background: #F1F5F9;
+    color: #243757;
+    padding: 3px 9px;
+    border-radius: 999px;
+    border: 1px solid #E2E8F0;
+    font-size: 8.5pt;
+    font-weight: 600;
+  }
+
+  /* ---- KPI grid (replica StatsCard del AdminDashboard) ---- */
+  .kpis {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .kpi-card {
+    flex: 1 1 22%;
+    min-width: 110px;
+    background: #FFFFFF;
+    border: 1px solid #F3F4F6;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    padding: 12px 14px;
+    border-top: 3px solid #A3C221; /* acento lime */
+  }
+  .kpi-card .label {
+    font-size: 8pt;
+    color: #9CA3AF; /* text-gray-400 */
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .kpi-card .value {
+    font-size: 20pt;
+    font-weight: 900;       /* font-black */
+    color: #243757;
+    line-height: 1.1;
+  }
+  .kpi-card .sub {
+    font-size: 8.5pt;
+    color: #64748B;
+    margin-top: 3px;
+  }
+
+  /* ---- Section card wrapper ---- */
+  section.card {
+    background: #FFFFFF;
+    border: 1px solid #F3F4F6;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+  h2.section {
+    color: #243757;
+    font-size: 11pt;
+    font-weight: 800;
+    margin: 0 0 10px 0;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #E2E8F0;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  /* ---- Charts ---- */
+  .charts-row {
+    display: flex;
+    gap: 10px;
+    margin: 0;
+  }
+  .chart {
+    flex: 1;
+    background: #FFFFFF;
+    border: 1px solid #F3F4F6;
+    border-radius: 10px;
+    padding: 10px 12px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+  .chart-title {
+    font-size: 9.5pt;
+    color: #243757;
+    margin: 0 0 8px 0;
+    font-weight: 700;
+  }
+  .chart-empty {
+    color: #94A3B8;
+    font-style: italic;
+    text-align: center;
+    padding: 14px;
+    font-size: 9pt;
+  }
+
+  /* Bar chart */
+  .bar-chart .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+    font-size: 8.5pt;
+  }
+  .bar-chart .bar-label {
+    width: 38%;
+    color: #475569;
+    text-align: right;
+    padding-right: 4px;
+    font-weight: 600;
+  }
+  .bar-chart .bar-track {
+    flex: 1;
+    background: #F1F5F9;
+    height: 11px;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .bar-chart .bar-fill {
+    display: block;
+    height: 100%;
+    background: #243757;
+    border-radius: 6px;
+  }
+  .bar-chart .bar-value {
+    width: 36px;
+    text-align: right;
+    color: #243757;
+    font-weight: 800;
+  }
+
+  /* Pie chart */
+  .pie-wrapper { display: flex; align-items: center; gap: 14px; }
+  .pie {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: inset 0 0 0 4px #FFFFFF, 0 1px 2px rgba(15, 23, 42, 0.08);
+  }
+  .pie-legend {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 8.5pt;
+    flex: 1;
+  }
+  .pie-legend li {
+    margin-bottom: 4px;
+    color: #334155;
+  }
+  .pie-legend strong { color: #243757; font-weight: 800; }
+  .legend-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 3px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  /* ---- Tables (estética shadcn) ---- */
+  table.data {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 4px;
+    font-size: 9pt;
+  }
+  table.data thead th {
+    background: #243757;
+    color: #FFFFFF;
+    text-align: left;
+    padding: 7px 9px;
+    font-weight: 700;
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border-bottom: 3px solid #A3C221;
+  }
+  table.data thead th:first-child { border-top-left-radius: 8px; }
+  table.data thead th:last-child { border-top-right-radius: 8px; }
+  table.data tbody td {
+    padding: 6px 9px;
+    border-bottom: 1px solid #E2E8F0;
+    color: #334155;
+    vertical-align: middle;
+  }
+  table.data tbody tr:nth-child(even) td { background: #F8FAFC; }
+  table.data tbody tr:last-child td { border-bottom: none; }
+  table.data .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* State badges (mismo color que StateBadge del frontend) */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid;
+    font-size: 8pt;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+  .badge-BORRADOR     { background: #F3F4F6; color: #374151; border-color: #E5E7EB; }
+  .badge-ENVIADO      { background: #DBEAFE; color: #1D4ED8; border-color: #BFDBFE; }
+  .badge-EN_PROCESO   { background: #FEF3C7; color: #B45309; border-color: #FDE68A; }
+  .badge-REQUIERE_INFO{ background: #FFEDD5; color: #C2410C; border-color: #FED7AA; }
+  .badge-APROBADO     { background: #DCFCE7; color: #15803D; border-color: #BBF7D0; }
+  .badge-RECHAZADO    { background: #FEE2E2; color: #B91C1C; border-color: #FECACA; }
+  .badge-FINALIZADO   { background: #D1FAE5; color: #047857; border-color: #A7F3D0; }
+
+  /* Empty / utility */
+  .empty-state {
+    text-align: center;
+    padding: 28px 12px;
+    color: #94A3B8;
+    font-style: italic;
+    border: 1px dashed #E2E8F0;
+    border-radius: 10px;
+    background: #F8FAFC;
+  }
+  .text-muted { color: #64748B; font-size: 8.5pt; margin-top: 6px; }
+</style>
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+  <header class="header">
+    <div class="brand">
+      {% if logo_uri %}<img src="{{ logo_uri }}" alt="{{ institution_short_name }}">{% endif %}
+    </div>
+    <div class="meta">
+      <h1>{{ report_title }}</h1>
+      <div class="institution">{{ institution_name }}</div>
+      <div class="subtitle">
+        {% if generated_by %}Generado por <strong>{{ generated_by }}</strong> · {% endif %}
+        {{ generated_at }}
+      </div>
+    </div>
+  </header>
+
+  {% if active_filters %}
+  <div class="filters">
+    {% for f in active_filters %}<span class="filter-pill">{{ f }}</span>{% endfor %}
+  </div>
+  {% endif %}
+
+  {% block content %}{% endblock %}
+</body>
+</html>

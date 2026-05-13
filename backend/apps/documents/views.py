@@ -11,7 +11,8 @@ from __future__ import annotations
 from django.apps import apps
 from django.http import Http404
 from django.shortcuts import get_object_or_404
-from rest_framework import permissions, status, viewsets
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse, inline_serializer
+from rest_framework import permissions, serializers, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes, throttle_classes
 from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
@@ -146,6 +147,37 @@ class PublicVerifyThrottle(ScopedRateThrottle):
     scope = 'public_tracking'
 
 
+@extend_schema(
+    tags=['Public'],
+    summary='Verificación pública de documento oficial',
+    description=(
+        'Permite a cualquier persona verificar la autenticidad de un documento '
+        'emitido escaneando el QR o introduciendo el código de verificación. '
+        'Sin autenticación. Throttle: 20/min por IP.'
+    ),
+    parameters=[
+        OpenApiParameter(name='code', type=str, location='path', required=True,
+                         description='Código de verificación del documento (UUID)'),
+    ],
+    responses={
+        200: inline_serializer(
+            name='DocumentVerifyResult',
+            fields={
+                'valid': serializers.BooleanField(),
+                'revoked': serializers.BooleanField(),
+                'revoked_reason': serializers.CharField(allow_blank=True, allow_null=True),
+                'revoked_at': serializers.DateTimeField(allow_null=True),
+                'title': serializers.CharField(),
+                'doc_type': serializers.CharField(),
+                'resource_type': serializers.CharField(),
+                'issued_at': serializers.DateTimeField(),
+                'expires_at': serializers.DateTimeField(allow_null=True),
+                'verification_code': serializers.CharField(),
+            },
+        ),
+        404: OpenApiResponse(description='Documento no encontrado'),
+    },
+)
 @api_view(['GET'])
 @permission_classes([permissions.AllowAny])
 @throttle_classes([PublicVerifyThrottle])

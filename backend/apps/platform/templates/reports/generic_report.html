@@ -1,0 +1,76 @@
+{% extends "reports/base_report.html" %}
+
+{% comment %}
+Template genérico reutilizable. Variables esperadas:
+
+  report_title       — Título (string)
+  active_filters     — Lista de strings (pills cabecera)
+  kpis               — Lista de dicts: { label, value, sub }
+  charts             — Lista de strings HTML pre-renderizados
+  charts_title       — Título de la sección charts (opcional)
+  table_title        — Título de la sección tabla
+  table_headers      — Lista de strings
+  table_rows         — Lista de filas. Cada celda puede ser:
+                         - string/number  → se renderiza tal cual
+                         - dict { state: 'APROBADO', text: 'Aprobado' } → badge de estado
+                         - dict { numeric: True, value: 123 }            → alineado a la derecha
+  table_truncated    — bool
+  empty_message      — string para empty state
+{% endcomment %}
+
+{% block content %}
+  {% if kpis %}
+  <section class="card">
+    <h2 class="section">Indicadores Clave</h2>
+    <div class="kpis">
+      {% for k in kpis %}
+        <div class="kpi-card">
+          <div class="label">{{ k.label }}</div>
+          <div class="value">{{ k.value }}</div>
+          {% if k.sub %}<div class="sub">{{ k.sub }}</div>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if charts %}
+  <section class="card">
+    <h2 class="section">{{ charts_title|default:"Tendencias" }}</h2>
+    <div class="charts-row">
+      {% for chart in charts %}{{ chart|safe }}{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if table_rows %}
+  <section class="card">
+    <h2 class="section">{{ table_title|default:"Detalle" }}</h2>
+    <table class="data">
+      <thead>
+        <tr>{% for h in table_headers %}<th>{{ h }}</th>{% endfor %}</tr>
+      </thead>
+      <tbody>
+        {% for row in table_rows %}
+          <tr>
+            {% for cell in row %}
+              {% if cell.state %}
+                <td><span class="badge badge-{{ cell.state }}">{{ cell.text }}</span></td>
+              {% elif cell.numeric %}
+                <td class="num">{{ cell.value }}</td>
+              {% else %}
+                <td>{{ cell }}</td>
+              {% endif %}
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if table_truncated %}
+      <p class="text-muted">Mostrando los primeros {{ table_rows|length }} registros. Use la exportación XLSX para volúmenes mayores.</p>
+    {% endif %}
+  </section>
+  {% elif not kpis and not charts %}
+    <div class="empty-state">{{ empty_message|default:"Sin datos en el periodo seleccionado." }}</div>
+  {% endif %}
+{% endblock %}

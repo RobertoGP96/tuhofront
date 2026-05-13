@@ -1,0 +1,46 @@
+{% extends "reports/base_report.html" %}
+
+{% block content %}
+  <section>
+    <h2 class="section">Indicadores Clave</h2>
+    <div class="kpis">
+      {% for k in kpis %}
+        <div class="kpi-card">
+          <div class="label">{{ k.label }}</div>
+          <div class="value">{{ k.value }}</div>
+          {% if k.sub %}<div class="sub">{{ k.sub }}</div>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {% if charts %}
+  <section>
+    <h2 class="section">Tendencias</h2>
+    <div class="charts-row">
+      {% for chart in charts %}{{ chart|safe }}{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if table_rows %}
+  <section>
+    <h2 class="section">{{ table_title|default:"Detalle" }}</h2>
+    <table class="data">
+      <thead>
+        <tr>{% for h in table_headers %}<th>{{ h }}</th>{% endfor %}</tr>
+      </thead>
+      <tbody>
+        {% for row in table_rows %}
+          <tr>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if table_truncated %}
+      <p class="text-muted">Mostrando los primeros {{ table_rows|length }} registros. Use la exportación XLSX para volúmenes mayores.</p>
+    {% endif %}
+  </section>
+  {% else %}
+    <div class="empty-state">Sin datos en el periodo seleccionado.</div>
+  {% endif %}
+{% endblock %}
