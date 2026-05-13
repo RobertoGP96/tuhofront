@@ -51,6 +51,10 @@ class _HasRole(permissions.BasePermission):
         return getattr(u, 'user_type', None) in self.allowed_roles
 
 
+class IsAdminOnly(_HasRole):
+    allowed_roles = ('ADMIN',)
+
+
 class IsAdminOrInternalManager(_HasRole):
     allowed_roles = ('ADMIN', 'GESTOR_INTERNO')
 
@@ -67,7 +71,7 @@ class IsAdminOrSecretary(_HasRole):
     allowed_roles = ('ADMIN', 'SECRETARIA_DOCENTE')
 
 
-_PERSONAL_USER_ROLES = ('ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE')
+_PERSONAL_USER_ROLES = ('ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN')
 
 
 class IsPersonalUserOrAdmin(permissions.BasePermission):
@@ -187,7 +191,7 @@ def _format_row_basic(item: Any) -> list:
 # ----------------------------------------------------------------
 
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated, permissions.IsAdminUser])
+@permission_classes([IsAdminOnly])
 def overview_pdf(request):
     User = apps.get_model('platform', 'User')
     now = timezone.now()
