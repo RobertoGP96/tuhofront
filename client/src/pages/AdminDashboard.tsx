@@ -17,9 +17,11 @@ import type { AdminProcedure, AdminStats } from '../services/admin.service';
 import { localsService } from '../services/locals.service';
 import { secretaryAdminService } from '../services/secretary-admin.service';
 import type { SecretaryStats } from '../services/secretary-admin.service';
+import { reportsService } from '../services/reports.service';
 import type { User } from '../types/auth.types';
 import { USER_TYPE_LABELS } from '@/lib/constants';
 import { StateBadge } from '@/components/StateBadge';
+import { ExportReportButton } from '@/components/reports/ExportReportButton';
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('es-ES', {
@@ -223,7 +225,13 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-primary-navy">Panel de Control</h1>
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <h1 className="text-3xl font-bold text-primary-navy">Panel de Control</h1>
+        <ExportReportButton
+          label="Exportar reporte global"
+          onExport={(filters) => reportsService.downloadAdminOverview(filters)}
+        />
+      </div>
 
       {statsError && <ErrorMessage message={statsError} />}
 

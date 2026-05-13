@@ -10,6 +10,16 @@ import { FeedingTab } from './admin-internal/FeedingTab';
 import { AccommodationTab } from './admin-internal/AccommodationTab';
 import { TransportTab } from './admin-internal/TransportTab';
 import { MaintenanceTab } from './admin-internal/MaintenanceTab';
+import { ExportReportButton } from '@/components/reports/ExportReportButton';
+import { reportsService } from '@/services/reports.service';
+import type { InternalDomain } from '@/services/reports.service';
+
+const DOMAIN_LABEL: Record<InternalDomain, string> = {
+  feeding: 'Alimentación',
+  accommodation: 'Hospedaje',
+  transport: 'Transporte',
+  maintenance: 'Mantenimiento',
+};
 
 interface StatSummaryCard {
   label: string;
@@ -65,6 +75,7 @@ export default function AdminInternalProcedures() {
     maintenance: null,
   });
   const [statsLoading, setStatsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<InternalDomain>('feeding');
 
   useEffect(() => {
     let cancelled = false;
@@ -104,9 +115,15 @@ export default function AdminInternalProcedures() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-primary-navy">Tramites Internos</h1>
-        <p className="text-gray-500 mt-1">Gestion de tramites internos de la universidad</p>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-3xl font-bold text-primary-navy">Tramites Internos</h1>
+          <p className="text-gray-500 mt-1">Gestion de tramites internos de la universidad</p>
+        </div>
+        <ExportReportButton
+          label={`Exportar PDF — ${DOMAIN_LABEL[activeTab]}`}
+          onExport={(filters) => reportsService.downloadInternalDomain(activeTab, filters)}
+        />
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -123,7 +140,7 @@ export default function AdminInternalProcedures() {
 
       <Card className="border-gray-100 shadow-sm">
         <CardContent className="p-6">
-          <Tabs defaultValue="feeding">
+          <Tabs defaultValue="feeding" value={activeTab} onValueChange={(v) => setActiveTab(v as InternalDomain)}>
             <TabsList className="mb-6">
               <TabsTrigger value="feeding">Alimentacion</TabsTrigger>
               <TabsTrigger value="accommodation">Hospedaje</TabsTrigger>

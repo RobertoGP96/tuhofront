@@ -17,24 +17,16 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { proceduresService } from '@/services/procedures.service';
+import {
+  STATE_LABELS as BASE_STATE_LABELS,
+  VALID_STATE_TRANSITIONS,
+} from '@/lib/constants';
 import type { Procedure, ProcedureState } from '@/types/procedures.types';
 
-const STATE_LABELS: Record<ProcedureState, string> = {
-  BORRADOR: 'Borrador',
-  ENVIADO: 'Enviado',
-  EN_PROCESO: 'En Proceso',
-  REQUIERE_INFO: 'Requiere Información',
-  APROBADO: 'Aprobado',
-  RECHAZADO: 'Rechazado',
-  FINALIZADO: 'Finalizado',
-};
+const STATE_LABELS = BASE_STATE_LABELS as Record<ProcedureState, string>;
 
-const VALID_TRANSITIONS: Partial<Record<ProcedureState, ProcedureState[]>> = {
-  ENVIADO: ['EN_PROCESO'],
-  EN_PROCESO: ['APROBADO', 'RECHAZADO', 'REQUIERE_INFO'],
-  REQUIERE_INFO: ['EN_PROCESO'],
-  APROBADO: ['FINALIZADO'],
-};
+const VALID_TRANSITIONS: Partial<Record<ProcedureState, ProcedureState[]>> =
+  VALID_STATE_TRANSITIONS as Partial<Record<ProcedureState, ProcedureState[]>>;
 
 interface ManageProcedureDialogProps {
   procedure: Procedure | null;
@@ -57,9 +49,9 @@ export function ManageProcedureDialog({
     ? (VALID_TRANSITIONS[procedure.state] ?? [])
     : [];
 
-  const userName = procedure
-    ? `${procedure.user.first_name} ${procedure.user.last_name}`.trim() ||
-      procedure.user.username
+  const userName = procedure && procedure.user
+    ? `${procedure.user.first_name ?? ''} ${procedure.user.last_name ?? ''}`.trim() ||
+      procedure.user.username || '—'
     : '';
 
   function handleOpenChange(nextOpen: boolean) {

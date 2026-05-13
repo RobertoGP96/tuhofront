@@ -22,7 +22,9 @@ import { ChevronLeft, ChevronRight, Eye, FileText } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { proceduresService } from '../services/procedures.service';
+import { reportsService } from '../services/reports.service';
 import type { Procedure, ProcedureState } from '../types/procedures.types';
+import { ExportReportButton } from '@/components/reports/ExportReportButton';
 
 const STATE_LABELS: Record<ProcedureState, string> = {
   BORRADOR: 'Borrador',
@@ -153,6 +155,10 @@ export default function MyProcedures() {
           <h1 className="text-3xl font-bold text-primary-navy">Mis Tramites</h1>
           <p className="text-gray-500">Consulte el estado de sus solicitudes y procedimientos.</p>
         </div>
+        <ExportReportButton
+          label="Exportar mi historial"
+          onExport={(filters) => reportsService.downloadMyHistory(filters)}
+        />
       </div>
 
       <Card className="border-gray-100 shadow-sm">

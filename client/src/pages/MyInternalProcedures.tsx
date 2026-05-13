@@ -24,6 +24,9 @@ import {
 } from './admin-internal/ProcedureTableShared';
 import { formatDate, formatDateTime, PAGE_SIZE } from './admin-internal/constants';
 import { Utensils, BedDouble, Bus, Wrench } from 'lucide-react';
+import { ExportReportButton } from '@/components/reports/ExportReportButton';
+import { reportsService } from '@/services/reports.service';
+import { unwrapList } from '@/utils';
 
 const FEEDING_TYPE_LABELS: Record<string, string> = {
   RESTAURANT: 'Restaurante',
@@ -42,8 +45,6 @@ function FeedingUserTab() {
   const [isLoading, setIsLoading] = useState(true);
   const [stateFilter, setStateFilter] = useState<InternalProcedureState | 'ALL'>('ALL');
   const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
-
   useEffect(() => {
     let cancelled = false;
     setIsLoading(true);
@@ -51,8 +52,7 @@ function FeedingUserTab() {
       .getAll()
       .then((res) => {
         if (!cancelled) {
-          setItems(res.results ?? (res as unknown as FeedingProcedure[]));
-          setTotal(res.count ?? (res as unknown as FeedingProcedure[]).length);
+          setItems(unwrapList<FeedingProcedure>(res).items);
         }
       })
       .finally(() => { if (!cancelled) setIsLoading(false); });
@@ -129,7 +129,7 @@ function AccommodationUserTab() {
     accommodationService
       .getAll()
       .then((res) => {
-        if (!cancelled) setItems(res.results ?? (res as unknown as AccommodationProcedure[]));
+        if (!cancelled) setItems(unwrapList<AccommodationProcedure>(res).items);
       })
       .finally(() => { if (!cancelled) setIsLoading(false); });
     return () => { cancelled = true; };
@@ -205,7 +205,7 @@ function TransportUserTab() {
     transportService
       .getAll()
       .then((res) => {
-        if (!cancelled) setItems(res.results ?? (res as unknown as TransportProcedure[]));
+        if (!cancelled) setItems(unwrapList<TransportProcedure>(res).items);
       })
       .finally(() => { if (!cancelled) setIsLoading(false); });
     return () => { cancelled = true; };
@@ -283,7 +283,7 @@ function MaintenanceUserTab() {
     maintenanceService
       .getAll()
       .then((res) => {
-        if (!cancelled) setItems(res.results ?? (res as unknown as MaintanceProcedure[]));
+        if (!cancelled) setItems(unwrapList<MaintanceProcedure>(res).items);
       })
       .finally(() => { if (!cancelled) setIsLoading(false); });
     return () => { cancelled = true; };
@@ -360,9 +360,15 @@ function MaintenanceUserTab() {
 export default function MyInternalProcedures() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-primary-navy">Mis Trámites Internos</h1>
-        <p className="text-gray-500 mt-1">Consulte el estado de sus solicitudes internas.</p>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-3xl font-bold text-primary-navy">Mis Trámites Internos</h1>
+          <p className="text-gray-500 mt-1">Consulte el estado de sus solicitudes internas.</p>
+        </div>
+        <ExportReportButton
+          label="Exportar mi historial"
+          onExport={(filters) => reportsService.downloadMyHistory(filters)}
+        />
       </div>
 
       <Card className="border-gray-100 shadow-sm">

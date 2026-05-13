@@ -25,38 +25,31 @@ import {
 import { cn } from '@/lib/utils';
 import { ManageProcedureDialog } from '@/components/ManageProcedureDialog';
 import { proceduresService } from '@/services/procedures.service';
+import {
+  STATE_LABELS as BASE_STATE_LABELS,
+  STATE_COLORS,
+  ALL_STATES as ALL_STATES_BASE,
+} from '@/lib/constants';
 import type { Procedure, ProcedureState } from '@/types/procedures.types';
 
 const STATE_LABELS: Record<ProcedureState | 'ALL', string> = {
   ALL: 'Todos los estados',
-  BORRADOR: 'Borrador',
-  ENVIADO: 'Enviado',
-  EN_PROCESO: 'En Proceso',
-  REQUIERE_INFO: 'Requiere Información',
-  APROBADO: 'Aprobado',
-  RECHAZADO: 'Rechazado',
-  FINALIZADO: 'Finalizado',
+  ...(BASE_STATE_LABELS as Record<ProcedureState, string>),
 };
 
-const STATE_BADGE_CLASSES: Record<ProcedureState, string> = {
-  BORRADOR: 'bg-gray-100 text-gray-700 border-gray-200',
-  ENVIADO: 'bg-blue-100 text-blue-700 border-blue-200',
-  EN_PROCESO: 'bg-amber-100 text-amber-700 border-amber-200',
-  REQUIERE_INFO: 'bg-orange-100 text-orange-700 border-orange-200',
-  APROBADO: 'bg-green-100 text-green-700 border-green-200',
-  RECHAZADO: 'bg-red-100 text-red-700 border-red-200',
-  FINALIZADO: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-};
+const STATE_BADGE_CLASSES: Record<ProcedureState, string> = STATE_COLORS as Record<
+  ProcedureState,
+  string
+>;
 
 const PAGE_SIZE = 20;
 
-const ALL_STATES = Object.keys(STATE_LABELS).filter(
-  (k) => k !== 'ALL',
-) as ProcedureState[];
+const ALL_STATES = ALL_STATES_BASE as ProcedureState[];
 
 function getUserName(proc: Procedure): string {
-  const full = `${proc.user.first_name} ${proc.user.last_name}`.trim();
-  return full || proc.user.username;
+  if (!proc.user) return '—';
+  const full = `${proc.user.first_name ?? ''} ${proc.user.last_name ?? ''}`.trim();
+  return full || proc.user.username || '—';
 }
 
 function formatDate(dateStr: string): string {
@@ -105,7 +98,7 @@ export const ProceduresManagement = () => {
     try {
       const params: Record<string, string | number> = { page };
       if (stateFilter !== 'ALL') params.state = stateFilter;
-      if (debouncedSearch.trim()) params.follow_number = debouncedSearch.trim();
+      if (debouncedSearch.trim()) params.search = debouncedSearch.trim();
 
       const data = await proceduresService.getProcedures(params);
       setProcedures(data.results);
@@ -239,18 +232,20 @@ export const ProceduresManagement = () => {
                           size="icon"
                           className="h-8 w-8 text-blue-500 hover:bg-blue-50 hover:text-blue-600"
                           title="Ver trámite"
+                          aria-label={`Ver trámite ${proc.follow_number ?? ''}`}
                           onClick={() => navigate(`/procedures/${proc.id}`)}
                         >
-                          <Eye size={16} />
+                          <Eye size={16} aria-hidden="true" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 text-primary-navy hover:bg-blue-50"
                           title="Gestionar trámite"
+                          aria-label={`Gestionar trámite ${proc.follow_number ?? ''}`}
                           onClick={() => handleManage(proc)}
                         >
-                          <Settings size={16} />
+                          <Settings size={16} aria-hidden="true" />
                         </Button>
                       </div>
                     </ShadcnTableCell>

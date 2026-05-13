@@ -297,7 +297,7 @@ export default function AdminNews() {
   const [editingItem, setEditingItem] = useState<NewsItem | null>(null);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<{ id: number; title: string } | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: number; slug: string; title: string } | null>(null);
 
   const fetchNews = useCallback(async () => {
     setLoading(true);
@@ -318,7 +318,7 @@ export default function AdminNews() {
 
   const handleSave = async (payload: NewsPayload) => {
     if (editingItem) {
-      const updated = await platformService.updateNews(editingItem.id, payload);
+      const updated = await platformService.updateNews(editingItem.slug, payload);
       setNews((prev) => prev.map((n) => (n.id === updated.id ? updated : n)));
       toast.success('Noticia actualizada');
     } else {
@@ -340,13 +340,13 @@ export default function AdminNews() {
   };
 
   const requestDelete = (item: NewsItem) => {
-    setDeleteTarget({ id: item.id, title: item.title });
+    setDeleteTarget({ id: item.id, slug: item.slug, title: item.title });
     setDeleteDialogOpen(true);
   };
 
   const handleConfirmDelete = async () => {
     if (!deleteTarget) return;
-    await platformService.deleteNews(deleteTarget.id);
+    await platformService.deleteNews(deleteTarget.slug);
     setNews((prev) => prev.filter((n) => n.id !== deleteTarget.id));
     setTotalCount((c) => c - 1);
     toast.success('Noticia eliminada');
@@ -447,18 +447,20 @@ export default function AdminNews() {
                           size="icon"
                           className="h-7 w-7 text-blue-500 hover:bg-blue-50"
                           title="Editar"
+                          aria-label={`Editar noticia: ${item.title}`}
                           onClick={() => openEdit(item)}
                         >
-                          <Edit size={14} />
+                          <Edit size={14} aria-hidden="true" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
                           className="h-7 w-7 text-red-400 hover:bg-red-50"
                           title="Eliminar"
+                          aria-label={`Eliminar noticia: ${item.title}`}
                           onClick={() => requestDelete(item)}
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={14} aria-hidden="true" />
                         </Button>
                       </div>
                     </TableCell>

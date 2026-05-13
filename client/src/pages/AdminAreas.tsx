@@ -391,18 +391,20 @@ export default function AdminAreas() {
                             size="icon"
                             className="h-7 w-7 text-blue-500 hover:bg-blue-50"
                             title="Editar"
+                            aria-label={`Editar departamento: ${dept.name}`}
                             onClick={() => openEditDept(dept)}
                           >
-                            <Edit size={14} />
+                            <Edit size={14} aria-hidden="true" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="icon"
                             className="h-7 w-7 text-red-400 hover:bg-red-50"
                             title="Eliminar"
+                            aria-label={`Eliminar departamento: ${dept.name}`}
                             onClick={() => requestDelete('dept', dept.id, dept.name)}
                           >
-                            <Trash2 size={14} />
+                            <Trash2 size={14} aria-hidden="true" />
                           </Button>
                         </div>
                       </TableCell>
@@ -478,18 +480,20 @@ export default function AdminAreas() {
                             size="icon"
                             className="h-7 w-7 text-blue-500 hover:bg-blue-50"
                             title="Editar"
+                            aria-label={`Editar área: ${area.name}`}
                             onClick={() => openEditArea(area)}
                           >
-                            <Edit size={14} />
+                            <Edit size={14} aria-hidden="true" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="icon"
                             className="h-7 w-7 text-red-400 hover:bg-red-50"
                             title="Eliminar"
+                            aria-label={`Eliminar área: ${area.name}`}
                             onClick={() => requestDelete('area', area.id, area.name)}
                           >
-                            <Trash2 size={14} />
+                            <Trash2 size={14} aria-hidden="true" />
                           </Button>
                         </div>
                       </TableCell>

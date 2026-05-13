@@ -29,9 +29,11 @@ import {
   TableRow as ShadcnTableRow,
 } from '@/components/ui/table';
 import { secretaryAdminService } from '../services/secretary-admin.service';
+import { reportsService } from '../services/reports.service';
 import type { SecretaryDocProcedure } from '../types/secretary-doc.types';
 import { STATE_LABELS, VALID_TRANSITIONS } from '@/lib/constants';
 import { StateBadge } from '@/components/StateBadge';
+import { ExportReportButton } from '@/components/reports/ExportReportButton';
 
 // ---- Constants ----
 
@@ -312,6 +314,10 @@ export default function SecretaryProcedures() {
               : `${total} tramite${total !== 1 ? 's' : ''} registrado${total !== 1 ? 's' : ''}`}
           </p>
         </div>
+        <ExportReportButton
+          label="Exportar PDF"
+          onExport={(filters) => reportsService.downloadSecretary(filters)}
+        />
       </div>
 
       <div className="flex flex-col sm:flex-row flex-wrap gap-3">
