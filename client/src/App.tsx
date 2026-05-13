@@ -7,6 +7,7 @@ import AdminUsers from './pages/AdminUsers'
 import AdminAreas from './pages/AdminAreas'
 import AdminNews from './pages/AdminNews'
 import AdminLocals from './pages/AdminLocals'
+import AdminLdap from './pages/AdminLdap'
 import AdminSettings from './pages/AdminSettings'
 import Profile from './pages/Profile'
 import Reports from './pages/Reports'
@@ -269,6 +270,7 @@ function App() {
                   <Route path="news" element={<AdminNews />} />
                   <Route path="locals" element={<AdminLocals />} />
                   <Route path="settings" element={<AdminSettings />} />
+                  <Route path="ldap" element={<AdminLdap />} />
                 </Routes>
               </RoleGuard>
             }

@@ -323,8 +323,16 @@ AUTH_USER_MODEL = 'platform.User'
 AUTHENTICATION_BACKENDS = [
     # Axes debe ir primero
     'axes.backends.AxesStandaloneBackend',
+    # LDAP opcional, configurable en runtime vía /api/v1/settings/ldap/.
+    # El backend se auto-deshabilita (retorna None) si LdapConfig.enabled=False
+    # o si python-ldap/django-auth-ldap no están instalados.
+    'apps.platform.auth.ldap.RuntimeLdapBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+# LDAP runtime: solo `LDAP_BIND_PASSWORD` y opcionalmente
+# `LDAP_TLS_CA_CERTFILE` se leen aquí. Toda la demás configuración vive
+# en apps.settings_runtime.LdapConfig (BD + cache, editable en runtime).
 
 
 # ============================================

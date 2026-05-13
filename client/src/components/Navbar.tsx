@@ -9,6 +9,7 @@ import {
   Home,
   LogIn,
   LogOut,
+  Lock,
   MessageSquare,
   Newspaper,
   Search,
@@ -606,6 +607,12 @@ export const Navbar: React.FC<NavbarProps> = () => {
                     onClick={() => navigate('/admin/settings')}
                   >
                     <Settings size={15} /> Configuración
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="gap-2 cursor-pointer"
+                    onClick={() => navigate('/admin/ldap')}
+                  >
+                    <Lock size={15} /> Autenticación externa
                   </DropdownMenuItem>
                 </>
               )}

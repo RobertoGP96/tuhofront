@@ -30,6 +30,15 @@ djangorestframework-simplejwt>=5.3.2
 django-axes<7.0
 django-ratelimit>=4.1.0
 
+# Autenticación externa (opcional, activable en runtime vía /admin/ldap)
+# Soporta múltiples proveedores pluggables:
+#   - LDAP directo  → requiere python-ldap (wheels precompilados en Windows)
+#   - HTTP API REST → requiere requests (puro Python, sin compilación)
+# Si una librería no está disponible, el proveedor correspondiente se
+# auto-deshabilita; el sistema sigue funcionando con auth local.
+python-ldap>=3.4.4
+requests>=2.31.0
+
 # Base de datos
 psycopg2-binary>=2.9.0
 
