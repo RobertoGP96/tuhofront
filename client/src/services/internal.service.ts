@@ -107,17 +107,17 @@ export const transportService = {
 // Maintenance Procedures
 export const maintenanceService = {
   async getAll(): Promise<ProcedureListResponse<MaintanceProcedure>> {
-    const response = await apiClient.get<ProcedureListResponse<MaintanceProcedure>>(`${BASE_URL}/maintenance-procedures/`);
+    const response = await apiClient.get<ProcedureListResponse<MaintanceProcedure>>(`${BASE_URL}/maintance-procedures/`);
     return response.data;
   },
 
   async getById(id: number): Promise<MaintanceProcedure> {
-    const response = await apiClient.get<MaintanceProcedure>(`${BASE_URL}/maintenance-procedures/${id}/`);
+    const response = await apiClient.get<MaintanceProcedure>(`${BASE_URL}/maintance-procedures/${id}/`);
     return response.data;
   },
 
   async create(data: FormData): Promise<MaintanceProcedure> {
-    const response = await apiClient.post<MaintanceProcedure>(`${BASE_URL}/maintenance-procedures/`, data, {
+    const response = await apiClient.post<MaintanceProcedure>(`${BASE_URL}/maintance-procedures/`, data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -126,7 +126,7 @@ export const maintenanceService = {
   },
 
   async update(id: number, data: FormData): Promise<MaintanceProcedure> {
-    const response = await apiClient.patch<MaintanceProcedure>(`${BASE_URL}/maintenance-procedures/${id}/`, data, {
+    const response = await apiClient.patch<MaintanceProcedure>(`${BASE_URL}/maintance-procedures/${id}/`, data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -135,16 +135,16 @@ export const maintenanceService = {
   },
 
   async delete(id: number): Promise<void> {
-    await apiClient.delete(`${BASE_URL}/maintenance-procedures/${id}/`);
+    await apiClient.delete(`${BASE_URL}/maintance-procedures/${id}/`);
   },
 
   async getTypes(): Promise<MaintanceProcedureType[]> {
-    const response = await apiClient.get<MaintanceProcedureType[]>(`${BASE_URL}/maintenance-procedure-types/`);
+    const response = await apiClient.get<MaintanceProcedureType[]>(`${BASE_URL}/maintance-procedure-types/`);
     return response.data;
   },
 
   async getPriorities(): Promise<MaintancePriority[]> {
-    const response = await apiClient.get<MaintancePriority[]>(`${BASE_URL}/maintenance-priorities/`);
+    const response = await apiClient.get<MaintancePriority[]>(`${BASE_URL}/maintance-priorities/`);
     return response.data;
   }
 };
@@ -152,12 +152,12 @@ export const maintenanceService = {
 // Supporting data
 export const supportingDataService = {
   async getDepartments(): Promise<Department[]> {
-    const response = await apiClient.get<Department[]>('/platform/departments/');
+    const response = await apiClient.get<Department[]>('/departments/');
     return response.data;
   },
 
   async getAreas(): Promise<Area[]> {
-    const response = await apiClient.get<Area[]>('/platform/areas/');
+    const response = await apiClient.get<Area[]>('/areas/');
     return response.data;
   }
 };

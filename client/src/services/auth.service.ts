@@ -50,8 +50,8 @@ export const authService = {
     return response.data;
   },
 
-  async changePassword(data: { old_password: string; new_password: string }): Promise<void> {
-    await apiClient.post('/users/change_password/', data);
+  async changePassword(userId: number | string, data: { old_password: string; new_password: string }): Promise<void> {
+    await apiClient.post(`/users/${userId}/change_password/`, data);
   },
 
   setStoredUser(user: User) {

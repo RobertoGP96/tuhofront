@@ -9,6 +9,7 @@ import AdminNews from './pages/AdminNews'
 import AdminLocals from './pages/AdminLocals'
 import AdminSettings from './pages/AdminSettings'
 import Profile from './pages/Profile'
+import Reports from './pages/Reports'
 import AdminProcedures from './pages/AdminProcedures'
 import AdminInternalProcedures from './pages/AdminInternalProcedures'
 import MyProcedures from './pages/MyProcedures'
@@ -38,6 +39,7 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPasswordConfirm from './pages/ResetPasswordConfirm'
 import NotFound from './pages/NotFound'
 import Forbidden from './pages/Forbidden'
+import ServerError from './pages/ServerError'
 import LocalsCatalog from './pages/locals/LocalsCatalog'
 import LocalDetail from './pages/locals/LocalDetail'
 import ReservationForm from './pages/locals/ReservationForm'
@@ -45,9 +47,10 @@ import MyReservations from './pages/locals/MyReservations'
 import Tracking from './pages/Tracking'
 import VerifyDocument from './pages/VerifyDocument'
 import Activate from './pages/Activate'
+import UserDashboard from './pages/UserDashboard'
 
 function App() {
-  const { isAdmin, isAuthenticated, isLoading, userRole, isGestorInterno, isGestorTramites, isGestorReservas, isSecretaria } = useAuth();
+  const { isAuthenticated, isLoading, userRole } = useAuth();
 
   if (isLoading) {
     return (
@@ -73,6 +76,17 @@ function App() {
           <Route path="/verify" element={<VerifyDocument />} />
           <Route path="/verify/:code" element={<VerifyDocument />} />
           <Route path="/activate" element={<Activate />} />
+
+          {/* User dashboard — landing post-login para roles no administrativos */}
+          <Route
+            path="/dashboard"
+            element={
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+                <UserDashboard />
+              </RoleGuard>
+            }
+          />
+
           {/* My Internal Procedures — must come before /procedures/:id */}
           <Route
             path="/procedures/internals"
@@ -105,7 +119,7 @@ function App() {
           <Route
             path="/procedures/secretary/undergraduate/national"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'SECRETARIA_DOCENTE', 'ADMIN']}>
                 <UnderNatProcedure />
               </RoleGuard>
             }
@@ -113,7 +127,7 @@ function App() {
           <Route
             path="/procedures/secretary/undergraduate/international"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'SECRETARIA_DOCENTE', 'ADMIN']}>
                 <UnderInterProcedure />
               </RoleGuard>
             }
@@ -121,7 +135,7 @@ function App() {
           <Route
             path="/procedures/secretary/postgraduate/national"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'SECRETARIA_DOCENTE', 'ADMIN']}>
                 <PostNatProcedure />
               </RoleGuard>
             }
@@ -129,7 +143,7 @@ function App() {
           <Route
             path="/procedures/secretary/postgraduate/international"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'SECRETARIA_DOCENTE', 'ADMIN']}>
                 <PostInterProcedure />
               </RoleGuard>
             }
@@ -137,7 +151,7 @@ function App() {
           <Route
             path="/procedures/secretary/title-legalization"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'SECRETARIA_DOCENTE', 'ADMIN']}>
                 <TitleLegalization />
               </RoleGuard>
             }
@@ -217,6 +231,16 @@ function App() {
             }
           />
 
+          {/* Reports — all authenticated users (la página adapta el contenido por rol) */}
+          <Route
+            path="/reports"
+            element={
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+                <Reports />
+              </RoleGuard>
+            }
+          />
+
           {/* Secretary Management Panel — SECRETARIA_DOCENTE and ADMIN only */}
           <Route
             path="/secretary/*"
@@ -290,6 +314,7 @@ function App() {
 
           {/* Error pages */}
           <Route path="/forbidden" element={<Forbidden />} />
+          <Route path="/server-error" element={<ServerError />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </MainLayout>

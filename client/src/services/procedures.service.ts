@@ -3,7 +3,7 @@ import type { Procedure, ProcedureNote, PaginatedResponse, ProcedureState } from
 
 export interface GetProceduresParams {
   state?: string;
-  follow_number?: string;
+  search?: string;
   page?: number;
 }
 

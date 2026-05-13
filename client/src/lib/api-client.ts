@@ -49,10 +49,29 @@ apiClient.interceptors.response.use(
 
         return apiClient(originalRequest);
       } catch (refreshError) {
-        // Clear tokens and redirect to login if refresh fails
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
-        // window.location.href = '/login';
+        localStorage.removeItem('user');
+
+        const publicPaths = [
+          '/login',
+          '/register',
+          '/forgot-password',
+          '/reset-password/confirm',
+          '/activate',
+          '/tracking',
+          '/verify',
+          '/contact',
+          '/news',
+          '/',
+        ];
+        const currentPath = window.location.pathname;
+        const isPublic = publicPaths.some(
+          (p) => currentPath === p || currentPath.startsWith(`${p}/`),
+        );
+        if (!isPublic) {
+          window.location.href = '/login';
+        }
         return Promise.reject(refreshError);
       }
     }
