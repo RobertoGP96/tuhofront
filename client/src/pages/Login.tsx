@@ -25,13 +25,17 @@ const LoginPage: React.FC = () => {
         GESTOR_INTERNO: '/gestor-interno',
         GESTOR_TRAMITES: '/gestor-tramites',
         GESTOR_RESERVAS: '/gestor-reservas',
+        PROFESOR: '/dashboard',
+        TRABAJADOR: '/dashboard',
+        ESTUDIANTE: '/dashboard',
+        EXTERNO: '/dashboard',
       };
       const isSystemAdmin = user?.role === 'ADMIN' || user?.is_staff;
       const destination = from !== '/'
         ? from
         : isSystemAdmin
           ? '/admin'
-          : (user?.user_type ? redirectMap[user.user_type] ?? '/' : '/');
+          : (user?.user_type ? redirectMap[user.user_type] ?? '/dashboard' : '/dashboard');
       navigate(destination, { replace: true });
     } catch (err: unknown) {
       const error = err as { response?: { data?: { detail?: string } } };
@@ -67,7 +71,8 @@ const LoginPage: React.FC = () => {
 
               <div className="space-y-4">
                 <div className="relative group/input">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <label htmlFor="username" className="sr-only">Usuario o correo</label>
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none" aria-hidden="true">
                     <User className="h-5 w-5 text-gray-400 group-focus-within/input:text-primary-navy transition-colors" />
                   </div>
                   <input
@@ -75,6 +80,9 @@ const LoginPage: React.FC = () => {
                     name="username"
                     type="text"
                     required
+                    autoComplete="username"
+                    autoCapitalize="none"
+                    spellCheck={false}
                     className="block w-full pl-11 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-primary-navy placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-navy/20 focus:border-primary-navy transition-all"
                     placeholder="Usuario o Correo"
                     value={username}
@@ -83,7 +91,8 @@ const LoginPage: React.FC = () => {
                 </div>
 
                 <div className="relative group/input">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <label htmlFor="password" className="sr-only">Contraseña</label>
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none" aria-hidden="true">
                     <Lock className="h-5 w-5 text-gray-400 group-focus-within/input:text-primary-navy transition-colors" />
                   </div>
                   <input
@@ -91,6 +100,7 @@ const LoginPage: React.FC = () => {
                     name="password"
                     type="password"
                     required
+                    autoComplete="current-password"
                     className="block w-full pl-11 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-primary-navy placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-navy/20 focus:border-primary-navy transition-all"
                     placeholder="Contraseña"
                     value={password}

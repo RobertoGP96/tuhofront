@@ -3,14 +3,11 @@ import {
   Building2,
   ChevronRight,
   ClipboardList,
+  FileBarChart,
   FileCheck,
-  Hotel,
   LayoutDashboard,
   Settings,
-  Truck,
   Users,
-  Utensils,
-  Wrench,
 } from 'lucide-react';
 import React from 'react';
 import { useLocation } from 'react-router-dom';
@@ -42,6 +39,11 @@ function AdminSidebar() {
       <NavItem label="Trámites" icon={FileCheck} to="/admin/procedures" />
       <NavItem label="Internos" icon={ClipboardList} to="/admin/internal" />
       <NavItem label="Locales" icon={Building2} to="/admin/locals" />
+      <SidebarSection title="Secretaría Docente" />
+      <NavItem label="Panel Secretaría" icon={LayoutDashboard} to="/secretary" />
+      <NavItem label="Gestionar Trámites" icon={FileCheck} to="/secretary/procedures" />
+      <SidebarSection title="Reportes" />
+      <NavItem label="Reportes PDF" icon={FileBarChart} to="/reports" />
       <SidebarSection title="Sistema" />
       <NavItem label="Áreas" icon={BookOpen} to="/admin/areas" />
       <NavItem label="Noticias" icon={BookOpen} to="/admin/news" />
@@ -63,6 +65,8 @@ function SecretarySidebar() {
       <SidebarSection title="Secretaría Docente" />
       <NavItem label="Dashboard" icon={LayoutDashboard} to="/secretary" />
       <NavItem label="Trámites" icon={FileCheck} to="/secretary/procedures" />
+      <SidebarSection title="Reportes" />
+      <NavItem label="Reportes PDF" icon={FileBarChart} to="/reports" />
     </>
   );
 }
@@ -71,11 +75,9 @@ function GestorInternoSidebar() {
   return (
     <>
       <SidebarSection title="Trámites Internos" />
-      <NavItem label="Dashboard" icon={LayoutDashboard} to="/gestor-interno" />
-      <NavItem label="Alimentación" icon={Utensils} to="/procedures/internal/feeding" />
-      <NavItem label="Alojamiento" icon={Hotel} to="/procedures/internal/accommodation" />
-      <NavItem label="Transporte" icon={Truck} to="/procedures/internal/transport" />
-      <NavItem label="Mantenimiento" icon={Wrench} to="/procedures/internal/maintenance" />
+      <NavItem label="Panel de Trámites" icon={LayoutDashboard} to="/gestor-interno" />
+      <SidebarSection title="Reportes" />
+      <NavItem label="Reportes PDF" icon={FileBarChart} to="/reports" />
       <SidebarSection title="Configuración" />
       <NavItem label="Tipos y Prioridades" icon={Settings} to="/gestor-interno/settings" />
     </>
@@ -86,8 +88,9 @@ function GestorTramitesSidebar() {
   return (
     <>
       <SidebarSection title="Gestión de Trámites" />
-      <NavItem label="Dashboard" icon={LayoutDashboard} to="/gestor-tramites" />
-      <NavItem label="Todos los Trámites" icon={FileCheck} to="/gestor-tramites" />
+      <NavItem label="Panel de Trámites" icon={LayoutDashboard} to="/gestor-tramites" />
+      <SidebarSection title="Reportes" />
+      <NavItem label="Reportes PDF" icon={FileBarChart} to="/reports" />
       <SidebarSection title="Configuración" />
       <NavItem label="Tipos de Trámites" icon={Settings} to="/gestor-tramites/settings" />
     </>
@@ -98,8 +101,9 @@ function GestorReservasSidebar() {
   return (
     <>
       <SidebarSection title="Gestión de Reservas" />
-      <NavItem label="Dashboard" icon={LayoutDashboard} to="/gestor-reservas" />
       <NavItem label="Locales y Reservas" icon={Building2} to="/gestor-reservas" />
+      <SidebarSection title="Reportes" />
+      <NavItem label="Reportes PDF" icon={FileBarChart} to="/reports" />
     </>
   );
 }

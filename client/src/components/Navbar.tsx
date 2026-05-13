@@ -1,7 +1,10 @@
 import {
   Bell,
   BookOpen,
+  Building2,
   ChevronDown,
+  ClipboardList,
+  FileBarChart,
   FileText,
   Home,
   LogIn,
@@ -17,8 +20,7 @@ import {
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { notificationsService } from '../services/notifications.service';
-import type { Notificacion } from '../types/notifications.types';
+import { useNotificationsPoll } from '../hooks/useNotificationsPoll';
 import { cn } from '../utils';
 import { Logo } from './Logo';
 import { Button } from './ui/button';
@@ -42,41 +44,34 @@ export const Navbar: React.FC<NavbarProps> = () => {
   const {
     user,
     isAdmin,
-    isSecretaria,
+    isGestorInterno,
+    isGestorTramites,
+    isGestorReservas,
+    isAnyGestor,
+    isPersonalUser,
     canAccessInternal,
     canManageSecretary,
     logout,
     isAuthenticated,
   } = useAuth();
+
+  // ── Helpers de rol para dropdown ──────────────────────────────────────────
+  const showGestorInterno = isAdmin || isGestorInterno;
+  const showGestorTramites = isAdmin || isGestorTramites;
+  const showGestorReservas = isAdmin || isGestorReservas;
+  // Gestores tienen su propio panel; ocultamos el dropdown de Trámites personal.
+  const showTramitesDropdown = isAuthenticated && !isAnyGestor;
+  const showSecretarySubmenu = canManageSecretary || isPersonalUser;
+  const showLocalsSubmenu = isAdmin || canManageSecretary || isPersonalUser;
+  const canSeePersonalProcedures = isPersonalUser;
+  const canSeeReports = isAdmin || canManageSecretary || isAnyGestor;
   const userName = user?.username || user?.email || 'Invitado';
   const userRole = user?.user_type ?? '';
 
-  // ── Notifications ──────────────────────────────────────────────────────────
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [recentNotifications, setRecentNotifications] = useState<Notificacion[]>([]);
+  // ── Notifications (polling compartido) ────────────────────────────────────
+  const { recent: recentNotifications, unreadCount, markRead } = useNotificationsPoll();
   const [notifOpen, setNotifOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!isAuthenticated) return;
-
-    async function fetchNotifStats() {
-      try {
-        const [stats, unread] = await Promise.all([
-          notificationsService.getStats(),
-          notificationsService.getUnread(),
-        ]);
-        setUnreadCount(stats.sin_leer);
-        setRecentNotifications(unread.slice(0, 5));
-      } catch {
-        // silently ignore
-      }
-    }
-
-    fetchNotifStats();
-    const interval = setInterval(fetchNotifStats, 60_000);
-    return () => clearInterval(interval);
-  }, [isAuthenticated]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -96,6 +91,9 @@ export const Navbar: React.FC<NavbarProps> = () => {
     TRABAJADOR: 'Trabajador',
     ESTUDIANTE: 'Estudiante',
     EXTERNO: 'Externo',
+    GESTOR_INTERNO: 'Gestor de Trámites Internos',
+    GESTOR_TRAMITES: 'Gestor de Trámites',
+    GESTOR_RESERVAS: 'Gestor de Reservas',
   };
 
   // ── Static nav links (always visible) ──────────────────────────────────────
@@ -134,8 +132,8 @@ export const Navbar: React.FC<NavbarProps> = () => {
             </NavLink>
           ))}
 
-          {/* Trámites dropdown — authenticated users only */}
-          {isAuthenticated && (
+          {/* Trámites dropdown — autenticados que sí inician trámites (no gestores) */}
+          {showTramitesDropdown && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -149,14 +147,15 @@ export const Navbar: React.FC<NavbarProps> = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="min-w-52">
-                {/* My Procedures */}
-                <DropdownMenuItem
-                  className="gap-2 cursor-pointer"
-                  onClick={() => navigate('/procedures')}
-                >
-                  <BookOpen size={15} className="text-gray-400" />
-                  Mis Trámites
-                </DropdownMenuItem>
+                {canSeePersonalProcedures && (
+                  <DropdownMenuItem
+                    className="gap-2 cursor-pointer"
+                    onClick={() => navigate('/procedures')}
+                  >
+                    <BookOpen size={15} className="text-gray-400" />
+                    Mis Trámites
+                  </DropdownMenuItem>
+                )}
 
                 {/* Mis Trámites Internos — PROFESOR, TRABAJADOR, ADMIN */}
                 {canAccessInternal && (
@@ -169,64 +168,66 @@ export const Navbar: React.FC<NavbarProps> = () => {
                   </DropdownMenuItem>
                 )}
 
-                <DropdownMenuSeparator />
+                {showSecretarySubmenu && <DropdownMenuSeparator />}
 
-                {/* Secretaría Docente — all authenticated */}
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger className="gap-2 cursor-pointer">
-                    <i className="bx bx-book text-base text-gray-400" />
-                    Secretaría Docente
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent className="min-w-48">
-                    <DropdownMenuSub>
-                      <DropdownMenuSubTrigger className="gap-2 cursor-pointer">
-                        <i className="bx bxs-graduation text-base text-gray-400" />
-                        Pregrado
-                      </DropdownMenuSubTrigger>
-                      <DropdownMenuSubContent>
-                        <DropdownMenuItem
-                          className="gap-2 cursor-pointer"
-                          onClick={() => navigate('/procedures/secretary/undergraduate/national')}
-                        >
-                          Nacional
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="gap-2 cursor-pointer"
-                          onClick={() => navigate('/procedures/secretary/undergraduate/international')}
-                        >
-                          Internacional
-                        </DropdownMenuItem>
-                      </DropdownMenuSubContent>
-                    </DropdownMenuSub>
-                    <DropdownMenuSub>
-                      <DropdownMenuSubTrigger className="gap-2 cursor-pointer">
-                        <i className="bx bx-briefcase text-base text-gray-400" />
-                        Posgrado
-                      </DropdownMenuSubTrigger>
-                      <DropdownMenuSubContent>
-                        <DropdownMenuItem
-                          className="gap-2 cursor-pointer"
-                          onClick={() => navigate('/procedures/secretary/postgraduate/national')}
-                        >
-                          Nacional
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="gap-2 cursor-pointer"
-                          onClick={() => navigate('/procedures/secretary/postgraduate/international')}
-                        >
-                          Internacional
-                        </DropdownMenuItem>
-                      </DropdownMenuSubContent>
-                    </DropdownMenuSub>
-                    <DropdownMenuItem
-                      className="gap-2 cursor-pointer"
-                      onClick={() => navigate('/procedures/secretary/title-legalization')}
-                    >
-                      <i className="bx bxs-certification text-base text-gray-400" />
-                      Legalización de Título
-                    </DropdownMenuItem>
-                  </DropdownMenuSubContent>
-                </DropdownMenuSub>
+                {/* Secretaría Docente — usuarios personales y secretaría/admin */}
+                {showSecretarySubmenu && (
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger className="gap-2 cursor-pointer">
+                      <i className="bx bx-book text-base text-gray-400" />
+                      Secretaría Docente
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent className="min-w-48">
+                      <DropdownMenuSub>
+                        <DropdownMenuSubTrigger className="gap-2 cursor-pointer">
+                          <i className="bx bxs-graduation text-base text-gray-400" />
+                          Pregrado
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuSubContent>
+                          <DropdownMenuItem
+                            className="gap-2 cursor-pointer"
+                            onClick={() => navigate('/procedures/secretary/undergraduate/national')}
+                          >
+                            Nacional
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="gap-2 cursor-pointer"
+                            onClick={() => navigate('/procedures/secretary/undergraduate/international')}
+                          >
+                            Internacional
+                          </DropdownMenuItem>
+                        </DropdownMenuSubContent>
+                      </DropdownMenuSub>
+                      <DropdownMenuSub>
+                        <DropdownMenuSubTrigger className="gap-2 cursor-pointer">
+                          <i className="bx bx-briefcase text-base text-gray-400" />
+                          Posgrado
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuSubContent>
+                          <DropdownMenuItem
+                            className="gap-2 cursor-pointer"
+                            onClick={() => navigate('/procedures/secretary/postgraduate/national')}
+                          >
+                            Nacional
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="gap-2 cursor-pointer"
+                            onClick={() => navigate('/procedures/secretary/postgraduate/international')}
+                          >
+                            Internacional
+                          </DropdownMenuItem>
+                        </DropdownMenuSubContent>
+                      </DropdownMenuSub>
+                      <DropdownMenuItem
+                        className="gap-2 cursor-pointer"
+                        onClick={() => navigate('/procedures/secretary/title-legalization')}
+                      >
+                        <i className="bx bxs-certification text-base text-gray-400" />
+                        Legalización de Título
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                )}
 
                 {/* Internos — ADMIN, PROFESOR, TRABAJADOR only */}
                 {canAccessInternal && (
@@ -268,29 +269,31 @@ export const Navbar: React.FC<NavbarProps> = () => {
                   </DropdownMenuSub>
                 )}
 
-                <DropdownMenuSeparator />
+                {showLocalsSubmenu && <DropdownMenuSeparator />}
 
-                {/* Locales — all */}
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger className="gap-2 cursor-pointer">
-                    <i className="bx bx-building text-base text-gray-400" />
-                    Locales
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent className="min-w-44">
-                    <DropdownMenuItem
-                      className="gap-2 cursor-pointer"
-                      onClick={() => navigate('/locals')}
-                    >
-                      Todos los Locales
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className="gap-2 cursor-pointer"
-                      onClick={() => navigate('/locals/my-reservations')}
-                    >
-                      Mis Reservas
-                    </DropdownMenuItem>
-                  </DropdownMenuSubContent>
-                </DropdownMenuSub>
+                {/* Locales — personal users, secretaría y admin */}
+                {showLocalsSubmenu && (
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger className="gap-2 cursor-pointer">
+                      <i className="bx bx-building text-base text-gray-400" />
+                      Locales
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent className="min-w-44">
+                      <DropdownMenuItem
+                        className="gap-2 cursor-pointer"
+                        onClick={() => navigate('/locals')}
+                      >
+                        Todos los Locales
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="gap-2 cursor-pointer"
+                        onClick={() => navigate('/locals/my-reservations')}
+                      >
+                        Mis Reservas
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           )}
@@ -310,6 +313,60 @@ export const Navbar: React.FC<NavbarProps> = () => {
             >
               <BookOpen size={16} className="opacity-70" />
               Secretaría
+            </NavLink>
+          )}
+
+          {/* Gestor de Trámites Internos */}
+          {!isAdmin && isGestorInterno && (
+            <NavLink
+              to="/gestor-interno"
+              className={({ isActive }) =>
+                cn(
+                  'px-3 py-2 text-sm font-medium transition-colors rounded-md flex items-center gap-2',
+                  isActive
+                    ? 'text-primary-navy bg-accent'
+                    : 'text-gray-500 hover:text-primary-navy hover:bg-gray-50',
+                )
+              }
+            >
+              <ClipboardList size={16} className="opacity-70" />
+              Trámites Internos
+            </NavLink>
+          )}
+
+          {/* Gestor de Trámites */}
+          {!isAdmin && isGestorTramites && (
+            <NavLink
+              to="/gestor-tramites"
+              className={({ isActive }) =>
+                cn(
+                  'px-3 py-2 text-sm font-medium transition-colors rounded-md flex items-center gap-2',
+                  isActive
+                    ? 'text-primary-navy bg-accent'
+                    : 'text-gray-500 hover:text-primary-navy hover:bg-gray-50',
+                )
+              }
+            >
+              <FileText size={16} className="opacity-70" />
+              Trámites
+            </NavLink>
+          )}
+
+          {/* Gestor de Reservas */}
+          {!isAdmin && isGestorReservas && (
+            <NavLink
+              to="/gestor-reservas"
+              className={({ isActive }) =>
+                cn(
+                  'px-3 py-2 text-sm font-medium transition-colors rounded-md flex items-center gap-2',
+                  isActive
+                    ? 'text-primary-navy bg-accent'
+                    : 'text-gray-500 hover:text-primary-navy hover:bg-gray-50',
+                )
+              }
+            >
+              <Building2 size={16} className="opacity-70" />
+              Reservas
             </NavLink>
           )}
 
@@ -378,23 +435,27 @@ export const Navbar: React.FC<NavbarProps> = () => {
                       <li
                         key={n.id}
                         className={cn(
-                          'px-4 py-3 hover:bg-gray-50 cursor-pointer flex gap-3',
+                          'px-4 py-3 hover:bg-gray-50 flex gap-3',
                           !n.visto && 'bg-blue-50/40',
                         )}
-                        onClick={() => {
-                          notificationsService.markAsRead(n.id).catch(() => {});
-                          setUnreadCount((c) => Math.max(0, c - 1));
-                          setNotifOpen(false);
-                          if (n.url_accion) navigate(n.url_accion);
-                        }}
                       >
-                        {!n.visto && (
-                          <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-blue-500" />
-                        )}
-                        <div className={cn('flex-1 min-w-0', n.visto && 'pl-4')}>
-                          <p className="text-sm font-medium text-gray-800 truncate">{n.asunto}</p>
-                          <p className="text-xs text-gray-400">{n.tiempo_transcurrido}</p>
-                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            void markRead(n.id);
+                            setNotifOpen(false);
+                            if (n.url_accion) navigate(n.url_accion);
+                          }}
+                          className="flex items-start gap-3 w-full text-left focus-visible:outline-none"
+                        >
+                          {!n.visto && (
+                            <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-blue-500" aria-label="No leída" />
+                          )}
+                          <div className={cn('flex-1 min-w-0', n.visto && 'pl-4')}>
+                            <p className="text-sm font-medium text-gray-800 truncate">{n.asunto}</p>
+                            <p className="text-xs text-gray-400">{n.tiempo_transcurrido}</p>
+                          </div>
+                        </button>
                       </li>
                     ))}
                   </ul>
@@ -448,12 +509,23 @@ export const Navbar: React.FC<NavbarProps> = () => {
                 <User size={15} /> Perfil
               </DropdownMenuItem>
 
-              <DropdownMenuItem
-                className="gap-2 cursor-pointer"
-                onClick={() => navigate('/procedures')}
-              >
-                <BookOpen size={15} /> Mis Trámites
-              </DropdownMenuItem>
+              {canSeePersonalProcedures && (
+                <DropdownMenuItem
+                  className="gap-2 cursor-pointer"
+                  onClick={() => navigate('/procedures')}
+                >
+                  <BookOpen size={15} /> Mis Trámites
+                </DropdownMenuItem>
+              )}
+
+              {canSeeReports && (
+                <DropdownMenuItem
+                  className="gap-2 cursor-pointer"
+                  onClick={() => navigate('/reports')}
+                >
+                  <FileBarChart size={15} /> Reportes PDF
+                </DropdownMenuItem>
+              )}
 
               {/* Secretary panel — SECRETARIA_DOCENTE + ADMIN */}
               {canManageSecretary && (
@@ -470,6 +542,45 @@ export const Navbar: React.FC<NavbarProps> = () => {
                     onClick={() => navigate('/secretary/procedures')}
                   >
                     <FileText size={15} className="opacity-0" /> Gestionar Trámites
+                  </DropdownMenuItem>
+                </>
+              )}
+
+              {/* Gestor de Trámites Internos */}
+              {showGestorInterno && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="gap-2 cursor-pointer"
+                    onClick={() => navigate('/gestor-interno')}
+                  >
+                    <ClipboardList size={15} /> Trámites Internos
+                  </DropdownMenuItem>
+                </>
+              )}
+
+              {/* Gestor de Trámites generales */}
+              {showGestorTramites && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="gap-2 cursor-pointer"
+                    onClick={() => navigate('/gestor-tramites')}
+                  >
+                    <FileText size={15} /> Gestión de Trámites
+                  </DropdownMenuItem>
+                </>
+              )}
+
+              {/* Gestor de Reservas */}
+              {showGestorReservas && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="gap-2 cursor-pointer"
+                    onClick={() => navigate('/gestor-reservas')}
+                  >
+                    <Building2 size={15} /> Gestión de Reservas
                   </DropdownMenuItem>
                 </>
               )}

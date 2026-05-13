@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Upload, Send, Paperclip } from 'lucide-react';
+import { toast } from 'sonner';
+import apiClient from '../lib/api-client';
 
 export const ContactForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -33,12 +35,24 @@ export const ContactForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Form submitted:', { ...formData, document: documentFile });
-      setIsSubmitting(false);
-      // Reset form
+
+    const messageWithFile = documentFile
+      ? `${formData.message}\n\n(Adjunto mencionado: ${documentFile.name})`
+      : formData.message;
+
+    try {
+      await apiClient.post('/public/contact/', {
+        username: formData.username,
+        lastname: formData.lastname,
+        id_card: formData.id,
+        email: formData.email,
+        phone: formData.phone,
+        address: formData.address,
+        subject: formData.subject,
+        message: messageWithFile,
+      });
+
+      toast.success('Mensaje enviado. Te contactaremos pronto.');
       setFormData({
         username: '',
         lastname: '',
@@ -50,7 +64,16 @@ export const ContactForm: React.FC = () => {
         message: ''
       });
       setDocumentFile(null);
-    }, 2000);
+    } catch (err) {
+      const error = err as { response?: { data?: Record<string, unknown> | { detail?: string } } };
+      const data = error.response?.data;
+      const detail = typeof data === 'object' && data !== null && 'detail' in data
+        ? String((data as { detail?: unknown }).detail ?? '')
+        : '';
+      toast.error(detail || 'No se pudo enviar el mensaje. Intentá más tarde.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

@@ -10,8 +10,10 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useAuth } from '../hooks/useAuth';
 import { authService } from '../services/auth.service';
+import { reportsService } from '../services/reports.service';
 import type { User as UserType } from '../types/auth.types';
 import { USER_TYPE_OPTIONS } from '../types/auth.types';
+import { ExportReportButton } from '@/components/reports/ExportReportButton';
 
 type ProfileFormData = {
   first_name: string;
@@ -115,7 +117,11 @@ export default function Profile() {
     }
     setSavingPassword(true);
     try {
-      await authService.changePassword({
+      if (!user?.id) {
+        toast.error('No se pudo determinar el usuario actual.');
+        return;
+      }
+      await authService.changePassword(user.id, {
         old_password: data.old_password,
         new_password: data.new_password,
       });
@@ -138,7 +144,13 @@ export default function Profile() {
 
   return (
     <div className="max-w-3xl mx-auto py-8 px-4 space-y-6">
-      <h1 className="text-2xl font-black uppercase text-primary-navy">Mi Perfil</h1>
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <h1 className="text-2xl font-black uppercase text-primary-navy">Mi Perfil</h1>
+        <ExportReportButton
+          label="Descargar mi historial PDF"
+          onExport={(filters) => reportsService.downloadMyHistory(filters)}
+        />
+      </div>
 
       {/* Profile Card */}
       <Card className="border border-gray-100 shadow-sm">
