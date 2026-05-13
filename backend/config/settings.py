@@ -39,7 +39,7 @@ SECRET_KEY = os.getenv(
     'django-insecure-@e2&yg!lk#5aj&yvs-&%%-%@=t90rvn)+y@u*6bdebh7a^et))'
 )
 
-DEBUG = env_bool('DEBUG', True)
+DEBUG = env_bool('DEBUG', False)
 
 # En producción exigimos SECRET_KEY explícita (no fallback inseguro)
 if not DEBUG and SECRET_KEY.startswith('django-insecure-'):
@@ -48,7 +48,14 @@ if not DEBUG and SECRET_KEY.startswith('django-insecure-'):
     )
 
 DOMAIN = os.getenv('DOMAIN', '127.0.0.1:8000')
-ALLOWED_HOSTS = env_list('ALLOWED_HOSTS', '*')
+ALLOWED_HOSTS = env_list('ALLOWED_HOSTS', 'localhost,127.0.0.1' if not DEBUG else '*')
+
+# Guardia: no permitir ALLOWED_HOSTS='*' en producción
+if not DEBUG and ('*' in ALLOWED_HOSTS or not ALLOWED_HOSTS):
+    raise RuntimeError(
+        "ALLOWED_HOSTS no puede ser '*' o vacío en producción. "
+        "Configura ALLOWED_HOSTS en .env con dominios explícitos."
+    )
 
 # Add apps directory to PYTHONPATH
 sys.path.append(os.path.join(BASE_DIR, 'apps'))
@@ -301,8 +308,10 @@ EMAIL_USE_SSL = env_bool('EMAIL_USE_SSL', True)
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'noreply@uho.edu.cu')
 ALLOWED_REDIRECT_URLS = ['mailto://']
 
-# Uses console backend if no SMTP configured and DEBUG=True
-if DEBUG and not EMAIL_HOST_USER:
+# En desarrollo, si no hay credenciales SMTP reales, usar console backend
+# para evitar errores de autenticación contra Gmail con placeholders.
+_PLACEHOLDER_EMAIL_USERS = ('', 'tu_correo@uho.edu.cu', 'tu_correo@gmail.com')
+if DEBUG and (EMAIL_HOST_USER in _PLACEHOLDER_EMAIL_USERS or not EMAIL_HOST_PASSWORD):
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
@@ -346,7 +355,8 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True
-    CSRF_COOKIE_HTTPONLY = False  # El frontend necesita leer el CSRF
+    # El frontend usa JWT (no necesita leer el CSRF desde JS)
+    CSRF_COOKIE_HTTPONLY = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 CSRF_TRUSTED_ORIGINS = env_list(
@@ -407,3 +417,120 @@ INSTITUTION_WEBSITE = os.getenv('INSTITUTION_WEBSITE', 'https://www.uho.edu.cu')
 INSTITUTION_LOGO = os.getenv('INSTITUTION_LOGO', 'static/img/logo.png')
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5173')
 PUBLIC_TRACKING_URL = os.getenv('PUBLIC_TRACKING_URL', f"{FRONTEND_URL.rstrip('/')}/tracking")
+
+
+# ============================================
+# LOGGING
+# ============================================
+LOG_DIR = BASE_DIR / 'logs'
+LOG_DIR.mkdir(exist_ok=True)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} {name} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '[{asctime}] {levelname} {name}: {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': str(LOG_DIR / 'django.log'),
+            'maxBytes': 10 * 1024 * 1024,  # 10 MB
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+        'error_file': {
+            'level': 'ERROR',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': str(LOG_DIR / 'errors.log'),
+            'maxBytes': 10 * 1024 * 1024,
+            'backupCount': 10,
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console', 'file'],
+        'level': 'INFO' if DEBUG else 'WARNING',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO' if DEBUG else 'WARNING',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['error_file', 'console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.security': {
+            'handlers': ['error_file', 'console'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'apps': {
+            'handlers': ['console', 'file', 'error_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'celery': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
+
+
+# ============================================
+# CELERY HARDENING (producción)
+# ============================================
+CELERY_TASK_ACKS_LATE = env_bool('CELERY_TASK_ACKS_LATE', True)
+CELERY_TASK_REJECT_ON_WORKER_LOST = True
+CELERY_TASK_TIME_LIMIT = int(os.getenv('CELERY_TASK_TIME_LIMIT', '600'))  # 10 min
+CELERY_TASK_SOFT_TIME_LIMIT = int(os.getenv('CELERY_TASK_SOFT_TIME_LIMIT', '540'))  # 9 min
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
+CELERY_TASK_DEFAULT_RETRY_DELAY = 60
+CELERY_TASK_MAX_RETRIES = 3
+
+
+# ============================================
+# SENTRY (monitoreo de errores, opcional)
+# ============================================
+SENTRY_DSN = os.getenv('SENTRY_DSN', '').strip()
+if SENTRY_DSN:
+    try:
+        import sentry_sdk
+        from sentry_sdk.integrations.django import DjangoIntegration
+        from sentry_sdk.integrations.celery import CeleryIntegration
+        from sentry_sdk.integrations.logging import LoggingIntegration
+        import logging as _logging
+
+        sentry_sdk.init(
+            dsn=SENTRY_DSN,
+            integrations=[
+                DjangoIntegration(),
+                CeleryIntegration(),
+                LoggingIntegration(level=_logging.INFO, event_level=_logging.ERROR),
+            ],
+            traces_sample_rate=float(os.getenv('SENTRY_TRACES_SAMPLE_RATE', '0.05')),
+            send_default_pii=False,
+            environment=os.getenv('SENTRY_ENVIRONMENT', 'production' if not DEBUG else 'development'),
+            release=os.getenv('SENTRY_RELEASE'),
+        )
+    except ImportError:
+        # sentry-sdk no instalado; ignorar silenciosamente
+        pass

@@ -79,5 +79,5 @@ gunicorn>=21.2.0
 python-decouple>=3.8
 whitenoise>=6.5.0
 
-# Monitoreo (opcional)
-# sentry-sdk>=1.32.0
+# Monitoreo (opcional, se activa si SENTRY_DSN está definido en .env)
+sentry-sdk[django]>=1.32.0

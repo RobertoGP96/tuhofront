@@ -9,6 +9,7 @@ from .models import (
     MaintancePriority, MaintanceProcedure
 )
 from apps.platform.models import Department, Area, Note
+from .permissions import IsStaffOrReadOnly, IsOwnerOrStaff, is_internal_staff
 from .serializers import (
     GuestSerializer, FeedingDaysSerializer, FeedingProcedureSerializer,
     AccommodationProcedureSerializer, TransportProcedureTypeSerializer,
@@ -18,6 +19,9 @@ from .serializers import (
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
+import logging
+
+logger = logging.getLogger(__name__)
 
 # CRUD para Guest
 @extend_schema(
@@ -27,12 +31,13 @@ from rest_framework.decorators import api_view
 class GuestListCreateView(ListCreateAPIView):
     """
     Listar todos los huéspedes o crear uno nuevo.
-    
+
     GET: Retorna lista paginada de todos los huéspedes registrados
-    POST: Crea un nuevo huésped
+    POST: Crea un nuevo huésped (solo staff/admin)
     """
     queryset = Guest.objects.all()
     serializer_class = GuestSerializer
+    permission_classes = [IsStaffOrReadOnly]
 
 @extend_schema(
     tags=['Guests - Huéspedes'],
@@ -41,14 +46,13 @@ class GuestListCreateView(ListCreateAPIView):
 class GuestRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     """
     Obtener, actualizar o eliminar un huésped específico.
-    
+
     GET: Retorna los detalles de un huésped
-    PUT: Actualiza completamente un huésped
-    PATCH: Actualiza parcialmente un huésped
-    DELETE: Elimina un huésped
+    PUT/PATCH/DELETE: solo staff/admin.
     """
     queryset = Guest.objects.all()
     serializer_class = GuestSerializer
+    permission_classes = [IsStaffOrReadOnly]
 
 # CRUD para FeedingDays
 @extend_schema(
@@ -57,18 +61,20 @@ class GuestRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
 )
 class FeedingDaysListCreateView(ListCreateAPIView):
     """
-    Listar todos los días de alimentación o crear uno nuevo.
+    Listar todos los días de alimentación o crear uno nuevo (solo staff/admin).
     """
     queryset = FeedingDays.objects.all()
     serializer_class = FeedingDaysSerializer
+    permission_classes = [IsStaffOrReadOnly]
 
 @extend_schema(
     tags=['Feeding Days - Días de Alimentación']
 )
 class FeedingDaysRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
-    """Operaciones CRUD en un día de alimentación específico."""
+    """Operaciones CRUD en un día de alimentación específico (escritura solo staff/admin)."""
     queryset = FeedingDays.objects.all()
     serializer_class = FeedingDaysSerializer
+    permission_classes = [IsStaffOrReadOnly]
 
 # CRUD para FeedingProcedure
 @extend_schema(
@@ -86,17 +92,19 @@ class FeedingProcedureListCreateView(ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_staff or getattr(user, 'user_type', '') == 'ADMIN':
-            return FeedingProcedure.objects.all()
-        return FeedingProcedure.objects.filter(user=user)
+        qs = FeedingProcedure.objects.select_related('user').prefetch_related('feeding_days')
+        if is_internal_staff(user):
+            return qs
+        return qs.filter(user=user)
 
 @extend_schema(
     tags=['Feeding Procedures - Trámites de Alimentación']
 )
 class FeedingProcedureRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
-    """Operaciones CRUD en un trámite de alimentación específico."""
-    queryset = FeedingProcedure.objects.all()
+    """Operaciones CRUD en un trámite de alimentación específico (dueño o staff)."""
+    queryset = FeedingProcedure.objects.select_related('user').prefetch_related('feeding_days')
     serializer_class = FeedingProcedureSerializer
+    permission_classes = [IsOwnerOrStaff]
 
 # CRUD para AccommodationProcedure
 @extend_schema(
@@ -114,17 +122,19 @@ class AccommodationProcedureListCreateView(ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_staff or getattr(user, 'user_type', '') == 'ADMIN':
-            return AccommodationProcedure.objects.all()
-        return AccommodationProcedure.objects.filter(user=user)
+        qs = AccommodationProcedure.objects.select_related('user').prefetch_related('guests', 'feeding_days')
+        if is_internal_staff(user):
+            return qs
+        return qs.filter(user=user)
 
 @extend_schema(
     tags=['Accommodation Procedures - Trámites de Hospedaje']
 )
 class AccommodationProcedureRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
-    """Operaciones CRUD en un trámite de hospedaje específico."""
-    queryset = AccommodationProcedure.objects.all()
+    """Operaciones CRUD en un trámite de hospedaje específico (dueño o staff)."""
+    queryset = AccommodationProcedure.objects.select_related('user').prefetch_related('guests', 'feeding_days')
     serializer_class = AccommodationProcedureSerializer
+    permission_classes = [IsOwnerOrStaff]
 
 # CRUD para TransportProcedureType
 @extend_schema(
@@ -132,17 +142,19 @@ class AccommodationProcedureRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIVi
     description='Gestionar tipos de transporte disponibles'
 )
 class TransportProcedureTypeListCreateView(ListCreateAPIView):
-    """Listar o crear tipos de transporte."""
+    """Listar o crear tipos de transporte (escritura solo staff/admin)."""
     queryset = TransportProcedureType.objects.all()
     serializer_class = TransportProcedureTypeSerializer
+    permission_classes = [IsStaffOrReadOnly]
 
 @extend_schema(
     tags=['Transport Types - Tipos de Transporte']
 )
 class TransportProcedureTypeRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
-    """Operaciones CRUD en un tipo de transporte específico."""
+    """Operaciones CRUD en un tipo de transporte específico (escritura solo staff/admin)."""
     queryset = TransportProcedureType.objects.all()
     serializer_class = TransportProcedureTypeSerializer
+    permission_classes = [IsStaffOrReadOnly]
 
 # CRUD para TransportProcedure
 @extend_schema(
@@ -160,17 +172,19 @@ class TransportProcedureListCreateView(ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_staff or getattr(user, 'user_type', '') == 'ADMIN':
-            return TransportProcedure.objects.all()
-        return TransportProcedure.objects.filter(user=user)
+        qs = TransportProcedure.objects.select_related('user', 'procedure_type')
+        if is_internal_staff(user):
+            return qs
+        return qs.filter(user=user)
 
 @extend_schema(
     tags=['Transport Procedures - Trámites de Transporte']
 )
 class TransportProcedureRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
-    """Operaciones CRUD en un trámite de transporte específico."""
-    queryset = TransportProcedure.objects.all()
+    """Operaciones CRUD en un trámite de transporte específico (dueño o staff)."""
+    queryset = TransportProcedure.objects.select_related('user', 'procedure_type')
     serializer_class = TransportProcedureSerializer
+    permission_classes = [IsOwnerOrStaff]
 
 # CRUD para MaintanceProcedureType
 @extend_schema(
@@ -178,17 +192,19 @@ class TransportProcedureRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     description='Gestionar tipos de mantenimiento'
 )
 class MaintanceProcedureTypeListCreateView(ListCreateAPIView):
-    """Listar o crear tipos de mantenimiento."""
+    """Listar o crear tipos de mantenimiento (escritura solo staff/admin)."""
     queryset = MaintanceProcedureType.objects.all()
     serializer_class = MaintanceProcedureTypeSerializer
+    permission_classes = [IsStaffOrReadOnly]
 
 @extend_schema(
     tags=['Maintenance Types - Tipos de Mantenimiento']
 )
 class MaintanceProcedureTypeRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
-    """Operaciones CRUD en un tipo de mantenimiento específico."""
+    """Operaciones CRUD en un tipo de mantenimiento específico (escritura solo staff/admin)."""
     queryset = MaintanceProcedureType.objects.all()
     serializer_class = MaintanceProcedureTypeSerializer
+    permission_classes = [IsStaffOrReadOnly]
 
 # CRUD para MaintancePriority
 @extend_schema(
@@ -196,17 +212,19 @@ class MaintanceProcedureTypeRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIVi
     description='Gestionar niveles de prioridad de mantenimiento'
 )
 class MaintancePriorityListCreateView(ListCreateAPIView):
-    """Listar o crear prioridades de mantenimiento."""
+    """Listar o crear prioridades de mantenimiento (escritura solo staff/admin)."""
     queryset = MaintancePriority.objects.all()
     serializer_class = MaintancePrioritySerializer
+    permission_classes = [IsStaffOrReadOnly]
 
 @extend_schema(
     tags=['Maintenance Priority - Prioridades de Mantenimiento']
 )
 class MaintancePriorityRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
-    """Operaciones CRUD en una prioridad específica."""
+    """Operaciones CRUD en una prioridad específica (escritura solo staff/admin)."""
     queryset = MaintancePriority.objects.all()
     serializer_class = MaintancePrioritySerializer
+    permission_classes = [IsStaffOrReadOnly]
 
 # CRUD para MaintenanceProcedure
 @extend_schema(
@@ -224,17 +242,19 @@ class MaintanceProcedureListCreateView(ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_staff or getattr(user, 'user_type', '') == 'ADMIN':
-            return MaintanceProcedure.objects.all()
-        return MaintanceProcedure.objects.filter(user=user)
+        qs = MaintanceProcedure.objects.select_related('user', 'procedure_type', 'priority')
+        if is_internal_staff(user):
+            return qs
+        return qs.filter(user=user)
 
 @extend_schema(
     tags=['Maintenance Procedures - Trámites de Mantenimiento']
 )
 class MaintanceProcedureRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
-    """Operaciones CRUD en un trámite de mantenimiento específico."""
-    queryset = MaintanceProcedure.objects.all()
+    """Operaciones CRUD en un trámite de mantenimiento específico (dueño o staff)."""
+    queryset = MaintanceProcedure.objects.select_related('user', 'procedure_type', 'priority')
     serializer_class = MaintanceProcedureSerializer
+    permission_classes = [IsOwnerOrStaff]
     
 # CRUD para Department
 @extend_schema(
@@ -242,35 +262,39 @@ class MaintanceProcedureRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     description='Gestionar departamentos'
 )
 class DepartmentListCreateView(ListCreateAPIView):
-    """Listar o crear departamentos."""
+    """Listar o crear departamentos (escritura solo staff/admin)."""
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
-    
+    permission_classes = [IsStaffOrReadOnly]
+
 @extend_schema(
     tags=['Departments - Departamentos']
 )
 class DepartmentRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
-    """Operaciones CRUD en un departamento específico."""
+    """Operaciones CRUD en un departamento específico (escritura solo staff/admin)."""
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
-    
+    permission_classes = [IsStaffOrReadOnly]
+
 # CRUD para Area
 @extend_schema(
     tags=['Areas - Áreas'],
     description='Gestionar áreas'
 )
 class AreaListCreateView(ListCreateAPIView):
-    """Listar o crear áreas."""
+    """Listar o crear áreas (escritura solo staff/admin)."""
     queryset = Area.objects.all()
     serializer_class = AreaSerializer
-    
+    permission_classes = [IsStaffOrReadOnly]
+
 @extend_schema(
     tags=['Areas - Áreas']
 )
 class AreaRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
-    """Operaciones CRUD en un área específica."""
+    """Operaciones CRUD en un área específica (escritura solo staff/admin)."""
     queryset = Area.objects.all()
     serializer_class = AreaSerializer
+    permission_classes = [IsStaffOrReadOnly]
     
 # CRUD para Note
 @extend_schema(
@@ -341,8 +365,8 @@ def get_all_procedures(request):
             },
             status=status.HTTP_200_OK,
         )
-    except Exception as e:
-        print(f"Error al obtener los trámites: {e}")
+    except Exception:
+        logger.exception("Error al obtener los trámites internos")
         return Response(
             {"error": "Ocurrió un error al obtener los trámites."},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,

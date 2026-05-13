@@ -1,3 +1,4 @@
+import logging
 import secrets
 import string
 from django.core.mail import send_mail
@@ -5,6 +6,8 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 
 def generate_secure_token(length: int = 32) -> str:
@@ -178,16 +181,16 @@ def send_verification_code_sms(user, code: str) -> bool:
     try:
         # Implementar integración con servicio SMS
         # Ejemplo con Twilio, Nexmo, etc.
-        
+
         phone = user.phone
         message = f"Tu código de verificación es: {code}"
-        
-        # TODO: Implementar envío real de SMS
-        print(f"SMS a {phone}: {message}")
-        
+
+        # TODO: Implementar envío real de SMS (Twilio, Infobip, etc.)
+        logger.info("SMS pendiente de envío a %s (modo dev): %s", phone, message)
+
         return True
-    except Exception as e:
-        print(f"Error enviando SMS: {e}")
+    except Exception:
+        logger.exception("Error enviando SMS")
         return False
 
 

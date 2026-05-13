@@ -7,11 +7,27 @@ Proporciona endpoints REST para gestionar locales y reservas.
 from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, BasePermission
 from django.utils import timezone
 from django.db.models import Q, Count, Avg, F
 from django_filters.rest_framework import DjangoFilterBackend
 from datetime import datetime, timedelta
+
+from apps.internal.permissions import is_reservas_staff
+
+# Gestores de otros módulos no deben ver/operar el módulo de reservas.
+_FOREIGN_MODULE_ROLES = ('GESTOR_INTERNO', 'GESTOR_TRAMITES')
+
+
+class CanManageLocalsRBAC(BasePermission):
+    """Escritura de locales para staff de reservas (admin / GESTOR_RESERVAS)."""
+
+    message = "No tiene permisos para gestionar locales."
+
+    def has_permission(self, request, view):
+        if request.method in ('GET', 'HEAD', 'OPTIONS'):
+            return bool(request.user and request.user.is_authenticated)
+        return is_reservas_staff(request.user)
 
 from .models import (
     Local,
@@ -99,9 +115,9 @@ class LocalViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         """Define permisos según la acción"""
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            return [IsAdminUser()]
+            return [CanManageLocalsRBAC()]
         return [IsAuthenticated()]
-    
+
     def get_queryset(self):
         """Optimiza queryset con select_related y prefetch_related"""
         queryset = super().get_queryset()
@@ -395,12 +411,20 @@ class LocalReservationViewSet(viewsets.ModelViewSet):
             'user',
             'approved_by'
         )
-        
-        # Si no es staff, solo puede ver sus propias reservas
-        if not self.request.user.is_staff:
-            queryset = queryset.filter(user=self.request.user)
-        
-        return queryset
+
+        user = self.request.user
+        user_type = getattr(user, 'user_type', '')
+
+        # Gestores de otros módulos no ven reservas
+        if user_type in _FOREIGN_MODULE_ROLES:
+            return queryset.none()
+
+        # Staff del módulo de reservas (admin / GESTOR_RESERVAS) ve todas
+        if is_reservas_staff(user):
+            return queryset
+
+        # Resto de usuarios solo ven sus propias reservas
+        return queryset.filter(user=user)
     
     def perform_create(self, serializer):
         """Crea la reserva con el usuario autenticado"""

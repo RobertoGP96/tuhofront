@@ -59,6 +59,13 @@ class User(AbstractUser):
         verbose_name=_("Token de activación"),
         help_text=_("Token utilizado para activar la cuenta del usuario")
     )
+
+    activation_token_expires_at = models.DateTimeField(
+        blank=True,
+        null=True,
+        verbose_name=_("Expiración del token de activación"),
+        help_text=_("Fecha y hora en que expira el token de activación (24h por defecto)")
+    )
     
     id_card = models.CharField(
         max_length=11,
@@ -279,19 +286,38 @@ class User(AbstractUser):
         """Verifica si el usuario tiene email y teléfono verificados"""
         return self.email_verified and (not getattr(self, 'phone', None) or self.phone_verified)
 
-    def generate_activation_token(self):
-        """Genera un nuevo token de activación"""
+    def generate_activation_token(self, lifetime_hours: int = 24):
+        """Genera un nuevo token de activación con expiración.
+
+        Args:
+            lifetime_hours: horas de validez del token (default 24).
+        """
         import secrets
+        from datetime import timedelta
+        from django.utils import timezone
+
         self.activation_token = secrets.token_urlsafe(32)
-        self.save(update_fields=['activation_token'])
+        self.activation_token_expires_at = timezone.now() + timedelta(hours=lifetime_hours)
+        self.save(update_fields=['activation_token', 'activation_token_expires_at'])
         return self.activation_token
 
+    def is_activation_token_valid(self) -> bool:
+        """Verifica si el token de activación actual está dentro de su período válido."""
+        from django.utils import timezone
+        if not self.activation_token or not self.activation_token_expires_at:
+            return False
+        return timezone.now() <= self.activation_token_expires_at
+
     def activate_account(self):
-        """Activa la cuenta del usuario"""
+        """Activa la cuenta del usuario y limpia el token."""
         self.is_active = True
         self.email_verified = True
         self.activation_token = None
-        self.save(update_fields=['is_active', 'email_verified', 'activation_token'])
+        self.activation_token_expires_at = None
+        self.save(update_fields=[
+            'is_active', 'email_verified',
+            'activation_token', 'activation_token_expires_at',
+        ])
 
     def verify_phone(self):
         """Marca el teléfono como verificado"""

@@ -193,6 +193,12 @@ class UserViewSet(viewsets.ModelViewSet):
         except User.DoesNotExist:
             return Response({'error': _('Token inválido o expirado.')}, status=status.HTTP_400_BAD_REQUEST)
 
+        if not user.is_activation_token_valid():
+            return Response(
+                {'error': _('El token de activación ha expirado. Solicita uno nuevo.')},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         user.activate_account()
         log_event(action='user_activation', resource=user, description='Cuenta activada vía email')
         return Response({'message': _('Cuenta activada exitosamente.')})
@@ -255,8 +261,15 @@ class PasswordResetConfirmView(APIView):
         except User.DoesNotExist:
             return Response({'error': _('Token inválido o expirado.')}, status=status.HTTP_400_BAD_REQUEST)
 
+        if not user.is_activation_token_valid():
+            return Response(
+                {'error': _('El token de recuperación ha expirado. Solicita uno nuevo.')},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         user.set_password(serializer.validated_data['new_password'])
         user.activation_token = None
+        user.activation_token_expires_at = None
         user.save()
         log_event(action='password_reset', resource=user, description='Contraseña restablecida')
         return Response({'message': _('Contraseña actualizada exitosamente.')})
@@ -382,14 +395,18 @@ class UserStaffViewSet(viewsets.ModelViewSet):
 
 
 class UserSearchView(APIView):
+    """Búsqueda paginada de usuarios. Acceso solo staff/admin."""
+
     permission_classes = [IsStaffUser]
 
     def get(self, request):
+        from ..pagination import StandardResultsSetPagination
+
         query = request.query_params.get('q', '')
         user_type = request.query_params.get('user_type', '')
         is_active = request.query_params.get('is_active', '')
 
-        users = User.objects.all()
+        users = User.objects.all().order_by('-date_joined')
         if query:
             users = users.filter(
                 Q(username__icontains=query)
@@ -403,5 +420,12 @@ class UserSearchView(APIView):
         if is_active:
             users = users.filter(is_active=is_active.lower() == 'true')
 
+        paginator = StandardResultsSetPagination()
+        page = paginator.paginate_queryset(users, request, view=self)
+        if page is not None:
+            serializer = UserListSerializer(page, many=True)
+            return paginator.get_paginated_response(serializer.data)
+
+        # Fallback (paginator no aplicó): tope de seguridad.
         serializer = UserListSerializer(users[:50], many=True)
-        return Response({'count': users.count(), 'results': serializer.data})
+        return Response({'count': users.count(), 'results': serializer.data, 'next': None, 'previous': None})

@@ -1,21 +1,25 @@
+import logging
+
 from django.core.mail import EmailMessage
 from django.core.mail.backends.smtp import EmailBackend
 from .models.models import Email
 
+logger = logging.getLogger(__name__)
+
+
 def custom_send_mail():
     email = Email.objects.get(id=1)
     try:
-            backend = EmailBackend(
-                host=email.smtp_server,
-                port=email.smtp_port,
-                username=email.smtp_username,
-                password=email.smtp_password,
-                use_tls=False,
-                use_ssl=True,
-                fail_silently=False,
-            )
-            
-            return backend
-    except Exception as e:
-        print(e)
+        backend = EmailBackend(
+            host=email.smtp_server,
+            port=email.smtp_port,
+            username=email.smtp_username,
+            password=email.smtp_password,
+            use_tls=False,
+            use_ssl=True,
+            fail_silently=False,
+        )
+        return backend
+    except Exception:
+        logger.exception('No se pudo construir el backend de email personalizado')
         return None

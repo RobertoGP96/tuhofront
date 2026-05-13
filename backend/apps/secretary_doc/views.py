@@ -14,6 +14,9 @@ from django.utils.decorators import method_decorator
 from django.views.generic import DetailView
 from datetime import datetime, timedelta
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Local imports
 from apps.platform.models.procedure import ProcedureStateEnum
@@ -240,8 +243,8 @@ def Cambiar_Estado(request, id):
             enviar_correo_cambio_estado(tramite)
             tramite.save()
             return JsonResponse({'success': True, 'message': 'Estado cambiado', 'id': tramite.id, 'estado': tramite.estado})
-        except Exception as e:
-            print(e)
+        except Exception:
+            logger.exception('Error cambiando estado de trámite secretaría id=%s', id)
             return JsonResponse({'success': False, 'message': 'Error cambiando estado'}, status=500)
     estados = ProcedureStateEnum.values
     return JsonResponse({'success': True, 'estados': estados})
@@ -256,8 +259,8 @@ def Cambiar_Estado_Posgrado(request, id):
             enviar_correo_cambio_estado(tramite)
             tramite.save()
             return JsonResponse({'success': True, 'message': 'Estado cambiado posgrado', 'id': tramite.id})
-        except Exception as e:
-            print(e)
+        except Exception:
+            logger.exception('Error cambiando estado de trámite secretaría id=%s', id)
             return JsonResponse({'success': False, 'message': 'Error cambiando estado'}, status=500)
     estados = ProcedureStateEnum.values
     return JsonResponse({'success': True, 'estados': estados})
@@ -273,8 +276,8 @@ def Cambiar_Estado_Pregrado(request, id):
             enviar_correo_cambio_estado(tramite)
             tramite.save()
             return JsonResponse({'success': True, 'message': 'Estado cambiado pregrado', 'id': tramite.id})
-        except Exception as e:
-            print(e)
+        except Exception:
+            logger.exception('Error cambiando estado de trámite secretaría id=%s', id)
             return JsonResponse({'success': False, 'message': 'Error cambiando estado'}, status=500)
     estados = ProcedureStateEnum.values
     return JsonResponse({'success': True, 'estados': estados})
