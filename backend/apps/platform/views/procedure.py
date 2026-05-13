@@ -5,12 +5,17 @@ from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.translation import gettext_lazy as _
 
+from apps.internal.permissions import is_tramites_staff
+
 from ..models.procedure import Procedure
 from ..serializers.procedure import (
     ProcedureSerializer,
     ProcedureDetailSerializer,
     ProcedureListSerializer
 )
+
+# Gestores de otros módulos no deben ver/operar trámites externos.
+_FOREIGN_MODULE_ROLES = ('GESTOR_INTERNO', 'GESTOR_RESERVAS')
 
 
 class ProcedureViewSet(viewsets.ModelViewSet):
@@ -20,7 +25,7 @@ class ProcedureViewSet(viewsets.ModelViewSet):
     Proporciona operaciones CRUD y acciones adicionales para trámites.
     """
     
-    queryset = Procedure.objects.all().select_subclasses()
+    queryset = Procedure.objects.select_related('user').select_subclasses()
     serializer_class = ProcedureSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
@@ -40,13 +45,18 @@ class ProcedureViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Filtra trámites según permisos del usuario"""
         user = self.request.user
-        
-        # Superusarios ven todos los trámites
-        if user.is_staff:
-            return Procedure.objects.all().select_subclasses()
-        
+        user_type = getattr(user, 'user_type', '')
+
+        # Gestores de otros módulos quedan completamente fuera.
+        if user_type in _FOREIGN_MODULE_ROLES:
+            return Procedure.objects.none()
+
+        # Admin, staff y GESTOR_TRAMITES ven todos los trámites
+        if user.is_staff or is_tramites_staff(user):
+            return Procedure.objects.select_related('user').select_subclasses()
+
         # Usuarios normales solo ven sus propios trámites
-        return Procedure.objects.filter(user=user).select_subclasses()
+        return Procedure.objects.filter(user=user).select_related('user').select_subclasses()
     
     def perform_create(self, serializer):
         """Crea un nuevo trámite asignándolo al usuario actual"""
@@ -82,10 +92,10 @@ class ProcedureViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['post'])
     def approve(self, request, pk=None):
-        """Acción para aprobar un trámite (solo admin)"""
-        if not request.user.is_staff:
+        """Acción para aprobar un trámite (admin o GESTOR_TRAMITES)"""
+        if not (request.user.is_staff or is_tramites_staff(request.user)):
             return Response(
-                {'error': _('Solo administradores pueden aprobar trámites')},
+                {'error': _('No autorizado para aprobar trámites')},
                 status=status.HTTP_403_FORBIDDEN
             )
         
@@ -119,23 +129,31 @@ class ProcedureViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'])
     def stats(self, request):
-        """Obtiene estadísticas de trámites del usuario"""
+        """Obtiene estadísticas de trámites del usuario.
+
+        Una sola query con ``aggregate(Count(...))`` en vez de 8 queries
+        secuenciales (N+1).
+        """
+        from django.db.models import Count, Q
+
         user = request.user
-        
-        if user.is_staff:
+        user_type = getattr(user, 'user_type', '')
+        if user_type in _FOREIGN_MODULE_ROLES:
+            procedures = Procedure.objects.none()
+        elif user.is_staff or is_tramites_staff(user):
             procedures = Procedure.objects.all()
         else:
             procedures = Procedure.objects.filter(user=user)
-        
-        stats = {
-            'total': procedures.count(),
-            'borrador': procedures.filter(state='BORRADOR').count(),
-            'enviado': procedures.filter(state='ENVIADO').count(),
-            'en_proceso': procedures.filter(state='EN_PROCESO').count(),
-            'requiere_info': procedures.filter(state='REQUIERE_INFO').count(),
-            'aprobado': procedures.filter(state='APROBADO').count(),
-            'rechazado': procedures.filter(state='RECHAZADO').count(),
-            'finalizado': procedures.filter(state='FINALIZADO').count(),
-        }
-        
-        return Response(stats)
+
+        agg = procedures.aggregate(
+            total=Count('id'),
+            borrador=Count('id', filter=Q(state='BORRADOR')),
+            enviado=Count('id', filter=Q(state='ENVIADO')),
+            en_proceso=Count('id', filter=Q(state='EN_PROCESO')),
+            requiere_info=Count('id', filter=Q(state='REQUIERE_INFO')),
+            aprobado=Count('id', filter=Q(state='APROBADO')),
+            rechazado=Count('id', filter=Q(state='RECHAZADO')),
+            finalizado=Count('id', filter=Q(state='FINALIZADO')),
+        )
+
+        return Response(agg)

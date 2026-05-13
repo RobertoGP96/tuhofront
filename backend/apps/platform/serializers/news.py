@@ -22,6 +22,9 @@ class NewsListSerializer(serializers.ModelSerializer):
             'category',
             'header_image',
             'summary',
+            'body',
+            'is_published',
+            'tags',
             'author_name',
             'publication_date',
             'featured',
@@ -29,8 +32,9 @@ class NewsListSerializer(serializers.ModelSerializer):
             'is_new',
             'read_time',
             'created_at',
+            'updated_at',
         ]
-        read_only_fields = ['slug', 'created_at']
+        read_only_fields = ['slug', 'created_at', 'updated_at']
     
     def get_tag_list(self, obj):
         """Returns parsed tag list"""
@@ -73,6 +77,8 @@ class NewsDetailSerializer(serializers.ModelSerializer):
             'header_image',
             'summary',
             'body',
+            'is_published',
+            'tags',
             'author_name',
             'author_email',
             'publication_date',

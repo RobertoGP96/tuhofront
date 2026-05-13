@@ -10,22 +10,30 @@ class DepartmentInAreaSerializer(serializers.ModelSerializer):
 
 
 class AreaListSerializer(serializers.ModelSerializer):
-    """Serializer for area list view."""
-    department = DepartmentInAreaSerializer(read_only=True)
-    
+    """Serializer for area list view.
+
+    Expone `department` como ID (FK) y `department_name` como string para el frontend.
+    """
+    department_name = serializers.CharField(source='department.name', read_only=True)
+
     class Meta:
         model = Area
-        fields = ['id', 'name', 'department', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'department', 'department_name', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
 
 
 class AreaSerializer(serializers.ModelSerializer):
-    """Serializer for area create/update."""
+    """Serializer for area create/update.
+
+    Mantiene `department` como FK (escritura/lectura), expone `department_name` y
+    `department_info` para que cualquier consumidor obtenga lo que necesite.
+    """
+    department_name = serializers.CharField(source='department.name', read_only=True)
     department_info = DepartmentInAreaSerializer(source='department', read_only=True)
-    
+
     class Meta:
         model = Area
-        fields = ['id', 'name', 'department', 'department_info', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'department', 'department_name', 'department_info', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
     
     def validate_name(self, value):
