@@ -92,7 +92,7 @@ function App() {
           <Route
             path="/procedures/internals"
             element={
-              <RoleGuard roles={['PROFESOR', 'TRABAJADOR', 'ADMIN', 'GESTOR_INTERNO']}>
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
                 <MyInternalProcedures />
               </RoleGuard>
             }
@@ -120,7 +120,7 @@ function App() {
           <Route
             path="/procedures/secretary/undergraduate/national"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'SECRETARIA_DOCENTE', 'ADMIN']}>
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
                 <UnderNatProcedure />
               </RoleGuard>
             }
@@ -128,7 +128,7 @@ function App() {
           <Route
             path="/procedures/secretary/undergraduate/international"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'SECRETARIA_DOCENTE', 'ADMIN']}>
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
                 <UnderInterProcedure />
               </RoleGuard>
             }
@@ -136,7 +136,7 @@ function App() {
           <Route
             path="/procedures/secretary/postgraduate/national"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'SECRETARIA_DOCENTE', 'ADMIN']}>
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
                 <PostNatProcedure />
               </RoleGuard>
             }
@@ -144,7 +144,7 @@ function App() {
           <Route
             path="/procedures/secretary/postgraduate/international"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'SECRETARIA_DOCENTE', 'ADMIN']}>
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
                 <PostInterProcedure />
               </RoleGuard>
             }
@@ -152,7 +152,7 @@ function App() {
           <Route
             path="/procedures/secretary/title-legalization"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'SECRETARIA_DOCENTE', 'ADMIN']}>
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
                 <TitleLegalization />
               </RoleGuard>
             }
@@ -162,7 +162,7 @@ function App() {
           <Route
             path="/procedures/internal/feeding"
             element={
-              <RoleGuard roles={['PROFESOR', 'TRABAJADOR', 'ADMIN', 'GESTOR_INTERNO']}>
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
                 <FeedingProcedurePage />
               </RoleGuard>
             }
@@ -170,7 +170,7 @@ function App() {
           <Route
             path="/procedures/internal/accommodation"
             element={
-              <RoleGuard roles={['PROFESOR', 'TRABAJADOR', 'ADMIN', 'GESTOR_INTERNO']}>
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
                 <AccommodationProcedurePage />
               </RoleGuard>
             }
@@ -178,7 +178,7 @@ function App() {
           <Route
             path="/procedures/internal/transport"
             element={
-              <RoleGuard roles={['PROFESOR', 'TRABAJADOR', 'ADMIN', 'GESTOR_INTERNO']}>
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
                 <TransportProcedurePage />
               </RoleGuard>
             }
@@ -186,7 +186,7 @@ function App() {
           <Route
             path="/procedures/internal/maintenance"
             element={
-              <RoleGuard roles={['PROFESOR', 'TRABAJADOR', 'ADMIN', 'GESTOR_INTERNO']}>
+              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
                 <MaintenanceProcedurePage />
               </RoleGuard>
             }

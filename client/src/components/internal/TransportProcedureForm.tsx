@@ -59,21 +59,28 @@ export function TransportProcedureForm({ onSuccess, onCancel }: TransportProcedu
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
+    const now = new Date();
 
-    if (!formData.procedure_type) {
-      newErrors.procedure_type = 'Este campo es requerido';
+    if (!formData.procedure_type || formData.procedure_type <= 0) {
+      newErrors.procedure_type = 'Seleccione un tipo de transporte';
     }
     if (!formData.departure_time) {
       newErrors.departure_time = 'Este campo es requerido';
+    } else if (new Date(formData.departure_time) <= now) {
+      newErrors.departure_time = 'La hora de salida debe ser futura';
     }
     if (!formData.departure_place) {
       newErrors.departure_place = 'Este campo es requerido';
     }
-    if (formData.round_trip && !formData.return_time) {
-      newErrors.return_time = 'Este campo es requerido para viaje redondo';
-    }
-    if (formData.round_trip && !formData.return_place) {
-      newErrors.return_place = 'Este campo es requerido para viaje redondo';
+    if (formData.round_trip) {
+      if (!formData.return_time) {
+        newErrors.return_time = 'Este campo es requerido para viaje redondo';
+      } else if (formData.departure_time && new Date(formData.return_time) <= new Date(formData.departure_time)) {
+        newErrors.return_time = 'La hora de regreso debe ser posterior a la de salida';
+      }
+      if (!formData.return_place) {
+        newErrors.return_place = 'Este campo es requerido para viaje redondo';
+      }
     }
     if (!formData.passengers || formData.passengers < 1) {
       newErrors.passengers = 'Debe ser al menos 1 pasajero';
@@ -315,8 +322,8 @@ export function TransportProcedureForm({ onSuccess, onCancel }: TransportProcedu
                   Cancelar
                 </Button>
               )}
-              <Button type="submit" disabled={isSubmitting} className="w-full md:w-auto bg-primary-navy hover:bg-primary-navy/90 text-white px-10 py-6 rounded-2xl font-bold uppercase tracking-widest shadow-xl shadow-primary-navy/20 active:scale-95 transition-all">
-                {isSubmitting ? 'Enviando...' : 'Enviar Solicitud'}
+              <Button type="submit" disabled={isSubmitting || transportTypes.length === 0} className="w-full md:w-auto bg-primary-navy hover:bg-primary-navy/90 text-white px-10 py-6 rounded-2xl font-bold uppercase tracking-widest shadow-xl shadow-primary-navy/20 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed">
+                {isSubmitting ? 'Enviando...' : transportTypes.length === 0 ? 'Sin tipos disponibles' : 'Enviar Solicitud'}
               </Button>
             </div>
           </CardContent>

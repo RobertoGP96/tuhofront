@@ -43,11 +43,21 @@ const [isLoading, setIsLoading] = useState(false);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
-    
+
     if (!formData.full_name?.trim()) newErrors.full_name = 'El nombre es requerido';
-    if (!formData.id_card?.trim()) newErrors.id_card = 'El carné de identidad es requerido';
+    if (!formData.id_card?.trim()) {
+      newErrors.id_card = 'El carné de identidad es requerido';
+    } else if (!/^\d{11}$/.test(formData.id_card.trim())) {
+      newErrors.id_card = 'El carné debe tener exactamente 11 dígitos numéricos';
+    }
+    if (formData.email && !/^\S+@\S+\.\S+$/.test(formData.email)) {
+      newErrors.email = 'Correo electrónico no válido';
+    }
+    if (formData.phone && !/^[+\d\s\-()]{7,}$/.test(formData.phone)) {
+      newErrors.phone = 'Teléfono no válido';
+    }
     if (!formData.career?.trim()) newErrors.career = 'La carrera es requerida';
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -147,24 +157,26 @@ const [isLoading, setIsLoading] = useState(false);
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-xs font-bold uppercase text-gray-500">Correo Electrónico</Label>
-                  <Input 
-                    id="email" 
+                  <Input
+                    id="email"
                     type="email"
                     value={formData.email || ''}
                     onChange={(e) => handleChange('email', e.target.value)}
-                    placeholder="correo@uho.edu.cu" 
-                    className="rounded-xl border-gray-100 bg-gray-50/50"
+                    placeholder="correo@uho.edu.cu"
+                    className={`rounded-xl border-gray-100 bg-gray-50/50 ${errors.email ? 'border-red-500' : ''}`}
                   />
+                  {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone" className="text-xs font-bold uppercase text-gray-500">Teléfono</Label>
-                  <Input 
-                    id="phone" 
+                  <Input
+                    id="phone"
                     value={formData.phone || ''}
                     onChange={(e) => handleChange('phone', e.target.value)}
-                    placeholder="Número de teléfono" 
-                    className="rounded-xl border-gray-100 bg-gray-50/50"
+                    placeholder="Número de teléfono"
+                    className={`rounded-xl border-gray-100 bg-gray-50/50 ${errors.phone ? 'border-red-500' : ''}`}
                   />
+                  {errors.phone && <p className="text-xs text-red-500">{errors.phone}</p>}
                 </div>
               </div>
             </div>

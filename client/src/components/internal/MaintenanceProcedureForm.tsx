@@ -103,11 +103,11 @@ export function MaintenanceProcedureForm({ onSuccess, onCancel }: MaintenancePro
     if (!formData.description) {
       newErrors.description = 'Este campo es requerido';
     }
-    if (!formData.procedure_type) {
-      newErrors.procedure_type = 'Este campo es requerido';
+    if (!formData.procedure_type || formData.procedure_type <= 0) {
+      newErrors.procedure_type = 'Seleccione un tipo de mantenimiento';
     }
-    if (!formData.priority) {
-      newErrors.priority = 'Este campo es requerido';
+    if (!formData.priority || formData.priority <= 0) {
+      newErrors.priority = 'Seleccione una prioridad';
     }
 
     setErrors(newErrors);
@@ -298,8 +298,8 @@ export function MaintenanceProcedureForm({ onSuccess, onCancel }: MaintenancePro
                     Cancelar
                   </Button>
                 )}
-                <Button type="submit" disabled={isSubmitting} className="w-full md:w-auto bg-primary-navy hover:bg-primary-navy/90 text-white px-10 py-6 rounded-2xl font-bold uppercase tracking-widest shadow-xl shadow-primary-navy/20 active:scale-95 transition-all">
-                  {isSubmitting ? 'Enviando...' : 'Enviar Solicitud'}
+                <Button type="submit" disabled={isSubmitting || procedureTypes.length === 0 || priorities.length === 0} className="w-full md:w-auto bg-primary-navy hover:bg-primary-navy/90 text-white px-10 py-6 rounded-2xl font-bold uppercase tracking-widest shadow-xl shadow-primary-navy/20 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed">
+                  {isSubmitting ? 'Enviando...' : (procedureTypes.length === 0 || priorities.length === 0) ? 'Sin datos disponibles' : 'Enviar Solicitud'}
                 </Button>
               </div>
           </CardContent>

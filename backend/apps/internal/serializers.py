@@ -40,6 +40,7 @@ class FeedingProcedureSerializer(serializers.ModelSerializer):
         model = FeedingProcedure
         fields = '__all__'
         extra_fields = ['username']
+        extra_kwargs = {'user': {'read_only': True}}
 
     def create(self, validated_data):
         feeding_days_data = validated_data.pop('feeding_days', [])
@@ -74,7 +75,7 @@ class FeedingProcedureSerializer(serializers.ModelSerializer):
 
 class AccommodationProcedureSerializer(serializers.ModelSerializer):
     guests = GuestSerializer(many=True)  # Relación ManyToMany
-    feeding_days = FeedingDaysSerializer(many=True)  # Relación ManyToMany
+    feeding_days = FeedingDaysSerializer(many=True, required=False)  # Relación ManyToMany
     username = serializers.CharField(source='user.username', read_only=True)
     notes = NoteSerializer(many=True, required=False)
 
@@ -82,6 +83,7 @@ class AccommodationProcedureSerializer(serializers.ModelSerializer):
         model = AccommodationProcedure
         fields = '__all__'
         extra_fields = ['username']
+        extra_kwargs = {'user': {'read_only': True}}
 
     def create(self, validated_data):
         guests_data = validated_data.pop('guests', [])
@@ -137,6 +139,7 @@ class TransportProcedureSerializer(serializers.ModelSerializer):
         model = TransportProcedure
         fields = '__all__'
         extra_fields = ['username']
+        extra_kwargs = {'user': {'read_only': True}}
         
     def update(self, instance, validated_data):
         # Manejar los datos de notes
@@ -173,6 +176,7 @@ class MaintanceProcedureSerializer(serializers.ModelSerializer):
         model = MaintanceProcedure
         fields = '__all__'
         extra_fields = ['username']
+        extra_kwargs = {'user': {'read_only': True}}
         
     def update(self, instance, validated_data):
         # Manejar los datos de notes

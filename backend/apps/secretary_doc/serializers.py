@@ -58,18 +58,13 @@ class SecretaryDocProcedureCreateSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        # Obtener el usuario autenticado si existe
-        user = None
+        # `user` es FK obligatoria heredada de Procedure. Lo tomamos del request si
+        # no fue inyectado por perform_create del viewset (que ya añade created_by/
+        # updated_by a validated_data).
         request = self.context.get('request')
-        if request and hasattr(request, 'user'):
-            user = request.user
-
-        # Crear el trámite
-        tramite = SecretaryDocProcedure.objects.create(
-            **validated_data,
-            created_by=user,
-            updated_by=user
-        )
+        if request and hasattr(request, 'user') and 'user' not in validated_data:
+            validated_data['user'] = request.user
+        tramite = SecretaryDocProcedure.objects.create(**validated_data)
         return tramite
 
 

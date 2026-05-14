@@ -2,3 +2,4 @@ allowBuilds:
   '@swc/core': false
   esbuild: false
   msw: false
+

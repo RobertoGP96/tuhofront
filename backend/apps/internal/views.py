@@ -97,6 +97,9 @@ class FeedingProcedureListCreateView(ListCreateAPIView):
             return qs
         return qs.filter(user=user)
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
 @extend_schema(
     tags=['Feeding Procedures - Trámites de Alimentación']
 )
@@ -126,6 +129,9 @@ class AccommodationProcedureListCreateView(ListCreateAPIView):
         if is_internal_staff(user):
             return qs
         return qs.filter(user=user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 @extend_schema(
     tags=['Accommodation Procedures - Trámites de Hospedaje']
@@ -176,6 +182,9 @@ class TransportProcedureListCreateView(ListCreateAPIView):
         if is_internal_staff(user):
             return qs
         return qs.filter(user=user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 @extend_schema(
     tags=['Transport Procedures - Trámites de Transporte']
@@ -246,6 +255,9 @@ class MaintanceProcedureListCreateView(ListCreateAPIView):
         if is_internal_staff(user):
             return qs
         return qs.filter(user=user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 @extend_schema(
     tags=['Maintenance Procedures - Trámites de Mantenimiento']

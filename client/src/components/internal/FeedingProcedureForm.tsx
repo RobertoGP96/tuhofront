@@ -55,15 +55,20 @@ export function FeedingProcedureForm({ onSuccess, onCancel }: FeedingProcedureFo
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
+    const today = new Date().toISOString().slice(0, 10);
 
     if (!formData.feeding_type) {
       newErrors.feeding_type = 'Este campo es requerido';
     }
     if (!formData.start_day) {
       newErrors.start_day = 'Este campo es requerido';
+    } else if (formData.start_day < today) {
+      newErrors.start_day = 'La fecha de inicio no puede ser anterior a hoy';
     }
     if (!formData.end_day) {
       newErrors.end_day = 'Este campo es requerido';
+    } else if (formData.start_day && formData.end_day <= formData.start_day) {
+      newErrors.end_day = 'La fecha de fin debe ser posterior a la de inicio';
     }
     if (!formData.amount || formData.amount < 1) {
       newErrors.amount = 'Debe ser al menos 1 persona';
@@ -72,10 +77,10 @@ export function FeedingProcedureForm({ onSuccess, onCancel }: FeedingProcedureFo
       newErrors.description = 'Este campo es requerido';
     }
 
-    const validFeedingDays = feedingDays.filter(day => 
+    const validFeedingDays = feedingDays.filter(day =>
       day.date && (day.breakfast > 0 || day.lunch > 0 || day.dinner > 0 || day.snack > 0)
     );
-    
+
     if (validFeedingDays.length === 0) {
       newErrors.feeding_days = 'Debe agregar al menos un día de alimentación con comidas seleccionadas';
     }

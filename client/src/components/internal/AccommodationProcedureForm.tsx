@@ -72,12 +72,15 @@ export function AccommodationProcedureForm({ onSuccess, onCancel }: Accommodatio
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
+    const today = new Date().toISOString().slice(0, 10);
 
     if (!formData.accommodation_type) {
       newErrors.accommodation_type = 'Este campo es requerido';
     }
     if (!formData.start_day) {
       newErrors.start_day = 'Este campo es requerido';
+    } else if (formData.start_day < today) {
+      newErrors.start_day = 'La fecha de inicio no puede ser anterior a hoy';
     }
     if (!formData.end_day) {
       newErrors.end_day = 'Este campo es requerido';
@@ -88,9 +91,12 @@ export function AccommodationProcedureForm({ onSuccess, onCancel }: Accommodatio
       newErrors.description = 'Este campo es requerido';
     }
 
+    const hasIncompleteGuest = guests.some(g => (g.name && !g.identification) || (!g.name && g.identification));
     const validGuests = guests.filter(guest => guest.name && guest.identification);
     if (validGuests.length === 0) {
       newErrors.guests = 'Debe agregar al menos un huésped con nombre y identificación';
+    } else if (hasIncompleteGuest) {
+      newErrors.guests = 'Hay huéspedes incompletos: cada uno debe tener nombre e identificación';
     }
 
     setErrors(newErrors);
