@@ -23,17 +23,14 @@ El comando es seguro: cada usuario / departamento / local se actualiza si ya exi
 
 Todos activos, con email verificado. Diseñados para que puedas probar cada rol del sistema sin hacer permutaciones manuales:
 
-| Usuario | Contraseña | `user_type` | `is_staff` | `is_superuser` | Carnet | Nombre completo |
-|---|---|---|---|---|---|---|
-| `admin` | `Admin12345` | ADMIN | ✅ | ✅ | 85010112345 | Admin Sistema |
-| `secretaria` | `Demo12345` | SECRETARIA_DOCENTE | ✅ | ❌ | 85020212345 | Lucia Pérez |
-| `profesor` | `Demo12345` | PROFESOR | ❌ | ❌ | 80030312345 | Carlos Rodríguez |
-| `trabajador` | `Demo12345` | TRABAJADOR | ❌ | ❌ | 85040412345 | María González |
-| `estudiante` | `Demo12345` | ESTUDIANTE | ❌ | ❌ | 02050512345 | Juan Martínez |
-| `externo` | `Demo12345` | EXTERNO | ❌ | ❌ | 78060612345 | Pedro Suárez |
-| `gestor_int` | `Demo12345` | GESTOR_INTERNO | ✅ | ❌ | 82070712345 | Ana Díaz |
-| `gestor_tram` | `Demo12345` | GESTOR_TRAMITES | ✅ | ❌ | 82080812345 | Luis Hernández |
-| `gestor_res` | `Demo12345` | GESTOR_RESERVAS | ✅ | ❌ | 82090912345 | Elena Ramos |
+| Usuario | Contraseña | `user_type` | `is_staff` | `is_superuser` | Nombre completo |
+|---|---|---|---|---|---|
+| `admin` | `Admin12345` | ADMIN | ✅ | ✅ | Roberto Almeida |
+| `gestor_int` | `Demo12345` | GESTOR_INTERNO | ✅ | ❌ | Ana Díaz |
+| `gestor_sec` | `Demo12345` | GESTOR_SECRETARIA | ✅ | ❌ | Luis Hernández |
+| `gestor_res` | `Demo12345` | GESTOR_RESERVAS | ✅ | ❌ | Elena Ramos |
+| `usuario` | `Demo12345` | USUARIO | ❌ | ❌ | Juan Martínez |
+| `usuario.amaya` … `usuario.pedro` | `Demo12345` | USUARIO | ❌ | ❌ | (variantes para volumen) |
 
 ### Departamentos y Áreas
 
@@ -63,10 +60,10 @@ Todos prefijados con `Demo ` para identificarlos fácilmente y poder borrarlos c
 
 ### Reservas
 
-Creadas por `profesor`:
+Creadas por varios `usuario.*`:
 
 1. **Pendiente** en `LAB-01` — dentro de 2 días, 9:00–11:00, 25 asistentes.
-2. **Aprobada** en `AUDI-A` — dentro de 4 días, 14:00–17:00, 120 asistentes, aprobada por `admin`.
+2. **Aprobada** en `AUDI-A` — dentro de 4 días, 14:00–17:00, 120 asistentes, aprobada por `admin` o `gestor_res`.
 
 ### Catálogos internos
 
@@ -78,10 +75,10 @@ Creadas por `profesor`:
 
 | Tipo | Solicitante | Detalle |
 |---|---|---|
-| `FeedingProcedure` | profesor | Almuerzo restaurante, 5 personas, 3–5 días desde hoy |
-| `AccommodationProcedure` | profesor | Hotelito posgrado, 7–10 días desde hoy |
-| `TransportProcedure` | profesor | Viaje ida y vuelta, 12 pasajeros, en 5 días |
-| `MaintanceProcedure` | trabajador | Aire del LAB-01 no enfría, prioridad Media |
+| `FeedingProcedure` | usuario.carlos | Almuerzo restaurante, 5 personas, 3–5 días desde hoy |
+| `AccommodationProcedure` | usuario.carlos | Hotelito posgrado, 7–10 días desde hoy |
+| `TransportProcedure` | usuario.carlos | Viaje ida y vuelta, 12 pasajeros, en 5 días |
+| `MaintanceProcedure` | usuario.maria | Aire del LAB-01 no enfría, prioridad Media |
 
 ---
 
@@ -91,10 +88,10 @@ Creadas por `profesor`:
 |---|---|---|---|
 | Login + dashboard admin | `admin` | `/admin` | Estadísticas con datos reales (procedures count, users count) |
 | Aprobar reserva pendiente | `admin` o `gestor_res` | `/admin/locals` o `/gestor-reservas` | La reserva del LAB-01 aparece en pendientes |
-| Crear trámite interno | `profesor` | `/procedures/internal/feeding` | Formulario funcional con departamentos en el selector |
-| Crear mantenimiento | `trabajador` | `/procedures/internal/maintenance` | Selectores de Tipo y Prioridad cargados |
-| Ver mis trámites | `profesor` | `/procedures/internals` | 3 trámites en BORRADOR |
-| Secretaría docente | `secretaria` | `/secretary` | Panel con lista (vacía) — podés crear nuevos |
+| Crear trámite interno | `usuario.carlos` | `/procedures/internal/feeding` | Formulario funcional con departamentos en el selector |
+| Crear mantenimiento | `usuario.maria` | `/procedures/internal/maintenance` | Selectores de Tipo y Prioridad cargados |
+| Ver mis trámites | `usuario.carlos` | `/procedures/internals` | 3 trámites en BORRADOR |
+| Secretaría docente | `gestor_sec` | `/secretary` | Panel con lista (vacía) — podés crear nuevos |
 | Tracking público | (sin login) | `/tracking` | Pegar `follow_number` + carnet de una reserva |
 | Noticias públicas | (sin login) | `/news` | 3 noticias de demo |
 | API directa | — | http://localhost:8000/api/docs/ | Probar `/auth/login/` con `admin`/`Admin12345` |

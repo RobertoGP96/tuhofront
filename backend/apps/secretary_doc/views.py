@@ -30,7 +30,12 @@ from .serializers import (
     DocumentoSerializer
 )
 from .decorators import administracion_required, gestores_tramites_required, all_required
-from .permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
+from .permissions import (
+    IsOwnerOrReadOnly,
+    IsAdminOrReadOnly,
+    CanManageSecretaryProcedure,
+    is_secretary_staff,
+)
 
 # Get the user model
 User = get_user_model()
@@ -39,9 +44,21 @@ Usuario = User  # For backward compatibility
 class TramiteViewSet(viewsets.ModelViewSet):
     """
     API endpoint que permite ver y editar los trámites.
+
+    Permisos:
+    - Cualquier usuario autenticado puede crear su propio trámite.
+    - El solicitante (``created_by``) puede leer sus trámites.
+    - El staff de la secretaría (GESTOR_SECRETARIA, ADMIN)
+      puede leer y modificar todos los trámites, incluido cambiar de estado.
     """
-    queryset = SecretaryDocProcedure.objects.all().order_by('-created_at')
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, CanManageSecretaryProcedure]
+
+    def get_queryset(self):
+        qs = SecretaryDocProcedure.objects.all().order_by('-created_at')
+        user = self.request.user
+        if is_secretary_staff(user):
+            return qs
+        return qs.filter(created_by=user)
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -60,26 +77,28 @@ class TramiteViewSet(viewsets.ModelViewSet):
     def cambiar_estado(self, request, pk=None):
         tramite = self.get_object()
         nuevo_estado = request.data.get('estado')
-        
+        observaciones = request.data.get('observaciones', '').strip()
+
         if not nuevo_estado:
             return Response(
-                {'error': 'El campo estado es requerido'}, 
-                status=status.HTTP_400_BAD_REQUEST
+                {'error': 'El campo estado es requerido'},
+                status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
+        estado_anterior = tramite.state
         tramite.state = nuevo_estado
         tramite.updated_by = request.user
         tramite.save()
-        
-        # Crear un nuevo seguimiento
+
+        # Registrar el cambio en el historial de seguimientos
         SeguimientoTramite.objects.create(
             tramite=tramite,
             estado=nuevo_estado,
-            observaciones=f'Estado cambiado a {nuevo_estado}',
-            usuario=request.user
+            observaciones=observaciones or f'Estado cambiado de {estado_anterior} a {nuevo_estado}',
+            usuario=request.user,
         )
-        
-        return Response({'status': 'Estado actualizado'})
+
+        return Response({'status': 'Estado actualizado', 'state': nuevo_estado})
 
     @action(detail=True, methods=['post'])
     def subir_documento(self, request, pk=None):

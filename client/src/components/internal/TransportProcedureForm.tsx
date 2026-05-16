@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Textarea } from '../ui/textarea';
 
 interface TransportProcedureFormProps {
-  onSuccess?: () => void;
+  onSuccess?: (createdId: number) => void;
   onCancel?: () => void;
 }
 
@@ -104,7 +104,7 @@ export function TransportProcedureForm({ onSuccess, onCancel }: TransportProcedu
     try {
       setIsSubmitting(true);
 
-      await transportService.create(formData);
+      const created = await transportService.create(formData);
 
       toast.success('Solicitud de transporte creada exitosamente');
 
@@ -120,7 +120,7 @@ export function TransportProcedureForm({ onSuccess, onCancel }: TransportProcedu
       });
       setErrors({});
 
-      onSuccess?.();
+      onSuccess?.(created.id);
     } catch (error) {
       console.error('Error creating transport procedure:', error);
       toast.error('No se pudo crear la solicitud. Intente nuevamente');

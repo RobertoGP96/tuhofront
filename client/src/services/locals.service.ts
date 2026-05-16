@@ -194,4 +194,18 @@ export const localsService = {
     );
     return response.data;
   },
+
+  async startReservation(id: number): Promise<ReservationDetail> {
+    const response = await apiClient.post<ReservationDetail>(
+      `${BASE}/reservations/${id}/start/`
+    );
+    return response.data;
+  },
+
+  async finishReservation(id: number): Promise<ReservationDetail> {
+    const response = await apiClient.post<ReservationDetail>(
+      `${BASE}/reservations/${id}/finish/`
+    );
+    return response.data;
+  },
 };

@@ -54,8 +54,20 @@ export interface NewsItem {
   publication_date: string | null;
   featured: boolean;
   tags: string;
+  author_name?: string | null;
+  tag_list?: string[];
+  read_time?: number;
   created_at: string;
   updated_at: string;
+}
+
+export interface NewsDetailItem extends NewsItem {
+  author_name: string | null;
+  author_email: string | null;
+  tag_list: string[];
+  related_news: NewsItem[];
+  read_time: number;
+  absolute_url?: string;
 }
 
 export interface NewsPayload {
@@ -143,6 +155,11 @@ export const platformService = {
   // News
   async getNews(params?: GetNewsParams): Promise<PaginatedResponse<NewsItem>> {
     const response = await apiClient.get<PaginatedResponse<NewsItem>>('/news/', { params });
+    return response.data;
+  },
+
+  async getNewsBySlug(slug: string): Promise<NewsDetailItem> {
+    const response = await apiClient.get<NewsDetailItem>(`/news/${slug}/`);
     return response.data;
   },
 

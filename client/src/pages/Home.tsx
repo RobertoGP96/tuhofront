@@ -7,7 +7,7 @@ const Home: React.FC = () => {
   const { isAuthenticated } = useAuth();
 
   return (
-    <section className="flex flex-col gap-0 items-center pb-20 grow w-full bg-white -mt-8 -mx-8 w-[calc(100%+4rem)]">
+    <section className="flex flex-col gap-0 items-center pb-20 grow w-full bg-white -mt-6 md:-mt-8 -mx-6 md:-mx-8 w-[calc(100%+3rem)] md:w-[calc(100%+4rem)]">
       {/* Hero Section */}
       <article className="relative w-full flex flex-col justify-center items-center h-[400px] overflow-hidden bg-primary-navy">
         <div className="absolute inset-0 opacity-10 bg-[url('https://www.uho.edu.cu/wp-content/uploads/2019/07/uho-bg.jpg')] bg-cover bg-center"></div>

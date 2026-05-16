@@ -21,11 +21,10 @@ import { adminService } from '@/services/admin.service';
 import type { User } from '@/types/auth.types';
 
 const USER_TYPE_OPTIONS = [
-  { value: 'ESTUDIANTE', label: 'Estudiante' },
-  { value: 'PROFESOR', label: 'Profesor' },
-  { value: 'TRABAJADOR', label: 'Trabajador' },
-  { value: 'EXTERNO', label: 'Externo' },
-  { value: 'SECRETARIA_DOCENTE', label: 'Secretaría Docente' },
+  { value: 'USUARIO', label: 'Usuario' },
+  { value: 'GESTOR_INTERNO', label: 'Gestor Trámites Internos' },
+  { value: 'GESTOR_SECRETARIA', label: 'Gestor Secretaría Docente' },
+  { value: 'GESTOR_RESERVAS', label: 'Gestor Reservas' },
   { value: 'ADMIN', label: 'Administrador' },
 ];
 

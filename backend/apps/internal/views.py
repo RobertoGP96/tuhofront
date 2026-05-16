@@ -18,7 +18,8 @@ from .serializers import (
 )
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 import logging
 
 logger = logging.getLogger(__name__)
@@ -89,6 +90,7 @@ class FeedingProcedureListCreateView(ListCreateAPIView):
     POST: Crea una nueva solicitud de alimentación
     """
     serializer_class = FeedingProcedureSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
@@ -122,6 +124,7 @@ class AccommodationProcedureListCreateView(ListCreateAPIView):
     POST: Crea una nueva solicitud de hospedaje
     """
     serializer_class = AccommodationProcedureSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
@@ -175,6 +178,7 @@ class TransportProcedureListCreateView(ListCreateAPIView):
     POST: Crea una nueva solicitud de transporte
     """
     serializer_class = TransportProcedureSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
@@ -248,6 +252,7 @@ class MaintanceProcedureListCreateView(ListCreateAPIView):
     POST: Crea una nueva solicitud de mantenimiento
     """
     serializer_class = MaintanceProcedureSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
@@ -314,24 +319,44 @@ class AreaRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     description='Gestionar notas'
 )
 class NoteListCreateView(ListCreateAPIView):
-    """Listar o crear notas."""
-    queryset = Note.objects.all()
+    """Listar o crear notas (dueño o staff del módulo interno)."""
     serializer_class = NoteSerializer
-    
+    permission_classes = [IsAuthenticated, IsOwnerOrStaff]
+
+    def get_queryset(self):
+        user = self.request.user
+        qs = Note.objects.all()
+        if is_internal_staff(user):
+            return qs
+        return qs.filter(user=user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
 @extend_schema(
     tags=['Notes - Notas']
 )
 class NoteRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
-    """Operaciones CRUD en una nota específica."""
-    queryset = Note.objects.all()
+    """Operaciones CRUD en una nota específica (dueño o staff)."""
     serializer_class = NoteSerializer
-    
+    permission_classes = [IsAuthenticated, IsOwnerOrStaff]
+
+    def get_queryset(self):
+        user = self.request.user
+        qs = Note.objects.all()
+        if is_internal_staff(user):
+            return qs
+        return qs.filter(user=user)
+
+
 @extend_schema(
     tags=['Procedures - Trámites Generales'],
     description='Obtener todos los trámites de todas las categorías',
     responses={200: {'type': 'object', 'properties': {'procedures': {'type': 'array'}}}}
 )
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_all_procedures(request):
     """
     GET /internal/procedures/
@@ -343,11 +368,17 @@ def get_all_procedures(request):
     - Mantenimiento
     """
     try:
-        # Obtener todos los trámites
-        feeding_procedures = FeedingProcedure.objects.all()
-        accommodation_procedures = AccommodationProcedure.objects.all()
-        transport_procedures = TransportProcedure.objects.all()
-        maintance_procedures = MaintanceProcedure.objects.all()
+        user = request.user
+        if is_internal_staff(user):
+            feeding_procedures = FeedingProcedure.objects.all()
+            accommodation_procedures = AccommodationProcedure.objects.all()
+            transport_procedures = TransportProcedure.objects.all()
+            maintance_procedures = MaintanceProcedure.objects.all()
+        else:
+            feeding_procedures = FeedingProcedure.objects.filter(user=user)
+            accommodation_procedures = AccommodationProcedure.objects.filter(user=user)
+            transport_procedures = TransportProcedure.objects.filter(user=user)
+            maintance_procedures = MaintanceProcedure.objects.filter(user=user)
 
         # Serializar los datos
         feeding_serializer = FeedingProcedureSerializer(
@@ -398,32 +429,40 @@ def get_all_procedures(request):
     responses={200: {'type': 'object', 'properties': {'stats': {'type': 'object'}}}}
 )
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_procedure_stats(request):
     """
     GET /internal/stats/?type=feeding
-    
-    Retorna estadísticas de trámites por estado.
-    
+
+    Retorna estadísticas de trámites por estado. Los usuarios no staff sólo
+    ven estadísticas de sus propios trámites.
+
     Parámetros:
     - type (opcional): feeding, accommodation, transport, maintance
     """
     procedure_type = request.query_params.get('type', None)
+    user = request.user
+
+    def _scope(qs):
+        return qs if is_internal_staff(user) else qs.filter(user=user)
 
     # Filtrar por tipo de trámite si se proporciona
     if procedure_type == 'feeding':
-        procedures = FeedingProcedure.objects.all()
+        procedures = _scope(FeedingProcedure.objects.all())
     elif procedure_type == 'accommodation':
-        procedures = AccommodationProcedure.objects.all()
+        procedures = _scope(AccommodationProcedure.objects.all())
     elif procedure_type == 'transport':
-        procedures = TransportProcedure.objects.all()
+        procedures = _scope(TransportProcedure.objects.all())
     elif procedure_type == 'maintance':
-        procedures = MaintanceProcedure.objects.all()
+        procedures = _scope(MaintanceProcedure.objects.all())
     else:
         # Combinar todos los trámites
-        procedures = list(FeedingProcedure.objects.all()) + \
-                     list(AccommodationProcedure.objects.all()) + \
-                     list(TransportProcedure.objects.all()) + \
-                     list(MaintanceProcedure.objects.all())
+        procedures = (
+            list(_scope(FeedingProcedure.objects.all()))
+            + list(_scope(AccommodationProcedure.objects.all()))
+            + list(_scope(TransportProcedure.objects.all()))
+            + list(_scope(MaintanceProcedure.objects.all()))
+        )
 
     # Agrupar por estado
     stats = {}

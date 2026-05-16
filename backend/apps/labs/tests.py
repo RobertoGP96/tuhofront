@@ -40,7 +40,7 @@ class LabsSmokeTest(TestCase):
             email='labs_prof@uho.edu.cu',
             first_name='Carlos',
             last_name='Profesor',
-            user_type='PROFESOR',
+            user_type='USUARIO',
             id_card='80030312345',
             is_active=True,
             email_verified=True,

@@ -30,6 +30,7 @@ tuhofront/
 | Git | cualquiera reciente | Para clonar |
 | PostgreSQL | 14+ (opcional) | SQLite se usa por defecto en desarrollo |
 | Redis | 6+ (opcional) | Solo si querés ejecutar Celery con worker real |
+| GTK3 Runtime | 3.24+ (Windows) | **Necesario** para generar PDFs estilizados con WeasyPrint. Sin él los reportes salen en texto plano. Ver sección [Generación de PDFs](#-generación-de-pdfs-weasyprint). |
 
 > **Windows**: las instrucciones funcionan en `Git Bash`, `PowerShell` y `cmd`. Donde el comando difiera entre OS se indica explícitamente.
 
@@ -113,14 +114,11 @@ Todos los usuarios están activos, con email verificado y listos para usar.
 | Usuario | Contraseña | Rol (`user_type`) | Para qué sirve |
 |---|---|---|---|
 | `admin` | `Admin12345` | ADMIN (superuser) | Panel `/admin`, ver todos los trámites, aprobar, exportar reportes, gestionar usuarios y configuración |
-| `secretaria` | `Demo12345` | SECRETARIA_DOCENTE | Panel `/secretary`, gestionar trámites de secretaría docente |
-| `profesor` | `Demo12345` | PROFESOR | Crear trámites internos (alimentación, alojamiento, transporte) y reservar locales |
-| `trabajador` | `Demo12345` | TRABAJADOR | Crear trámites internos, especialmente mantenimiento |
-| `estudiante` | `Demo12345` | ESTUDIANTE | Trámites de secretaría docente |
-| `externo` | `Demo12345` | EXTERNO | Usuario público registrado (acceso limitado) |
-| `gestor_int` | `Demo12345` | GESTOR_INTERNO | Panel `/gestor-interno`, gestionar trámites internos |
-| `gestor_tram` | `Demo12345` | GESTOR_TRAMITES | Panel `/gestor-tramites`, gestionar trámites genéricos |
-| `gestor_res` | `Demo12345` | GESTOR_RESERVAS | Panel `/gestor-reservas`, aprobar/rechazar reservas |
+| `gestor_int` | `Demo12345` | GESTOR_INTERNO | Panel `/gestor-interno`, gestionar trámites internos (alimentación, alojamiento, transporte, mantenimiento) |
+| `gestor_sec` | `Demo12345` | GESTOR_SECRETARIA | Panel `/secretary` y `/gestor-secretaria`, gestionar trámites de Secretaría Docente |
+| `gestor_res` | `Demo12345` | GESTOR_RESERVAS | Panel `/gestor-reservas`, aprobar/rechazar reservas de locales |
+| `usuario` | `Demo12345` | USUARIO | Solicitante final: crear sus propios trámites y reservas |
+| `usuario.amaya` … `usuario.pedro` | `Demo12345` | USUARIO | Variantes adicionales para listados con volumen |
 
 ### Datos sembrados además de los usuarios
 
@@ -268,6 +266,45 @@ pnpm lint       # ESLint
    DATABASE_PORT=5432
    ```
 3. Volver a correr `python manage.py migrate` y `python manage.py seed_demo`.
+
+---
+
+## 🖨️ Generación de PDFs (WeasyPrint)
+
+Los reportes (`/api/v1/reports/*.pdf`) y documentos oficiales se renderizan con **WeasyPrint** desde plantillas HTML/CSS (logo institucional, KPIs, tablas con badges de estado, charts). WeasyPrint depende de librerías nativas (**GLib/Pango/Cairo/HarfBuzz**) que **no vienen con Python en Windows**. Si faltan, el sistema cae a un fallback de **texto plano** que es legible pero no respeta el branding.
+
+### Windows
+
+1. Descargar el instalador de [GTK3 Runtime Environment for Windows](https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases) (archivo `gtk3-runtime-3.24.x-win64.exe`, ~30 MB).
+2. Durante la instalación marcar **"Set up PATH environment variable to include GTK+"**. Sin esta opción WeasyPrint no encuentra las DLLs.
+3. Reiniciar la terminal (y el IDE) para que el `PATH` actualizado sea visible.
+4. Verificar:
+   ```bash
+   python -c "from weasyprint import HTML; print(HTML(string='<h1>ok</h1>').write_pdf()[:8])"
+   ```
+   Debe imprimir `b'%PDF-1.7\n'` sin lanzar excepción.
+
+### Linux
+
+```bash
+sudo apt install libpango-1.0-0 libpangoft2-1.0-0
+```
+
+### macOS
+
+```bash
+brew install pango
+```
+
+### ¿Cómo saber que está fallando?
+
+Cuando WeasyPrint no puede cargar las librerías nativas, el log del backend muestra:
+
+```
+WARNING  WeasyPrint no pudo renderizar el PDF (cannot load library 'libgobject-2.0-0'). En Windows instala GTK3 Runtime...
+```
+
+Si ves este warning en los logs, los reportes están saliendo en texto plano; instalá las dependencias nativas y reiniciá el servidor.
 
 ---
 

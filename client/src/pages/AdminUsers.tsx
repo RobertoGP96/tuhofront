@@ -26,21 +26,19 @@ import type { User } from '@/types/auth.types';
 import { EditUserDialog } from './EditUserDialog';
 
 const USER_TYPE_LABELS: Record<string, string> = {
-  ESTUDIANTE: 'Estudiante',
-  PROFESOR: 'Profesor',
-  TRABAJADOR: 'Trabajador',
-  EXTERNO: 'Externo',
-  SECRETARIA_DOCENTE: 'Sec. Docente',
+  USUARIO: 'Usuario',
+  GESTOR_INTERNO: 'Gestor Internos',
+  GESTOR_SECRETARIA: 'Gestor Secretaría',
+  GESTOR_RESERVAS: 'Gestor Reservas',
   ADMIN: 'Administrador',
 };
 
 const USER_TYPE_COLORS: Record<string, string> = {
   ADMIN: 'bg-purple-100 text-purple-800 border-purple-200',
-  SECRETARIA_DOCENTE: 'bg-blue-100 text-blue-800 border-blue-200',
-  PROFESOR: 'bg-teal-100 text-teal-800 border-teal-200',
-  TRABAJADOR: 'bg-orange-100 text-orange-800 border-orange-200',
-  ESTUDIANTE: 'bg-sky-100 text-sky-800 border-sky-200',
-  EXTERNO: 'bg-gray-100 text-gray-800 border-gray-200',
+  GESTOR_SECRETARIA: 'bg-blue-100 text-blue-800 border-blue-200',
+  GESTOR_INTERNO: 'bg-teal-100 text-teal-800 border-teal-200',
+  GESTOR_RESERVAS: 'bg-orange-100 text-orange-800 border-orange-200',
+  USUARIO: 'bg-sky-100 text-sky-800 border-sky-200',
 };
 
 const PAGE_SIZE = 20;
@@ -183,11 +181,10 @@ export default function AdminUsers() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos los tipos</SelectItem>
-            <SelectItem value="ESTUDIANTE">Estudiante</SelectItem>
-            <SelectItem value="PROFESOR">Profesor</SelectItem>
-            <SelectItem value="TRABAJADOR">Trabajador</SelectItem>
-            <SelectItem value="EXTERNO">Externo</SelectItem>
-            <SelectItem value="SECRETARIA_DOCENTE">Sec. Docente</SelectItem>
+            <SelectItem value="USUARIO">Usuario</SelectItem>
+            <SelectItem value="GESTOR_INTERNO">Gestor Internos</SelectItem>
+            <SelectItem value="GESTOR_SECRETARIA">Gestor Secretaría</SelectItem>
+            <SelectItem value="GESTOR_RESERVAS">Gestor Reservas</SelectItem>
             <SelectItem value="ADMIN">Administrador</SelectItem>
           </SelectContent>
         </Select>

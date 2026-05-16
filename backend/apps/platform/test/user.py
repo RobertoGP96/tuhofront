@@ -19,7 +19,7 @@ class UsuarioModelTest(TestCase):
             'last_name': 'User',
             'id_card': '99010112345',
             'password': 'testpass123',
-            'user_type': 'ESTUDIANTE'
+            'user_type': 'USUARIO'
         }
     
     def test_create_user(self):
@@ -99,7 +99,7 @@ class UsuarioAPITest(APITestCase):
             first_name='Test',
             last_name='User',
             id_card='99010112345',
-            user_type='ESTUDIANTE'
+            user_type='USUARIO'
         )
         
         # Crear usuario staff
@@ -110,7 +110,7 @@ class UsuarioAPITest(APITestCase):
             first_name='Staff',
             last_name='User',
             id_card='98010112345',
-            user_type='TRABAJADOR',
+            user_type='USUARIO',
             is_staff=True
         )
     
@@ -124,7 +124,7 @@ class UsuarioAPITest(APITestCase):
             'first_name': 'New',
             'last_name': 'User',
             'id_card': '00010112345',
-            'user_type': 'ESTUDIANTE'
+            'user_type': 'USUARIO'
         }
         
         response = self.client.post('/api/usuarios/', data)
@@ -217,7 +217,7 @@ class UsuarioStaffAPITest(APITestCase):
             first_name='Staff',
             last_name='User',
             id_card='98010112345',
-            user_type='TRABAJADOR',
+            user_type='USUARIO',
             is_staff=True
         )
         
@@ -231,7 +231,7 @@ class UsuarioStaffAPITest(APITestCase):
                 first_name=f'User{i}',
                 last_name='Test',
                 id_card=f'9901011234{i}',
-                user_type='ESTUDIANTE'
+                user_type='USUARIO'
             )
             self.test_users.append(user)
     

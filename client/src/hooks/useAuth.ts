@@ -8,12 +8,12 @@ export const useAuth = () => {
   const isStaff = user?.is_staff === true;
 
   const isAdmin = user?.role === 'ADMIN' || isStaff || userRole === 'ADMIN';
-  const isSecretaria = userRole === 'SECRETARIA_DOCENTE';
+  const isUsuario = userRole === 'USUARIO';
   const isGestorInterno = userRole === 'GESTOR_INTERNO';
-  const isGestorTramites = userRole === 'GESTOR_TRAMITES';
+  const isGestorSecretaria = userRole === 'GESTOR_SECRETARIA';
   const isGestorReservas = userRole === 'GESTOR_RESERVAS';
-  const isAnyGestor = isGestorInterno || isGestorTramites || isGestorReservas;
-  const isPersonalUser = !isAdmin && !isAnyGestor && !isSecretaria;
+  const isAnyGestor = isGestorInterno || isGestorSecretaria || isGestorReservas;
+  const isPersonalUser = isUsuario || (!isAdmin && !isAnyGestor);
 
   return {
     user,
@@ -23,20 +23,14 @@ export const useAuth = () => {
     logout,
     userRole,
     isAdmin,
-    isSecretaria,
-    isProfesor: userRole === 'PROFESOR',
-    isTrabajador: userRole === 'TRABAJADOR',
-    isEstudiante: userRole === 'ESTUDIANTE',
-    isExterno: userRole === 'EXTERNO',
+    isUsuario,
     isGestorInterno,
-    isGestorTramites,
+    isGestorSecretaria,
     isGestorReservas,
     isAnyGestor,
     isPersonalUser,
-    canAccessInternal: isStaff || userRole === 'ADMIN' || userRole === 'PROFESOR' || userRole === 'TRABAJADOR',
-    canManageSecretary: isStaff || userRole === 'ADMIN' || userRole === 'SECRETARIA_DOCENTE',
+    canManageSecretary: isStaff || userRole === 'ADMIN' || userRole === 'GESTOR_SECRETARIA',
     canManageInternal: isStaff || userRole === 'ADMIN' || userRole === 'GESTOR_INTERNO',
-    canManageTramites: isStaff || userRole === 'ADMIN' || userRole === 'GESTOR_TRAMITES',
     canManageReservas: isStaff || userRole === 'ADMIN' || userRole === 'GESTOR_RESERVAS',
   };
 };

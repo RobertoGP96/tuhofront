@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Textarea } from '../ui/textarea';
 
 interface AccommodationProcedureFormProps {
-  onSuccess?: () => void;
+  onSuccess?: (createdId: number) => void;
   onCancel?: () => void;
 }
 
@@ -125,8 +125,8 @@ export function AccommodationProcedureForm({ onSuccess, onCancel }: Accommodatio
         feeding_days: validFeedingDays
       };
 
-      await accommodationService.create(procedureData);
-      
+      const created = await accommodationService.create(procedureData);
+
       toast.success('Solicitud de alojamiento creada exitosamente');
 
       setFormData({
@@ -140,8 +140,8 @@ export function AccommodationProcedureForm({ onSuccess, onCancel }: Accommodatio
       setGuests([{ name: '', sex: 'M', identification: '' }]);
       setFeedingDays([{ date: '', breakfast: 0, lunch: 0, dinner: 0, snack: 0 }]);
       setErrors({});
-      
-      onSuccess?.();
+
+      onSuccess?.(created.id);
     } catch (error) {
       console.error('Error creating accommodation procedure:', error);
       toast.error('No se pudo crear la solicitud. Intente nuevamente');

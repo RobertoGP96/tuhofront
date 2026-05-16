@@ -7,7 +7,7 @@ Ejecutar con::
 
 Cobertura:
   - Creación de cada tipo de trámite por usuarios de todos los roles
-    (ESTUDIANTE, PROFESOR, TRABAJADOR, EXTERNO, GESTOR_INTERNO, ADMIN).
+    (USUARIO, GESTOR_INTERNO, ADMIN).
   - POST sin autenticación retorna 401.
   - El listado filtra por dueño para usuarios normales y muestra todo para staff.
   - `user` se asigna automáticamente desde `request.user` (no se acepta override).
@@ -55,10 +55,10 @@ class InternalProceduresTestMixin:
 
     @classmethod
     def setUpTestData(cls):
-        cls.estudiante = _make_user('test_estudiante', 'ESTUDIANTE', '02050512345')
-        cls.profesor = _make_user('test_profesor', 'PROFESOR', '80030312345')
-        cls.trabajador = _make_user('test_trabajador', 'TRABAJADOR', '75060612345')
-        cls.externo = _make_user('test_externo', 'EXTERNO', '78060612346')
+        cls.estudiante = _make_user('test_estudiante', 'USUARIO', '02050512345')
+        cls.profesor = _make_user('test_profesor', 'USUARIO', '80030312345')
+        cls.trabajador = _make_user('test_trabajador', 'USUARIO', '75060612345')
+        cls.externo = _make_user('test_externo', 'USUARIO', '78060612346')
         cls.gestor_interno = _make_user('test_gestor_int', 'GESTOR_INTERNO', '70010112345')
         cls.admin = _make_user(
             'test_admin', 'ADMIN', '85010112345',

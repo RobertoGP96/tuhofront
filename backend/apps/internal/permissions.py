@@ -6,7 +6,7 @@ Permisos personalizados para los endpoints de trámites internos y catálogos.
 - ``IsOwnerOrStaff``: usado en detail views; el dueño del trámite puede acceder
   a su propio recurso, los staff/admin del módulo interno pueden acceder a todos.
 
-Los helpers ``is_internal_staff``, ``is_tramites_staff`` y ``is_reservas_staff``
+Los helpers ``is_internal_staff``, ``is_secretaria_staff`` y ``is_reservas_staff``
 permiten a las vistas de cada módulo aislar a los gestores: un GESTOR_RESERVAS
 no debería poder crear/editar trámites internos, y viceversa.
 """
@@ -14,7 +14,7 @@ from rest_framework import permissions
 
 
 INTERNAL_STAFF_ROLES = ('ADMIN', 'GESTOR_INTERNO')
-TRAMITES_STAFF_ROLES = ('ADMIN', 'GESTOR_TRAMITES')
+SECRETARIA_STAFF_ROLES = ('ADMIN', 'GESTOR_SECRETARIA')
 RESERVAS_STAFF_ROLES = ('ADMIN', 'GESTOR_RESERVAS')
 
 
@@ -36,9 +36,13 @@ def is_internal_staff(user) -> bool:
     return _has_module_role(user, INTERNAL_STAFF_ROLES)
 
 
-def is_tramites_staff(user) -> bool:
-    """¿El usuario puede gestionar el módulo de trámites externos?"""
-    return _has_module_role(user, TRAMITES_STAFF_ROLES)
+def is_secretaria_staff(user) -> bool:
+    """¿El usuario puede gestionar el módulo de trámites de Secretaría Docente?"""
+    return _has_module_role(user, SECRETARIA_STAFF_ROLES)
+
+
+# Alias retro-compatible (será eliminado tras la migración completa del rol).
+is_tramites_staff = is_secretaria_staff
 
 
 def is_reservas_staff(user) -> bool:

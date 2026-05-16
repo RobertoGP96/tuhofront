@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Search, Clock, ArrowRight, Loader2, AlertCircle, ImageOff } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Search, Clock, ArrowRight, AlertCircle, ImageOff } from 'lucide-react';
 import { platformService, type NewsCategory, type NewsItem } from '@/services/platform.service';
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -18,7 +19,7 @@ const CATEGORIES: Array<{ id: string; label: string }> = [
   ...Object.entries(CATEGORY_LABELS).map(([id, label]) => ({ id, label })),
 ];
 
-const PAGE_SIZE = 9;
+const PAGE_SIZE = 100;
 
 function formatDate(dateStr: string | null): string {
   if (!dateStr) return '';
@@ -69,10 +70,7 @@ const News: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('todas');
   const [news, setNews] = useState<NewsItem[]>([]);
   const [featuredNews, setFeaturedNews] = useState<NewsItem | null>(null);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -82,28 +80,19 @@ const News: React.FC = () => {
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
     debounceTimer.current = setTimeout(() => {
       setDebouncedSearch(searchTerm);
-      setPage(1);
-      setNews([]);
     }, 300);
     return () => {
       if (debounceTimer.current) clearTimeout(debounceTimer.current);
     };
   }, [searchTerm]);
 
-  // Reset on category change
-  useEffect(() => {
-    setPage(1);
-    setNews([]);
-  }, [selectedCategory]);
-
-  const fetchNews = useCallback(async (pageNum: number, append: boolean) => {
-    if (pageNum === 1 && !append) setLoading(true);
-    else setLoadingMore(true);
+  const fetchNews = useCallback(async () => {
+    setLoading(true);
     setError(null);
 
     try {
       const params: Parameters<typeof platformService.getNews>[0] = {
-        page: pageNum,
+        page: 1,
         page_size: PAGE_SIZE,
         is_published: true,
       };
@@ -113,36 +102,25 @@ const News: React.FC = () => {
       const result = await platformService.getNews(params);
       const items = result.results;
 
-      setTotal(result.count);
-      setNews(prev => append ? [...prev, ...items] : items);
-
-      // Featured: first featured item from page 1 only
-      if (pageNum === 1) {
-        setFeaturedNews(items.find(i => i.featured) ?? null);
-      }
-    } catch {
-      setError('No se pudieron cargar las noticias. Intente nuevamente.');
+      setNews(items);
+      setFeaturedNews(items.find(i => i.featured) ?? null);
+    } catch (err) {
+      console.error('Error cargando noticias:', err);
+      const apiMsg = (err as { response?: { data?: { detail?: string } }; message?: string });
+      const detail = apiMsg?.response?.data?.detail;
+      setError(detail || apiMsg?.message || 'No se pudieron cargar las noticias. Intente nuevamente.');
     } finally {
       setLoading(false);
-      setLoadingMore(false);
     }
   }, [debouncedSearch, selectedCategory]);
 
   useEffect(() => {
-    fetchNews(1, false);
+    fetchNews();
   }, [fetchNews]);
-
-  const handleLoadMore = () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    fetchNews(nextPage, true);
-  };
 
   const regularNews = featuredNews
     ? news.filter(item => item.id !== featuredNews.id)
     : news;
-
-  const hasMore = news.length < total;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -219,7 +197,10 @@ const News: React.FC = () => {
             {/* Featured News */}
             {featuredNews && (
               <section className="mb-8">
-                <div className="relative rounded-2xl overflow-hidden shadow-lg group">
+                <Link
+                  to={`/news/${featuredNews.slug}`}
+                  className="relative rounded-2xl overflow-hidden shadow-lg group block"
+                >
                   {featuredNews.header_image ? (
                     <img
                       src={featuredNews.header_image}
@@ -245,7 +226,7 @@ const News: React.FC = () => {
                       <ArrowRight size={16} />
                     </span>
                   </div>
-                </div>
+                </Link>
               </section>
             )}
 
@@ -254,7 +235,7 @@ const News: React.FC = () => {
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold text-primary-navy">Últimas Noticias</h3>
                 <span className="text-xs text-gray-400 font-medium">
-                  {total > 0 ? `${total} resultado${total !== 1 ? 's' : ''}` : 'Sin resultados'}
+                  {news.length > 0 ? `${news.length} resultado${news.length !== 1 ? 's' : ''}` : 'Sin resultados'}
                 </span>
               </div>
 
@@ -267,8 +248,9 @@ const News: React.FC = () => {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {regularNews.map((item) => (
-                    <article
+                    <Link
                       key={item.id}
+                      to={`/news/${item.slug}`}
                       className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col"
                     >
                       {item.header_image ? (
@@ -295,37 +277,17 @@ const News: React.FC = () => {
                             <Clock size={12} />
                             <span>{formatDate(item.publication_date ?? item.created_at)}</span>
                           </div>
-                          <span className="text-sm font-bold text-primary-navy hover:text-secondary-lime transition-colors flex items-center gap-1 cursor-pointer">
+                          <span className="text-sm font-bold text-primary-navy group-hover:text-secondary-lime transition-colors flex items-center gap-1">
                             Leer más
                             <ArrowRight size={14} />
                           </span>
                         </div>
                       </div>
-                    </article>
+                    </Link>
                   ))}
                 </div>
               )}
             </section>
-
-            {/* Load More */}
-            {hasMore && (
-              <div className="mt-8 flex justify-center">
-                <button
-                  onClick={handleLoadMore}
-                  disabled={loadingMore}
-                  className="px-8 py-3 bg-white border border-gray-200 text-primary-navy font-bold rounded-xl shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-60 flex items-center gap-2"
-                >
-                  {loadingMore ? (
-                    <>
-                      <Loader2 size={16} className="animate-spin" />
-                      Cargando...
-                    </>
-                  ) : (
-                    'Cargar más noticias'
-                  )}
-                </button>
-              </div>
-            )}
           </>
         )}
       </main>

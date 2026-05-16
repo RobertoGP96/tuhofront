@@ -15,10 +15,14 @@ import AdminProcedures from './pages/AdminProcedures'
 import AdminInternalProcedures from './pages/AdminInternalProcedures'
 import MyProcedures from './pages/MyProcedures'
 import ProcedureDetail from './pages/ProcedureDetail'
+import SecretaryDocProcedureDetail from './pages/SecretaryDocProcedureDetail'
+import InternalProcedureDetail from './pages/InternalProcedureDetail'
+import ReservationDetail from './pages/locals/ReservationDetail'
 import Contact from './pages/Contact'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import News from './pages/News'
+import NewsDetail from './pages/NewsDetail'
 import Register from './pages/Register'
 import { AccommodationProcedurePage } from './pages/procedures/internal/AccommodationProcedurePage'
 import { FeedingProcedurePage } from './pages/procedures/internal/FeedingProcedurePage'
@@ -63,13 +67,14 @@ function App() {
 
   return (
     <Router>
-      <MainLayout role={userRole ?? 'EXTERNO'}>
+      <MainLayout role={userRole ?? 'USUARIO'}>
         <Routes>
           {/* Public/User Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" replace />} />
           <Route path="/register" element={!isAuthenticated ? <Register /> : <Navigate to="/" replace />} />
           <Route path="/news" element={<News />} />
+          <Route path="/news/:slug" element={<NewsDetail />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/confirm" element={<ResetPasswordConfirm />} />
           {/* Nuevas rutas públicas: tracking, verificación de documentos, activación */}
@@ -82,7 +87,7 @@ function App() {
           <Route
             path="/dashboard"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['USUARIO', 'GESTOR_INTERNO', 'GESTOR_SECRETARIA', 'GESTOR_RESERVAS', 'ADMIN']}>
                 <UserDashboard />
               </RoleGuard>
             }
@@ -92,7 +97,7 @@ function App() {
           <Route
             path="/procedures/internals"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['USUARIO', 'GESTOR_INTERNO', 'GESTOR_SECRETARIA', 'GESTOR_RESERVAS', 'ADMIN']}>
                 <MyInternalProcedures />
               </RoleGuard>
             }
@@ -102,7 +107,7 @@ function App() {
           <Route
             path="/procedures/:id"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['USUARIO', 'GESTOR_INTERNO', 'GESTOR_SECRETARIA', 'GESTOR_RESERVAS', 'ADMIN']}>
                 <ProcedureDetail />
               </RoleGuard>
             }
@@ -110,7 +115,7 @@ function App() {
           <Route
             path="/procedures"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['USUARIO', 'GESTOR_INTERNO', 'GESTOR_SECRETARIA', 'GESTOR_RESERVAS', 'ADMIN']}>
                 <MyProcedures />
               </RoleGuard>
             }
@@ -120,7 +125,7 @@ function App() {
           <Route
             path="/procedures/secretary/undergraduate/national"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['USUARIO', 'GESTOR_INTERNO', 'GESTOR_SECRETARIA', 'GESTOR_RESERVAS', 'ADMIN']}>
                 <UnderNatProcedure />
               </RoleGuard>
             }
@@ -128,7 +133,7 @@ function App() {
           <Route
             path="/procedures/secretary/undergraduate/international"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['USUARIO', 'GESTOR_INTERNO', 'GESTOR_SECRETARIA', 'GESTOR_RESERVAS', 'ADMIN']}>
                 <UnderInterProcedure />
               </RoleGuard>
             }
@@ -136,7 +141,7 @@ function App() {
           <Route
             path="/procedures/secretary/postgraduate/national"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['USUARIO', 'GESTOR_INTERNO', 'GESTOR_SECRETARIA', 'GESTOR_RESERVAS', 'ADMIN']}>
                 <PostNatProcedure />
               </RoleGuard>
             }
@@ -144,7 +149,7 @@ function App() {
           <Route
             path="/procedures/secretary/postgraduate/international"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['USUARIO', 'GESTOR_INTERNO', 'GESTOR_SECRETARIA', 'GESTOR_RESERVAS', 'ADMIN']}>
                 <PostInterProcedure />
               </RoleGuard>
             }
@@ -152,8 +157,29 @@ function App() {
           <Route
             path="/procedures/secretary/title-legalization"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['USUARIO', 'GESTOR_INTERNO', 'GESTOR_SECRETARIA', 'GESTOR_RESERVAS', 'ADMIN']}>
                 <TitleLegalization />
+              </RoleGuard>
+            }
+          />
+
+          {/* Secretary procedure detail (solicitante) — DEBE ir tras las rutas de creación
+              específicas de secretary para que ":id" no haga match con slugs. */}
+          <Route
+            path="/procedures/secretary/:id"
+            element={
+              <RoleGuard roles={['USUARIO', 'GESTOR_INTERNO', 'GESTOR_SECRETARIA', 'GESTOR_RESERVAS', 'ADMIN']}>
+                <SecretaryDocProcedureDetail />
+              </RoleGuard>
+            }
+          />
+
+          {/* Internal procedure detail (solicitante / gestor interno) */}
+          <Route
+            path="/procedures/internals/:type/:id"
+            element={
+              <RoleGuard roles={['USUARIO', 'GESTOR_INTERNO', 'GESTOR_SECRETARIA', 'GESTOR_RESERVAS', 'ADMIN']}>
+                <InternalProcedureDetail />
               </RoleGuard>
             }
           />
@@ -162,7 +188,7 @@ function App() {
           <Route
             path="/procedures/internal/feeding"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['USUARIO', 'GESTOR_INTERNO', 'GESTOR_SECRETARIA', 'GESTOR_RESERVAS', 'ADMIN']}>
                 <FeedingProcedurePage />
               </RoleGuard>
             }
@@ -170,7 +196,7 @@ function App() {
           <Route
             path="/procedures/internal/accommodation"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['USUARIO', 'GESTOR_INTERNO', 'GESTOR_SECRETARIA', 'GESTOR_RESERVAS', 'ADMIN']}>
                 <AccommodationProcedurePage />
               </RoleGuard>
             }
@@ -178,7 +204,7 @@ function App() {
           <Route
             path="/procedures/internal/transport"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['USUARIO', 'GESTOR_INTERNO', 'GESTOR_SECRETARIA', 'GESTOR_RESERVAS', 'ADMIN']}>
                 <TransportProcedurePage />
               </RoleGuard>
             }
@@ -186,7 +212,7 @@ function App() {
           <Route
             path="/procedures/internal/maintenance"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['USUARIO', 'GESTOR_INTERNO', 'GESTOR_SECRETARIA', 'GESTOR_RESERVAS', 'ADMIN']}>
                 <MaintenanceProcedurePage />
               </RoleGuard>
             }
@@ -197,7 +223,7 @@ function App() {
           <Route
             path="/locals/reserve"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['USUARIO', 'GESTOR_INTERNO', 'GESTOR_SECRETARIA', 'GESTOR_RESERVAS', 'ADMIN']}>
                 <ReservationForm />
               </RoleGuard>
             }
@@ -205,8 +231,17 @@ function App() {
           <Route
             path="/locals/my-reservations"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['USUARIO', 'GESTOR_INTERNO', 'GESTOR_SECRETARIA', 'GESTOR_RESERVAS', 'ADMIN']}>
                 <MyReservations />
+              </RoleGuard>
+            }
+          />
+          {/* Reservation detail (solicitante / gestor reservas) — debe ir antes de /locals/:id */}
+          <Route
+            path="/locals/my-reservations/:id"
+            element={
+              <RoleGuard roles={['USUARIO', 'GESTOR_INTERNO', 'GESTOR_SECRETARIA', 'GESTOR_RESERVAS', 'ADMIN']}>
+                <ReservationDetail />
               </RoleGuard>
             }
           />
@@ -216,7 +251,7 @@ function App() {
           <Route
             path="/profile"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['USUARIO', 'GESTOR_INTERNO', 'GESTOR_SECRETARIA', 'GESTOR_RESERVAS', 'ADMIN']}>
                 <Profile />
               </RoleGuard>
             }
@@ -226,7 +261,7 @@ function App() {
           <Route
             path="/notifications"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['USUARIO', 'GESTOR_INTERNO', 'GESTOR_SECRETARIA', 'GESTOR_RESERVAS', 'ADMIN']}>
                 <Notifications />
               </RoleGuard>
             }
@@ -236,17 +271,17 @@ function App() {
           <Route
             path="/reports"
             element={
-              <RoleGuard roles={['ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS']}>
+              <RoleGuard roles={['USUARIO', 'GESTOR_INTERNO', 'GESTOR_SECRETARIA', 'GESTOR_RESERVAS', 'ADMIN']}>
                 <Reports />
               </RoleGuard>
             }
           />
 
-          {/* Secretary Management Panel — SECRETARIA_DOCENTE and ADMIN only */}
+          {/* Secretary Management Panel — GESTOR_SECRETARIA y ADMIN */}
           <Route
             path="/secretary/*"
             element={
-              <RoleGuard roles={['SECRETARIA_DOCENTE', 'ADMIN']}>
+              <RoleGuard roles={['GESTOR_SECRETARIA', 'ADMIN']}>
                 <Routes>
                   <Route index element={<SecretaryDashboard />} />
                   <Route path="procedures" element={<SecretaryProcedures />} />
@@ -289,13 +324,13 @@ function App() {
             }
           />
 
-          {/* Gestor de Trámites */}
+          {/* Gestor de Secretaría Docente */}
           <Route
-            path="/gestor-tramites/*"
+            path="/gestor-secretaria/*"
             element={
-              <RoleGuard roles={['GESTOR_TRAMITES', 'ADMIN']}>
+              <RoleGuard roles={['GESTOR_SECRETARIA', 'ADMIN']}>
                 <Routes>
-                  <Route index element={<AdminProcedures />} />
+                  <Route index element={<SecretaryProcedures />} />
                   <Route path="settings" element={<AdminSettings />} />
                 </Routes>
               </RoleGuard>

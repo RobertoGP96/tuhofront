@@ -79,12 +79,12 @@ function buildReports(auth: ReturnType<typeof useAuth>): ReportCardDef[] {
     }
   }
 
-  // Trámites externos (Admin + GESTOR_TRAMITES)
-  if (auth.isAdmin || auth.isGestorTramites) {
+  // Trámites de Secretaría Docente (Admin + GESTOR_SECRETARIA)
+  if (auth.isAdmin || auth.isGestorSecretaria) {
     list.push({
       kind: 'procedures',
-      title: 'Trámites',
-      description: 'Trámites externos consolidados: estados, tendencia y detalle.',
+      title: 'Trámites Secretaría',
+      description: 'Trámites de Secretaría Docente: estados, tendencia y detalle.',
       icon: FileText,
       accent: 'bg-cyan-50 text-cyan-600',
       handler: (f) => reportsService.downloadProcedures(f),

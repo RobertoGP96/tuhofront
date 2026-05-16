@@ -49,9 +49,8 @@ export const MobileNav: React.FC = () => {
     isAuthenticated,
     isAdmin,
     isGestorInterno,
-    isGestorTramites,
+    isGestorSecretaria,
     isGestorReservas,
-    canManageSecretary,
   } = useAuth();
 
   if (!isAuthenticated) {
@@ -88,11 +87,11 @@ export const MobileNav: React.FC = () => {
     );
   }
 
-  if (isGestorTramites) {
+  if (isGestorSecretaria) {
     return (
       <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-gray-100 flex items-center justify-around px-2 z-50">
         <MobileNavItem label="Inicio" icon={Home} to="/" end />
-        <MobileNavItem label="Trámites" icon={FileText} to="/gestor-tramites" />
+        <MobileNavItem label="Secretaría" icon={BookOpen} to="/secretary" />
         <MobileNavItem label="Reportes" icon={FileBarChart} to="/reports" />
         <MobileNavItem label="Perfil" icon={User} to="/profile" />
       </div>
@@ -105,17 +104,6 @@ export const MobileNav: React.FC = () => {
         <MobileNavItem label="Inicio" icon={Home} to="/" end />
         <MobileNavItem label="Reservas" icon={Building2} to="/gestor-reservas" />
         <MobileNavItem label="Reportes" icon={FileBarChart} to="/reports" />
-        <MobileNavItem label="Perfil" icon={User} to="/profile" />
-      </div>
-    );
-  }
-
-  if (canManageSecretary) {
-    return (
-      <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-gray-100 flex items-center justify-around px-2 z-50">
-        <MobileNavItem label="Inicio" icon={Home} to="/" end />
-        <MobileNavItem label="Trámites" icon={FileText} to="/procedures" />
-        <MobileNavItem label="Secretaría" icon={BookOpen} to="/secretary" />
         <MobileNavItem label="Perfil" icon={User} to="/profile" />
       </div>
     );

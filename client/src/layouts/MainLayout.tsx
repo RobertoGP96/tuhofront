@@ -19,7 +19,7 @@ import type { UserRole } from '../types/auth.types';
 
 interface MainLayoutProps {
   children: React.ReactNode;
-  role?: UserRole | 'EXTERNO';
+  role?: UserRole;
 }
 
 function SidebarSection({ title }: { title: string }) {
@@ -59,18 +59,6 @@ function AdminSidebar() {
   );
 }
 
-function SecretarySidebar() {
-  return (
-    <>
-      <SidebarSection title="Secretaría Docente" />
-      <NavItem label="Dashboard" icon={LayoutDashboard} to="/secretary" />
-      <NavItem label="Trámites" icon={FileCheck} to="/secretary/procedures" />
-      <SidebarSection title="Reportes" />
-      <NavItem label="Reportes PDF" icon={FileBarChart} to="/reports" />
-    </>
-  );
-}
-
 function GestorInternoSidebar() {
   return (
     <>
@@ -84,15 +72,16 @@ function GestorInternoSidebar() {
   );
 }
 
-function GestorTramitesSidebar() {
+function GestorSecretariaSidebar() {
   return (
     <>
-      <SidebarSection title="Gestión de Trámites" />
-      <NavItem label="Panel de Trámites" icon={LayoutDashboard} to="/gestor-tramites" />
+      <SidebarSection title="Secretaría Docente" />
+      <NavItem label="Dashboard" icon={LayoutDashboard} to="/secretary" />
+      <NavItem label="Trámites" icon={FileCheck} to="/secretary/procedures" />
       <SidebarSection title="Reportes" />
       <NavItem label="Reportes PDF" icon={FileBarChart} to="/reports" />
       <SidebarSection title="Configuración" />
-      <NavItem label="Tipos de Trámites" icon={Settings} to="/gestor-tramites/settings" />
+      <NavItem label="Tipos de Trámites" icon={Settings} to="/gestor-secretaria/settings" />
     </>
   );
 }
@@ -108,17 +97,16 @@ function GestorReservasSidebar() {
   );
 }
 
-const SIDEBAR_ROLES: UserRole[] = ['ADMIN', 'SECRETARIA_DOCENTE', 'GESTOR_INTERNO', 'GESTOR_TRAMITES', 'GESTOR_RESERVAS'];
+const SIDEBAR_ROLES: UserRole[] = ['ADMIN', 'GESTOR_INTERNO', 'GESTOR_SECRETARIA', 'GESTOR_RESERVAS'];
 
 const ROLE_LABELS: Partial<Record<UserRole, string>> = {
   ADMIN: 'Admin',
-  SECRETARIA_DOCENTE: 'Secretaría',
   GESTOR_INTERNO: 'Gestión Interna',
-  GESTOR_TRAMITES: 'Gestión Trámites',
+  GESTOR_SECRETARIA: 'Gestión Secretaría',
   GESTOR_RESERVAS: 'Gestión Reservas',
 };
 
-export const MainLayout: React.FC<MainLayoutProps> = ({ children, role = 'EXTERNO' }) => {
+export const MainLayout: React.FC<MainLayoutProps> = ({ children, role = 'USUARIO' }) => {
   const hasSidebar = SIDEBAR_ROLES.includes(role as UserRole);
   const location = useLocation();
 
@@ -139,9 +127,8 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children, role = 'EXTERN
         {hasSidebar && (
           <aside className="hidden md:flex flex-col w-64 shrink-0 border-r border-gray-100 p-3 gap-1 bg-gray-50/40 overflow-y-auto">
             {role === 'ADMIN' && <AdminSidebar />}
-            {role === 'SECRETARIA_DOCENTE' && <SecretarySidebar />}
             {role === 'GESTOR_INTERNO' && <GestorInternoSidebar />}
-            {role === 'GESTOR_TRAMITES' && <GestorTramitesSidebar />}
+            {role === 'GESTOR_SECRETARIA' && <GestorSecretariaSidebar />}
             {role === 'GESTOR_RESERVAS' && <GestorReservasSidebar />}
           </aside>
         )}

@@ -4,10 +4,10 @@ Endpoints de reportes PDF para todos los perfiles.
 Rutas (montadas bajo /api/v1/reports/):
     GET overview.pdf                   — Admin only
     GET internal/<domain>.pdf          — Admin, GESTOR_INTERNO
-    GET procedures.pdf                 — Admin, GESTOR_TRAMITES
+    GET procedures.pdf                 — Admin, GESTOR_SECRETARIA
     GET reservations.pdf               — Admin, GESTOR_RESERVAS
-    GET secretary.pdf                  — Admin, SECRETARIA_DOCENTE
-    GET me.pdf                         — Usuario "personal" autenticado (su propio historial)
+    GET secretary.pdf                  — Admin, GESTOR_SECRETARIA
+    GET me.pdf                         — Usuario autenticado (su propio historial)
 
 Todos aceptan: date_from, date_to (YYYY-MM-DD), state, type.
 """
@@ -59,23 +59,24 @@ class IsAdminOrInternalManager(_HasRole):
     allowed_roles = ('ADMIN', 'GESTOR_INTERNO')
 
 
-class IsAdminOrTramitesManager(_HasRole):
-    allowed_roles = ('ADMIN', 'GESTOR_TRAMITES')
+class IsAdminOrSecretariaManager(_HasRole):
+    allowed_roles = ('ADMIN', 'GESTOR_SECRETARIA')
 
 
 class IsAdminOrReservationsManager(_HasRole):
     allowed_roles = ('ADMIN', 'GESTOR_RESERVAS')
 
 
-class IsAdminOrSecretary(_HasRole):
-    allowed_roles = ('ADMIN', 'SECRETARIA_DOCENTE')
+# Alias retro-compatibles para no romper imports antiguos.
+IsAdminOrTramitesManager = IsAdminOrSecretariaManager
+IsAdminOrSecretary = IsAdminOrSecretariaManager
 
 
-_PERSONAL_USER_ROLES = ('ESTUDIANTE', 'PROFESOR', 'TRABAJADOR', 'EXTERNO', 'SECRETARIA_DOCENTE', 'ADMIN')
+_PERSONAL_USER_ROLES = ('USUARIO', 'ADMIN')
 
 
 class IsPersonalUserOrAdmin(permissions.BasePermission):
-    """Mi historial: usuarios que sí inician trámites + admin. Los gestores no aplican."""
+    """Mi historial: usuarios finales + admin. Los gestores no aplican."""
 
     def has_permission(self, request, view):
         u = request.user
@@ -154,12 +155,13 @@ def _state_pie(qs: QuerySet, title: str) -> str:
 
 
 def _by_month_bar(qs: QuerySet, title: str, color: str = BRAND_NAVY) -> str:
-    rows = list(
+    all_rows = list(
         qs.annotate(month=TruncMonth('created_at'))
         .values('month')
         .annotate(total=Count('id'))
-        .order_by('month')[-12:]
+        .order_by('month')
     )
+    rows = all_rows[-12:]
     labels = [r['month'].strftime('%Y-%m') if r['month'] else '—' for r in rows]
     values = [r['total'] for r in rows]
     return build_bar_chart_html(labels, values, title=title, color=color)
@@ -342,7 +344,7 @@ def internal_domain_pdf(request, domain: str):
 
 
 # ----------------------------------------------------------------
-# 2b) External Procedures PDF (GESTOR_TRAMITES)
+# 2b) External Procedures PDF (GESTOR_SECRETARIA)
 # ----------------------------------------------------------------
 
 @api_view(['GET'])

@@ -4,7 +4,6 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify
 from django.db.models import Q
-from django.urls import reverse
 
 from apps.platform.enums import NewsCategoryEnum
 from apps.platform.validators import validate_file_size
@@ -224,8 +223,7 @@ class News(TimeStampedModel, StatusMixin):
         return f"{status}{featured} {self.title}"
 
     def get_absolute_url(self):
-        """Returns the URL for this news item"""
-        return reverse("news:detail", kwargs={"slug": self.slug})
+        return f"/news/{self.slug}/"
 
     @property
     def is_publicly_visible(self):

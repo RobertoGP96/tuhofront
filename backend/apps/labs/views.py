@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 from apps.internal.permissions import is_reservas_staff
 
 # Gestores de otros módulos no deben ver/operar el módulo de reservas.
-_FOREIGN_MODULE_ROLES = ('GESTOR_INTERNO', 'GESTOR_TRAMITES')
+_FOREIGN_MODULE_ROLES = ('GESTOR_INTERNO', 'GESTOR_SECRETARIA')
 
 
 class CanManageLocalsRBAC(BasePermission):
@@ -644,6 +644,54 @@ class LocalReservationViewSet(viewsets.ModelViewSet):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    @action(detail=True, methods=['post'], permission_classes=[CanApproveReservations])
+    def start(self, request, pk=None):
+        """
+        POST /api/reservations/{id}/start/
+        Marca una reserva aprobada como 'en curso' (sólo staff).
+        """
+        reservation = self.get_object()
+        try:
+            reservation.start()
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        ReservationHistory.objects.create(
+            reservation=reservation,
+            user=request.user,
+            action='STARTED',
+            details={'message': 'Reserva marcada en curso'},
+        )
+
+        return Response(
+            ReservationDetailSerializer(reservation).data,
+            status=status.HTTP_200_OK,
+        )
+
+    @action(detail=True, methods=['post'], permission_classes=[CanApproveReservations])
+    def finish(self, request, pk=None):
+        """
+        POST /api/reservations/{id}/finish/
+        Marca una reserva en curso como finalizada (sólo staff).
+        """
+        reservation = self.get_object()
+        try:
+            reservation.finish()
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        ReservationHistory.objects.create(
+            reservation=reservation,
+            user=request.user,
+            action='FINISHED',
+            details={'message': 'Reserva finalizada'},
+        )
+
+        return Response(
+            ReservationDetailSerializer(reservation).data,
+            status=status.HTTP_200_OK,
+        )
+
     @action(detail=True, methods=['get'])
     def history(self, request, pk=None):
         """

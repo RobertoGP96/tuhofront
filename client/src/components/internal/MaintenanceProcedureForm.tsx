@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Textarea } from '../ui/textarea';
 
 interface MaintenanceProcedureFormProps {
-  onSuccess?: () => void;
+  onSuccess?: (createdId: number) => void;
   onCancel?: () => void;
 }
 
@@ -126,7 +126,7 @@ export function MaintenanceProcedureForm({ onSuccess, onCancel }: MaintenancePro
       setIsSubmitting(true);
 
       const formDataToSend = createMaintenanceFormData(formData);
-      await maintenanceService.create(formDataToSend);
+      const created = await maintenanceService.create(formDataToSend);
 
       toast.success('Solicitud de mantenimiento creada exitosamente');
 
@@ -140,7 +140,7 @@ export function MaintenanceProcedureForm({ onSuccess, onCancel }: MaintenancePro
       setImagePreview(null);
       setErrors({});
 
-      onSuccess?.();
+      onSuccess?.(created.id);
     } catch (error) {
       console.error('Error creating maintenance procedure:', error);
       toast.error('No se pudo crear la solicitud. Intente nuevamente');

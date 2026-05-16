@@ -11,7 +11,7 @@ import React, { useState } from 'react';
 import { toast } from 'sonner';
 
 interface FeedingProcedureFormProps {
-  onSuccess?: () => void;
+  onSuccess?: (createdId: number) => void;
   onCancel?: () => void;
 }
 
@@ -109,7 +109,7 @@ export function FeedingProcedureForm({ onSuccess, onCancel }: FeedingProcedureFo
         feeding_days: validFeedingDays
       };
 
-      await feedingService.create(procedureData);
+      const created = await feedingService.create(procedureData);
 
       toast.success('Solicitud de alimentación creada exitosamente');
 
@@ -123,8 +123,8 @@ export function FeedingProcedureForm({ onSuccess, onCancel }: FeedingProcedureFo
       });
       setFeedingDays([{ date: '', breakfast: 0, lunch: 0, dinner: 0, snack: 0 }]);
       setErrors({});
-      
-      onSuccess?.();
+
+      onSuccess?.(created.id);
     } catch (error) {
       console.error('Error creating feeding procedure:', error);
       toast.error('No se pudo crear la solicitud. Intente nuevamente');

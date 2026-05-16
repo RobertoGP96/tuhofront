@@ -23,7 +23,7 @@ export function LdapGroupRoleMapEditor({
   disabled,
 }: LdapGroupRoleMapEditorProps) {
   const [newDn, setNewDn] = useState('');
-  const [newRole, setNewRole] = useState<UserRole>('PROFESOR');
+  const [newRole, setNewRole] = useState<UserRole>('USUARIO');
 
   const entries = Object.entries(value);
 

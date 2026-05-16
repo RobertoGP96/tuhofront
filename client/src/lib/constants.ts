@@ -43,12 +43,11 @@ export const VALID_STATE_TRANSITIONS: Partial<Record<string, string[]>> = {
 
 // User type display labels
 export const USER_TYPE_LABELS: Record<string, string> = {
+  USUARIO: 'Usuario',
+  GESTOR_INTERNO: 'Gestor de Trámites Internos',
+  GESTOR_SECRETARIA: 'Gestor de Secretaría Docente',
+  GESTOR_RESERVAS: 'Gestor de Reservas',
   ADMIN: 'Administrador',
-  SECRETARIA_DOCENTE: 'Secretaría Docente',
-  PROFESOR: 'Profesor',
-  TRABAJADOR: 'Trabajador',
-  ESTUDIANTE: 'Estudiante',
-  EXTERNO: 'Externo',
 };
 
 /** @deprecated usar `VALID_STATE_TRANSITIONS`. */

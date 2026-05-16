@@ -1,5 +1,5 @@
 
-export type UserRole = 'ADMIN' | 'SECRETARIA_DOCENTE' | 'PROFESOR' | 'TRABAJADOR' | 'ESTUDIANTE' | 'EXTERNO' | 'GESTOR_INTERNO' | 'GESTOR_TRAMITES' | 'GESTOR_RESERVAS';
+export type UserRole = 'USUARIO' | 'GESTOR_INTERNO' | 'GESTOR_SECRETARIA' | 'GESTOR_RESERVAS' | 'ADMIN';
 
 export type UserType = UserRole;
 
@@ -39,13 +39,9 @@ export interface RegisterData {
 }
 
 export const USER_TYPE_OPTIONS: { value: UserType; label: string }[] = [
-  { value: 'EXTERNO', label: 'Externo' },
-  { value: 'ESTUDIANTE', label: 'Estudiante' },
-  { value: 'PROFESOR', label: 'Profesor' },
-  { value: 'TRABAJADOR', label: 'Trabajador' },
-  { value: 'SECRETARIA_DOCENTE', label: 'Secretaría Docente' },
+  { value: 'USUARIO', label: 'Usuario' },
   { value: 'GESTOR_INTERNO', label: 'Gestor de Trámites Internos' },
-  { value: 'GESTOR_TRAMITES', label: 'Gestor de Trámites' },
+  { value: 'GESTOR_SECRETARIA', label: 'Gestor de Secretaría Docente' },
   { value: 'GESTOR_RESERVAS', label: 'Gestor de Reservas' },
   { value: 'ADMIN', label: 'Administrador' },
 ];

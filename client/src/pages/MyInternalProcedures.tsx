@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Link } from 'react-router-dom';
+import { Eye } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { feedingService, accommodationService, transportService, maintenanceService } from '@/services/internal.service';
 import type {
   FeedingProcedure,
@@ -81,13 +84,14 @@ function FeedingUserTab() {
             <TableHead>Cantidad</TableHead>
             <TableHead>Estado</TableHead>
             <TableHead>Fecha</TableHead>
+            <TableHead className="text-right">Acciones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {isLoading ? (
-            <TableSkeletonRows cols={4} />
+            <TableSkeletonRows cols={5} />
           ) : paged.length === 0 ? (
-            <EmptyRow colSpan={5} message="No tienes solicitudes de alimentación." />
+            <EmptyRow colSpan={6} message="No tienes solicitudes de alimentación." />
           ) : (
             paged.map((item) => (
               <TableRow key={item.id}>
@@ -98,6 +102,13 @@ function FeedingUserTab() {
                 <TableCell>{item.amount}</TableCell>
                 <TableCell><StateBadge state={item.state} /></TableCell>
                 <TableCell className="text-sm text-gray-400">{formatDate(item.created_at)}</TableCell>
+                <TableCell className="text-right">
+                  <Button asChild variant="ghost" size="sm" className="gap-1.5">
+                    <Link to={`/procedures/internals/feeding/${item.id}`}>
+                      <Eye size={14} /> Ver
+                    </Link>
+                  </Button>
+                </TableCell>
               </TableRow>
             ))
           )}
@@ -157,13 +168,14 @@ function AccommodationUserTab() {
             <TableHead>Huéspedes</TableHead>
             <TableHead>Estado</TableHead>
             <TableHead>Fecha</TableHead>
+            <TableHead className="text-right">Acciones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {isLoading ? (
-            <TableSkeletonRows cols={4} />
+            <TableSkeletonRows cols={5} />
           ) : paged.length === 0 ? (
-            <EmptyRow colSpan={5} message="No tienes solicitudes de hospedaje." />
+            <EmptyRow colSpan={6} message="No tienes solicitudes de hospedaje." />
           ) : (
             paged.map((item) => (
               <TableRow key={item.id}>
@@ -174,6 +186,13 @@ function AccommodationUserTab() {
                 <TableCell>{Array.isArray(item.guests) ? item.guests.length : '—'}</TableCell>
                 <TableCell><StateBadge state={item.state} /></TableCell>
                 <TableCell className="text-sm text-gray-400">{formatDate(item.created_at)}</TableCell>
+                <TableCell className="text-right">
+                  <Button asChild variant="ghost" size="sm" className="gap-1.5">
+                    <Link to={`/procedures/internals/accommodation/${item.id}`}>
+                      <Eye size={14} /> Ver
+                    </Link>
+                  </Button>
+                </TableCell>
               </TableRow>
             ))
           )}
@@ -234,13 +253,14 @@ function TransportUserTab() {
             <TableHead>I/V</TableHead>
             <TableHead>Estado</TableHead>
             <TableHead>Fecha</TableHead>
+            <TableHead className="text-right">Acciones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {isLoading ? (
-            <TableSkeletonRows cols={5} />
+            <TableSkeletonRows cols={6} />
           ) : paged.length === 0 ? (
-            <EmptyRow colSpan={6} message="No tienes solicitudes de transporte." />
+            <EmptyRow colSpan={7} message="No tienes solicitudes de transporte." />
           ) : (
             paged.map((item) => (
               <TableRow key={item.id}>
@@ -252,6 +272,13 @@ function TransportUserTab() {
                 <TableCell>{item.round_trip ? 'Sí' : 'No'}</TableCell>
                 <TableCell><StateBadge state={item.state} /></TableCell>
                 <TableCell className="text-sm text-gray-400">{formatDate(item.created_at)}</TableCell>
+                <TableCell className="text-right">
+                  <Button asChild variant="ghost" size="sm" className="gap-1.5">
+                    <Link to={`/procedures/internals/transport/${item.id}`}>
+                      <Eye size={14} /> Ver
+                    </Link>
+                  </Button>
+                </TableCell>
               </TableRow>
             ))
           )}
@@ -321,13 +348,14 @@ function MaintenanceUserTab() {
             <TableHead>Descripción</TableHead>
             <TableHead>Estado</TableHead>
             <TableHead>Fecha</TableHead>
+            <TableHead className="text-right">Acciones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {isLoading ? (
-            <TableSkeletonRows cols={4} />
+            <TableSkeletonRows cols={5} />
           ) : paged.length === 0 ? (
-            <EmptyRow colSpan={5} message="No tienes solicitudes de mantenimiento." />
+            <EmptyRow colSpan={6} message="No tienes solicitudes de mantenimiento." />
           ) : (
             paged.map((item) => (
               <TableRow key={item.id}>
@@ -338,6 +366,13 @@ function MaintenanceUserTab() {
                 </TableCell>
                 <TableCell><StateBadge state={item.state} /></TableCell>
                 <TableCell className="text-sm text-gray-400">{formatDate(item.created_at)}</TableCell>
+                <TableCell className="text-right">
+                  <Button asChild variant="ghost" size="sm" className="gap-1.5">
+                    <Link to={`/procedures/internals/maintenance/${item.id}`}>
+                      <Eye size={14} /> Ver
+                    </Link>
+                  </Button>
+                </TableCell>
               </TableRow>
             ))
           )}

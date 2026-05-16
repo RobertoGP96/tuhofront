@@ -24,7 +24,9 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APIClient
 
+from apps.internal.models import FeedingProcedure
 from apps.platform.models import User
+from apps.secretary_doc.models import SecretaryDocProcedure
 
 
 class HealthSmokeTest(TestCase):
@@ -60,7 +62,7 @@ class AuthSmokeTest(TestCase):
             email='smoke_student@uho.edu.cu',
             first_name='Smoke',
             last_name='Student',
-            user_type='ESTUDIANTE',
+            user_type='USUARIO',
             id_card='02050512345',
             is_active=True,
             email_verified=True,
@@ -151,7 +153,7 @@ class ActivationTokenExpirationTest(TestCase):
             email='activate@uho.edu.cu',
             first_name='To',
             last_name='Activate',
-            user_type='ESTUDIANTE',
+            user_type='USUARIO',
             id_card='02050512346',
             is_active=False,
             email_verified=False,
@@ -190,6 +192,142 @@ class ActivationTokenExpirationTest(TestCase):
         self.assertTrue(self.user.is_active)
         self.assertTrue(self.user.email_verified)
         self.assertIsNone(self.user.activation_token)
+
+
+class ProcedureModuleIsolationTest(TestCase):
+    """Cada gestor solo debe ver trámites del módulo que le corresponde.
+
+    Antes del fix, ``ProcedureViewSet`` usaba ``select_subclasses()`` sin
+    restringir a una subclase, así que GESTOR_SECRETARIA recibía también los
+    trámites internos (alimentación/hospedaje/transporte/mantenimiento), y
+    GESTOR_INTERNO/RESERVAS no veían nada.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.solicitante = User(
+            username='iso_solicitante',
+            email='iso_solicitante@uho.edu.cu',
+            first_name='Iso',
+            last_name='Solicitante',
+            user_type='USUARIO',
+            id_card='95010112345',
+            is_active=True,
+            email_verified=True,
+        )
+        cls.solicitante.set_password('Demo12345')
+        cls.solicitante.save()
+
+        cls.gestor_interno = User(
+            username='iso_gestor_int',
+            email='iso_gestor_int@uho.edu.cu',
+            user_type='GESTOR_INTERNO',
+            id_card='95020212345',
+            is_active=True,
+            email_verified=True,
+        )
+        cls.gestor_interno.set_password('Demo12345')
+        cls.gestor_interno.save()
+
+        cls.gestor_secretaria = User(
+            username='iso_gestor_sec',
+            email='iso_gestor_sec@uho.edu.cu',
+            user_type='GESTOR_SECRETARIA',
+            id_card='95030312345',
+            is_active=True,
+            email_verified=True,
+        )
+        cls.gestor_secretaria.set_password('Demo12345')
+        cls.gestor_secretaria.save()
+
+        cls.gestor_reservas = User(
+            username='iso_gestor_res',
+            email='iso_gestor_res@uho.edu.cu',
+            user_type='GESTOR_RESERVAS',
+            id_card='95040412345',
+            is_active=True,
+            email_verified=True,
+        )
+        cls.gestor_reservas.set_password('Demo12345')
+        cls.gestor_reservas.save()
+
+        cls.admin = User(
+            username='iso_admin',
+            email='iso_admin@uho.edu.cu',
+            user_type='ADMIN',
+            id_card='95050512345',
+            is_active=True,
+            email_verified=True,
+            is_staff=True,
+            is_superuser=True,
+        )
+        cls.admin.set_password('Admin12345')
+        cls.admin.save()
+
+        today = timezone.now().date()
+        cls.feeding = FeedingProcedure.objects.create(
+            user=cls.solicitante,
+            feeding_type='RESTAURANT',
+            start_day=today + timedelta(days=1),
+            end_day=today + timedelta(days=2),
+            description='Almuerzo de prueba',
+            amount=5,
+        )
+        cls.secretary = SecretaryDocProcedure.objects.create(
+            user=cls.solicitante,
+            study_type='PREGRADO',
+            visibility_type='NACIONAL',
+            career='Ingeniería',
+            year='5',
+            academic_program='Ingeniería Informática',
+            document_type='Certificación',
+            interest='ESTATAL',
+            full_name='Iso Solicitante',
+            id_card='95010112345',
+            email='iso_solicitante@uho.edu.cu',
+            phone='52345678',
+            created_by=cls.solicitante,
+        )
+
+    def _list_ids(self, user):
+        client = APIClient()
+        client.force_authenticate(user)
+        resp = client.get('/api/v1/procedures/')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        return {item['id'] for item in resp.json()['results']}
+
+    def test_gestor_secretaria_only_sees_secretary_procedures(self):
+        ids = self._list_ids(self.gestor_secretaria)
+        self.assertIn(str(self.secretary.id), ids)
+        self.assertNotIn(str(self.feeding.id), ids)
+
+    def test_gestor_interno_only_sees_internal_procedures(self):
+        ids = self._list_ids(self.gestor_interno)
+        self.assertIn(str(self.feeding.id), ids)
+        self.assertNotIn(str(self.secretary.id), ids)
+
+    def test_gestor_reservas_sees_no_procedures(self):
+        ids = self._list_ids(self.gestor_reservas)
+        self.assertEqual(ids, set())
+
+    def test_admin_sees_all_procedures(self):
+        ids = self._list_ids(self.admin)
+        self.assertIn(str(self.feeding.id), ids)
+        self.assertIn(str(self.secretary.id), ids)
+
+    def test_usuario_only_sees_own_procedures(self):
+        ids = self._list_ids(self.solicitante)
+        self.assertIn(str(self.feeding.id), ids)
+        self.assertIn(str(self.secretary.id), ids)
+
+    def test_stats_scoped_to_module_for_gestor_secretaria(self):
+        client = APIClient()
+        client.force_authenticate(self.gestor_secretaria)
+        resp = client.get('/api/v1/procedures/stats/')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        # GESTOR_SECRETARIA solo cuenta el trámite de secretaría (1), no el
+        # de alimentación.
+        self.assertEqual(resp.json()['total'], 1)
 
 
 class PublicContactSmokeTest(TestCase):

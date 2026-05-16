@@ -65,8 +65,7 @@ class NewsDetailSerializer(serializers.ModelSerializer):
     tag_list = serializers.SerializerMethodField()
     related_news = serializers.SerializerMethodField()
     read_time = serializers.SerializerMethodField()
-    absolute_url = serializers.CharField(source='get_absolute_url', read_only=True)
-    
+
     class Meta:
         model = News
         fields = [
@@ -86,7 +85,6 @@ class NewsDetailSerializer(serializers.ModelSerializer):
             'tag_list',
             'related_news',
             'read_time',
-            'absolute_url',
             'created_at',
             'updated_at',
         ]

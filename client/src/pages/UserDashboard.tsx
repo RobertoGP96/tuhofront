@@ -26,7 +26,7 @@ interface QuickAction {
 
 export default function UserDashboard() {
   const navigate = useNavigate();
-  const { user, isProfesor, isTrabajador, isEstudiante, isExterno } = useAuth();
+  const { user, isPersonalUser } = useAuth();
   const { unreadCount } = useNotificationsPoll();
 
   const [pendingProcedures, setPendingProcedures] = useState<number | null>(null);
@@ -97,28 +97,28 @@ export default function UserDashboard() {
       description: 'Constancia, certificación, legalización de título.',
       icon: GraduationCap,
       href: '/procedures/secretary/undergraduate/national',
-      show: isEstudiante || isProfesor || isTrabajador,
+      show: isPersonalUser,
     },
     {
       title: 'Solicitud de alimentación',
       description: 'Para visitas académicas y eventos.',
       icon: Utensils,
       href: '/procedures/internal/feeding',
-      show: isProfesor || isTrabajador,
+      show: isPersonalUser,
     },
     {
       title: 'Solicitud de mantenimiento',
       description: 'Reportar problemas en aulas, laboratorios u oficinas.',
       icon: Wrench,
       href: '/procedures/internal/maintenance',
-      show: isProfesor || isTrabajador,
+      show: isPersonalUser,
     },
     {
       title: 'Reservar un local',
       description: 'Aulas, auditorios, laboratorios, salas de reunión.',
       icon: Building2,
       href: '/locals/reserve',
-      show: !isExterno,
+      show: isPersonalUser,
     },
     {
       title: 'Ver mis trámites',
@@ -132,7 +132,7 @@ export default function UserDashboard() {
       description: 'Reservas activas, próximas e históricas.',
       icon: ClipboardCheck,
       href: '/locals/my-reservations',
-      show: !isExterno,
+      show: isPersonalUser,
     },
     {
       title: 'Noticias',

@@ -2,6 +2,7 @@ from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils import timezone
 from django.db.models import Q
@@ -12,6 +13,12 @@ from ..serializers.news import (
     NewsDetailSerializer,
     NewsCreateUpdateSerializer
 )
+
+
+class NewsPagination(PageNumberPagination):
+    page_size = 20
+    page_size_query_param = "page_size"
+    max_page_size = 200
 
 
 class NewsViewSet(viewsets.ModelViewSet):
@@ -35,6 +42,7 @@ class NewsViewSet(viewsets.ModelViewSet):
     
     queryset = News.objects.select_related('author').all()
     permission_classes = [IsAuthenticatedOrReadOnly]
+    pagination_class = NewsPagination
     lookup_field = 'slug'
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['category', 'featured', 'is_published']

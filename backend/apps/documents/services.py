@@ -65,7 +65,16 @@ def _html_to_pdf(html: str) -> bytes:
         HTML(string=html, base_url=str(settings.BASE_DIR)).write_pdf(target=buf)
         return buf.getvalue()
     except Exception as exc:  # noqa: BLE001
-        logger.info('WeasyPrint no disponible o error (%s), intentando xhtml2pdf', exc)
+        logger.warning(
+            'WeasyPrint no pudo renderizar el PDF (%s). '
+            'En Windows instala GTK3 Runtime (https://github.com/tschoonj/'
+            'GTK-for-Windows-Runtime-Environment-Installer/releases) marcando '
+            '"Set up PATH environment variable to include GTK+". '
+            'En Linux: apt install libpango-1.0-0 libpangoft2-1.0-0. '
+            'En macOS: brew install pango. '
+            'Intentando xhtml2pdf como fallback.',
+            exc,
+        )
 
     # 2) xhtml2pdf
     try:
@@ -74,7 +83,11 @@ def _html_to_pdf(html: str) -> bytes:
         pisa.CreatePDF(src=html, dest=buf, encoding='utf-8')
         return buf.getvalue()
     except Exception as exc:  # noqa: BLE001
-        logger.info('xhtml2pdf no disponible (%s), usando reportlab', exc)
+        logger.warning(
+            'xhtml2pdf tampoco disponible (%s). Cayendo a fallback de '
+            'texto plano (reportlab). El PDF NO tendrá estilos HTML/CSS.',
+            exc,
+        )
 
     # 3) Fallback: reportlab (texto plano)
     return _fallback_reportlab(html)

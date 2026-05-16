@@ -410,6 +410,37 @@ class LocalReservation(Procedure):
         self.cancellation_reason = reason
         self.save()
 
+    def start(self):
+        """Marca la reserva como en curso (transición APROBADA -> EN_CURSO).
+
+        Permite al gestor de reservas forzar el inicio aunque el ``save()``
+        automático no haya detectado la ventana de tiempo (por ejemplo cuando
+        un evento empieza un poco más tarde de lo previsto).
+        """
+        if self.state != ReservationStateEnum.APROBADA:
+            raise ValidationError(
+                "Sólo se pueden marcar como 'en curso' las reservas aprobadas"
+            )
+        self.state = ReservationStateEnum.EN_CURSO
+        self.save()
+
+    def finish(self):
+        """Marca la reserva como finalizada (transición EN_CURSO -> FINALIZADA).
+
+        Permite al gestor cerrar manualmente una reserva en curso. Si la
+        reserva todavía estaba en estado ``APROBADA`` pero ya pasó su
+        ventana de tiempo, también se acepta el cierre directo.
+        """
+        if self.state not in (
+            ReservationStateEnum.EN_CURSO,
+            ReservationStateEnum.APROBADA,
+        ):
+            raise ValidationError(
+                "Sólo se pueden finalizar reservas en curso o aprobadas"
+            )
+        self.state = ReservationStateEnum.FINALIZADA
+        self.save()
+
     @property
     def duration_hours(self):
         """Duración de la reserva en horas"""

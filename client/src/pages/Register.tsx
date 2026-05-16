@@ -15,7 +15,7 @@ const RegisterPage: React.FC = () => {
     phone: '',
     password: '',
     password_confirm: '',
-    user_type: 'EXTERNO',
+    user_type: 'USUARIO',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);

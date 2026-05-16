@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Calendar, Clock, Send, XCircle, Plus } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Calendar, Clock, Send, XCircle, Plus, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -201,6 +201,16 @@ export default function MyReservations() {
 
                   {/* Actions */}
                   <div className="flex items-center gap-2 shrink-0">
+                    <Button
+                      asChild
+                      size="sm"
+                      variant="ghost"
+                      className="text-primary-navy hover:bg-primary-navy/5 flex items-center gap-1"
+                    >
+                      <Link to={`/locals/my-reservations/${res.id}`}>
+                        <Eye size={13} /> Ver
+                      </Link>
+                    </Button>
                     {canSubmit(res.state) && (
                       <Button
                         size="sm"

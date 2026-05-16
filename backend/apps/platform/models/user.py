@@ -103,17 +103,13 @@ class User(AbstractUser):
     user_type = models.CharField(
         max_length=20,
         choices=[
-            ('ESTUDIANTE', _('Estudiante')),
-            ('PROFESOR', _('Profesor')),
-            ('TRABAJADOR', _('Trabajador')),
-            ('EXTERNO', _('Externo')),
-            ('SECRETARIA_DOCENTE', _('Secretaría Docente')),
-            ('ADMIN', _('Admin')),
+            ('USUARIO', _('Usuario')),
             ('GESTOR_INTERNO', _('Gestor de Trámites Internos')),
-            ('GESTOR_TRAMITES', _('Gestor de Trámites')),
+            ('GESTOR_SECRETARIA', _('Gestor de Secretaría Docente')),
             ('GESTOR_RESERVAS', _('Gestor de Reservas')),
+            ('ADMIN', _('Admin')),
         ],
-        default='EXTERNO',
+        default='USUARIO',
         verbose_name=_("Tipo de usuario"),
         help_text=_("Categoría del usuario en el sistema universitario")
     )
@@ -341,11 +337,11 @@ class User(AbstractUser):
         
         # Lógica específica por tipo de usuario
         module_permissions = {
-            'ESTUDIANTE': ['platform'],
-            'PROFESOR': ['platform'],
-            'TRABAJADOR': ['platform'],
-            'EXTERNO': ['atencion_poblacion'],
+            'USUARIO': ['platform', 'atencion_poblacion'],
+            'GESTOR_INTERNO': ['platform', 'internal'],
+            'GESTOR_SECRETARIA': ['platform', 'secretary_doc'],
+            'GESTOR_RESERVAS': ['platform', 'labs'],
         }
-        
+
         allowed_modules = module_permissions.get(self.user_type, [])
         return module_name in allowed_modules

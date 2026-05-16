@@ -3,9 +3,17 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
-from apps.internal.permissions import is_tramites_staff
+from apps.internal.models import (
+    FeedingProcedure,
+    AccommodationProcedure,
+    TransportProcedure,
+    MaintanceProcedure,
+)
+from apps.internal.permissions import is_secretaria_staff
+from apps.secretary_doc.models import SecretaryDocProcedure
 
 from ..models.procedure import Procedure
 from ..serializers.procedure import (
@@ -14,8 +22,65 @@ from ..serializers.procedure import (
     ProcedureListSerializer
 )
 
-# Gestores de otros módulos no deben ver/operar trámites externos.
-_FOREIGN_MODULE_ROLES = ('GESTOR_INTERNO', 'GESTOR_RESERVAS')
+_INTERNAL_SUBCLASSES = (
+    FeedingProcedure,
+    AccommodationProcedure,
+    TransportProcedure,
+    MaintanceProcedure,
+)
+_SECRETARIA_SUBCLASSES = (SecretaryDocProcedure,)
+
+# Cada rol de gestor solo ve los trámites de su módulo. GESTOR_RESERVAS no
+# tiene subclases de Procedure (las reservas viven en apps/labs).
+_SUBCLASSES_BY_ROLE = {
+    'GESTOR_INTERNO': _INTERNAL_SUBCLASSES,
+    'GESTOR_SECRETARIA': _SECRETARIA_SUBCLASSES,
+    'GESTOR_RESERVAS': (),
+}
+
+
+def _subclass_filter(subclasses):
+    """Q que limita un queryset de Procedure a filas que sean instancias de
+    alguna de las subclases dadas (herencia multi-tabla).
+
+    Para cada subclase ``Foo`` existe un reverse OneToOne ``foo`` (lowercase
+    ``_meta.model_name``); filtrar por ``foo__isnull=False`` deja solo las
+    filas que tienen una contraparte en la tabla hija.
+    """
+    q = Q()
+    for subcls in subclasses:
+        q |= Q(**{f"{subcls._meta.model_name}__isnull": False})
+    return q
+
+
+def _scope_procedure_queryset(user):
+    """Filtra Procedure según el rol del usuario, aislando módulos.
+
+    - Superuser / is_staff / ADMIN ven todos los módulos.
+    - Cada GESTOR_* ve solo las subclases de su módulo.
+    - Usuario normal ve solo sus propios trámites (de cualquier módulo).
+    """
+    base = Procedure.objects.select_related('user')
+
+    if not user or not user.is_authenticated:
+        return Procedure.objects.none()
+
+    user_type = getattr(user, 'user_type', '') or ''
+
+    if user.is_superuser or user.is_staff or user_type == 'ADMIN':
+        return base.select_subclasses()
+
+    if user_type in _SUBCLASSES_BY_ROLE:
+        subclasses = _SUBCLASSES_BY_ROLE[user_type]
+        if not subclasses:
+            return Procedure.objects.none()
+        return (
+            base.filter(_subclass_filter(subclasses))
+            .select_subclasses(*subclasses)
+        )
+
+    # USUARIO y cualquier otro rol: solo sus propios trámites.
+    return base.filter(user=user).select_subclasses()
 
 
 class ProcedureViewSet(viewsets.ModelViewSet):
@@ -43,20 +108,8 @@ class ProcedureViewSet(viewsets.ModelViewSet):
         return self.serializer_class
     
     def get_queryset(self):
-        """Filtra trámites según permisos del usuario"""
-        user = self.request.user
-        user_type = getattr(user, 'user_type', '')
-
-        # Gestores de otros módulos quedan completamente fuera.
-        if user_type in _FOREIGN_MODULE_ROLES:
-            return Procedure.objects.none()
-
-        # Admin, staff y GESTOR_TRAMITES ven todos los trámites
-        if user.is_staff or is_tramites_staff(user):
-            return Procedure.objects.select_related('user').select_subclasses()
-
-        # Usuarios normales solo ven sus propios trámites
-        return Procedure.objects.filter(user=user).select_related('user').select_subclasses()
+        """Filtra trámites según permisos del usuario y módulo del gestor."""
+        return _scope_procedure_queryset(self.request.user)
     
     def perform_create(self, serializer):
         """Crea un nuevo trámite asignándolo al usuario actual"""
@@ -92,8 +145,8 @@ class ProcedureViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['post'])
     def approve(self, request, pk=None):
-        """Acción para aprobar un trámite (admin o GESTOR_TRAMITES)"""
-        if not (request.user.is_staff or is_tramites_staff(request.user)):
+        """Acción para aprobar un trámite (admin o GESTOR_SECRETARIA)"""
+        if not (request.user.is_staff or is_secretaria_staff(request.user)):
             return Response(
                 {'error': _('No autorizado para aprobar trámites')},
                 status=status.HTTP_403_FORBIDDEN
@@ -136,14 +189,9 @@ class ProcedureViewSet(viewsets.ModelViewSet):
         """
         from django.db.models import Count, Q
 
-        user = request.user
-        user_type = getattr(user, 'user_type', '')
-        if user_type in _FOREIGN_MODULE_ROLES:
-            procedures = Procedure.objects.none()
-        elif user.is_staff or is_tramites_staff(user):
-            procedures = Procedure.objects.all()
-        else:
-            procedures = Procedure.objects.filter(user=user)
+        # Reutilizamos el mismo scoping que get_queryset para que las
+        # estadísticas no expongan trámites de otros módulos al gestor.
+        procedures = _scope_procedure_queryset(request.user)
 
         agg = procedures.aggregate(
             total=Count('id'),

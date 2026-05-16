@@ -21,14 +21,10 @@ const LoginPage: React.FC = () => {
       const user = await login(username, password);
       const redirectMap: Record<string, string> = {
         ADMIN: '/admin',
-        SECRETARIA_DOCENTE: '/secretary',
         GESTOR_INTERNO: '/gestor-interno',
-        GESTOR_TRAMITES: '/gestor-tramites',
+        GESTOR_SECRETARIA: '/gestor-secretaria',
         GESTOR_RESERVAS: '/gestor-reservas',
-        PROFESOR: '/dashboard',
-        TRABAJADOR: '/dashboard',
-        ESTUDIANTE: '/dashboard',
-        EXTERNO: '/dashboard',
+        USUARIO: '/dashboard',
       };
       const isSystemAdmin = user?.role === 'ADMIN' || user?.is_staff;
       const destination = from !== '/'

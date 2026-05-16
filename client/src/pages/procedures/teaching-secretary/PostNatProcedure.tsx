@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { useAuth } from "@/hooks/useAuth";
 import { secretaryDocService } from "@/services/secretary-doc.service";
+import { parseApiError } from "@/utils";
 import { toast } from 'sonner';
 import { ArrowLeft, FileText, GraduationCap, User, Loader2 } from "lucide-react";
 import type { StudyType, InterestType, SecretaryDocProcedureForm } from "@/types/secretary-doc.types";
@@ -29,9 +30,8 @@ const [isLoading, setIsLoading] = useState(false);
     study_type: 'POSGRADO',
     visibility_type: 'NACIONAL',
     interest: 'ESTATAL',
-    full_name: user ? `${user.first_name} ${user.last_name || ''}` : '',
+    full_name: user ? `${user.first_name} ${user.last_name || ''}`.trim() : '',
     email: user?.email || '',
-    document_type: 'CERTIFICACION_POSTGRADO',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -50,14 +50,20 @@ const [isLoading, setIsLoading] = useState(false);
     } else if (!/^\d{11}$/.test(formData.id_card.trim())) {
       newErrors.id_card = 'El carné debe tener exactamente 11 dígitos numéricos';
     }
-    if (formData.email && !/^\S+@\S+\.\S+$/.test(formData.email)) {
+    if (!formData.email?.trim()) {
+      newErrors.email = 'El correo electrónico es requerido';
+    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
       newErrors.email = 'Correo electrónico no válido';
     }
-    if (formData.phone && !/^[+\d\s\-()]{7,}$/.test(formData.phone)) {
+    if (!formData.phone?.trim()) {
+      newErrors.phone = 'El teléfono es requerido';
+    } else if (!/^[+\d\s\-()]{7,}$/.test(formData.phone)) {
       newErrors.phone = 'Teléfono no válido';
     }
     if (!formData.career?.trim()) newErrors.career = 'La carrera es requerida';
     if (!formData.year) newErrors.year = 'Seleccione un año';
+    if (!formData.academic_program?.trim()) newErrors.academic_program = 'Seleccione un programa';
+    if (!formData.document_type?.trim()) newErrors.document_type = 'Seleccione un tipo de documento';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -68,24 +74,25 @@ const [isLoading, setIsLoading] = useState(false);
     
     setIsLoading(true);
     try {
-      await secretaryDocService.create({
+      const created = await secretaryDocService.create({
         study_type: (formData.study_type || 'POSGRADO') as StudyType,
         visibility_type: formData.visibility_type || 'NACIONAL',
         career: formData.career || '',
         year: formData.year || '',
         academic_program: formData.academic_program || '',
-        document_type: 'CERTIFICACION_POSTGRADO',
+        document_type: formData.document_type || '',
         interest: (formData.interest || 'ESTATAL') as InterestType,
         full_name: formData.full_name || '',
         id_card: formData.id_card || '',
         email: formData.email || '',
         phone: formData.phone || '',
       });
-      
-      toast.success("Trámite enviado — Su solicitud ha sido enviada exitosamente.");
-      navigate('/procedures');
+
+      toast.success("Trámite enviado correctamente.");
+      navigate(`/procedures/secretary/${created.id}`, { state: { justCreated: true } });
     } catch (error) {
-      toast.error("Hubo un problema al enviar el trámite. Intente de nuevo.");
+      console.error('Error creando trámite:', error);
+      toast.error(parseApiError(error, 'Hubo un problema al enviar el trámite. Intente de nuevo.'));
     } finally {
       setIsLoading(false);
     }
@@ -150,7 +157,7 @@ const [isLoading, setIsLoading] = useState(false);
                   {errors.id_card && <p className="text-xs text-red-500">{errors.id_card}</p>}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-xs font-bold uppercase text-gray-500">Correo Electrónico</Label>
+                  <Label htmlFor="email" className="text-xs font-bold uppercase text-gray-500">Correo Electrónico *</Label>
                   <Input
                     id="email"
                     type="email"
@@ -162,7 +169,7 @@ const [isLoading, setIsLoading] = useState(false);
                   {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-xs font-bold uppercase text-gray-500">Teléfono</Label>
+                  <Label htmlFor="phone" className="text-xs font-bold uppercase text-gray-500">Teléfono *</Label>
                   <Input
                     id="phone"
                     value={formData.phone || ''}
@@ -184,12 +191,12 @@ const [isLoading, setIsLoading] = useState(false);
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="academic_program" className="text-xs font-bold uppercase text-gray-500">Programa</Label>
-                  <Select 
-                    value={formData.academic_program} 
+                  <Label htmlFor="academic_program" className="text-xs font-bold uppercase text-gray-500">Programa *</Label>
+                  <Select
+                    value={formData.academic_program}
                     onValueChange={(value) => handleChange('academic_program', value)}
                   >
-                    <SelectTrigger id="academic_program" className="rounded-xl border-gray-100 bg-gray-50/50">
+                    <SelectTrigger id="academic_program" className={`rounded-xl border-gray-100 bg-gray-50/50 ${errors.academic_program ? 'border-red-500' : ''}`}>
                       <SelectValue placeholder="Seleccione..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -198,6 +205,7 @@ const [isLoading, setIsLoading] = useState(false);
                       <SelectItem value="Doctorado">Doctorado</SelectItem>
                     </SelectContent>
                   </Select>
+                  {errors.academic_program && <p className="text-xs text-red-500">{errors.academic_program}</p>}
                 </div>
                 <div className="space-y-2 md:col-span-2">
                   <Label htmlFor="career" className="text-xs font-bold uppercase text-gray-500">Nombre de la Especialidad/Maestría *</Label>
@@ -214,12 +222,12 @@ const [isLoading, setIsLoading] = useState(false);
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="document_type" className="text-xs font-bold uppercase text-gray-500">Tipo de Documento</Label>
-                  <Select 
-                    value={formData.document_type} 
+                  <Label htmlFor="document_type" className="text-xs font-bold uppercase text-gray-500">Tipo de Documento *</Label>
+                  <Select
+                    value={formData.document_type}
                     onValueChange={(value) => handleChange('document_type', value)}
                   >
-                    <SelectTrigger id="document_type" className="rounded-xl border-gray-100 bg-gray-50/50">
+                    <SelectTrigger id="document_type" className={`rounded-xl border-gray-100 bg-gray-50/50 ${errors.document_type ? 'border-red-500' : ''}`}>
                       <SelectValue placeholder="Seleccione..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -229,6 +237,7 @@ const [isLoading, setIsLoading] = useState(false);
                       <SelectItem value="COPIA_LITERAL">Copia Literal del Título</SelectItem>
                     </SelectContent>
                   </Select>
+                  {errors.document_type && <p className="text-xs text-red-500">{errors.document_type}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="year" className="text-xs font-bold uppercase text-gray-500">Año de Graduación *</Label>

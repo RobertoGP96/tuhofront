@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 export function TransportProcedurePage() {
   const navigate = useNavigate();
 
-  const handleSuccess = () => {
-    navigate('/procedures/internals');
+  const handleSuccess = (createdId: number) => {
+    navigate(`/procedures/internals/transport/${createdId}`, { state: { justCreated: true } });
   };
 
   const handleCancel = () => {
@@ -14,7 +14,7 @@ export function TransportProcedurePage() {
 
   return (
     <div className="w-full max-w-4xl mx-auto py-8 px-4">
-      <TransportProcedureForm 
+      <TransportProcedureForm
         onSuccess={handleSuccess}
         onCancel={handleCancel}
       />

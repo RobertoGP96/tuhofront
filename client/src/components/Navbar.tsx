@@ -46,11 +46,10 @@ export const Navbar: React.FC<NavbarProps> = () => {
     user,
     isAdmin,
     isGestorInterno,
-    isGestorTramites,
+    isGestorSecretaria,
     isGestorReservas,
     isAnyGestor,
     isPersonalUser,
-    canAccessInternal,
     canManageSecretary,
     logout,
     isAuthenticated,
@@ -58,7 +57,7 @@ export const Navbar: React.FC<NavbarProps> = () => {
 
   // ── Helpers de rol para dropdown ──────────────────────────────────────────
   const showGestorInterno = isAdmin || isGestorInterno;
-  const showGestorTramites = isAdmin || isGestorTramites;
+  const showGestorSecretaria = isAdmin || isGestorSecretaria;
   const showGestorReservas = isAdmin || isGestorReservas;
   // Gestores tienen su propio panel; ocultamos el dropdown de Trámites personal.
   const showTramitesDropdown = isAuthenticated && !isAnyGestor;
@@ -86,15 +85,11 @@ export const Navbar: React.FC<NavbarProps> = () => {
 
   // ── Role label ──────────────────────────────────────────────────────────────
   const ROLE_LABELS: Record<string, string> = {
-    ADMIN: 'Administrador',
-    SECRETARIA_DOCENTE: 'Secretaría Docente',
-    PROFESOR: 'Profesor',
-    TRABAJADOR: 'Trabajador',
-    ESTUDIANTE: 'Estudiante',
-    EXTERNO: 'Externo',
+    USUARIO: 'Usuario',
     GESTOR_INTERNO: 'Gestor de Trámites Internos',
-    GESTOR_TRAMITES: 'Gestor de Trámites',
+    GESTOR_SECRETARIA: 'Gestor de Secretaría Docente',
     GESTOR_RESERVAS: 'Gestor de Reservas',
+    ADMIN: 'Administrador',
   };
 
   // ── Static nav links (always visible) ──────────────────────────────────────
@@ -148,18 +143,10 @@ export const Navbar: React.FC<NavbarProps> = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="min-w-52">
-                {canSeePersonalProcedures && (
-                  <DropdownMenuItem
-                    className="gap-2 cursor-pointer"
-                    onClick={() => navigate('/procedures')}
-                  >
-                    <BookOpen size={15} className="text-gray-400" />
-                    Mis Trámites
-                  </DropdownMenuItem>
-                )}
+                {/* "Mis Trámites" vive ahora sólo en el menú de usuario (avatar). */}
 
                 {/* Mis Trámites Internos — PROFESOR, TRABAJADOR, ADMIN */}
-                {canAccessInternal && (
+                {isPersonalUser && (
                   <DropdownMenuItem
                     className="gap-2 cursor-pointer"
                     onClick={() => navigate('/procedures/internals')}
@@ -169,7 +156,7 @@ export const Navbar: React.FC<NavbarProps> = () => {
                   </DropdownMenuItem>
                 )}
 
-                {showSecretarySubmenu && <DropdownMenuSeparator />}
+                {isPersonalUser && showSecretarySubmenu && <DropdownMenuSeparator />}
 
                 {/* Secretaría Docente — usuarios personales y secretaría/admin */}
                 {showSecretarySubmenu && (
@@ -231,7 +218,7 @@ export const Navbar: React.FC<NavbarProps> = () => {
                 )}
 
                 {/* Internos — ADMIN, PROFESOR, TRABAJADOR only */}
-                {canAccessInternal && (
+                {isPersonalUser && (
                   <DropdownMenuSub>
                     <DropdownMenuSubTrigger className="gap-2 cursor-pointer">
                       <i className="bx bx-plus text-base text-gray-400" />
@@ -299,24 +286,6 @@ export const Navbar: React.FC<NavbarProps> = () => {
             </DropdownMenu>
           )}
 
-          {/* Secretary panel link — SECRETARIA_DOCENTE + ADMIN */}
-          {canManageSecretary && !isAdmin && (
-            <NavLink
-              to="/secretary"
-              className={({ isActive }) =>
-                cn(
-                  'px-3 py-2 text-sm font-medium transition-colors rounded-md flex items-center gap-2',
-                  isActive
-                    ? 'text-primary-navy bg-accent'
-                    : 'text-gray-500 hover:text-primary-navy hover:bg-gray-50',
-                )
-              }
-            >
-              <BookOpen size={16} className="opacity-70" />
-              Secretaría
-            </NavLink>
-          )}
-
           {/* Gestor de Trámites Internos */}
           {!isAdmin && isGestorInterno && (
             <NavLink
@@ -335,10 +304,10 @@ export const Navbar: React.FC<NavbarProps> = () => {
             </NavLink>
           )}
 
-          {/* Gestor de Trámites */}
-          {!isAdmin && isGestorTramites && (
+          {/* Gestor de Secretaría Docente */}
+          {!isAdmin && isGestorSecretaria && (
             <NavLink
-              to="/gestor-tramites"
+              to="/gestor-secretaria"
               className={({ isActive }) =>
                 cn(
                   'px-3 py-2 text-sm font-medium transition-colors rounded-md flex items-center gap-2',
@@ -348,8 +317,8 @@ export const Navbar: React.FC<NavbarProps> = () => {
                 )
               }
             >
-              <FileText size={16} className="opacity-70" />
-              Trámites
+              <BookOpen size={16} className="opacity-70" />
+              Secretaría Docente
             </NavLink>
           )}
 
@@ -528,25 +497,6 @@ export const Navbar: React.FC<NavbarProps> = () => {
                 </DropdownMenuItem>
               )}
 
-              {/* Secretary panel — SECRETARIA_DOCENTE + ADMIN */}
-              {canManageSecretary && (
-                <>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    className="gap-2 cursor-pointer"
-                    onClick={() => navigate('/secretary')}
-                  >
-                    <FileText size={15} /> Panel Secretaría
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="gap-2 cursor-pointer"
-                    onClick={() => navigate('/secretary/procedures')}
-                  >
-                    <FileText size={15} className="opacity-0" /> Gestionar Trámites
-                  </DropdownMenuItem>
-                </>
-              )}
-
               {/* Gestor de Trámites Internos */}
               {showGestorInterno && (
                 <>
@@ -560,15 +510,21 @@ export const Navbar: React.FC<NavbarProps> = () => {
                 </>
               )}
 
-              {/* Gestor de Trámites generales */}
-              {showGestorTramites && (
+              {/* Gestor de Secretaría Docente */}
+              {showGestorSecretaria && (
                 <>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="gap-2 cursor-pointer"
-                    onClick={() => navigate('/gestor-tramites')}
+                    onClick={() => navigate('/secretary')}
                   >
-                    <FileText size={15} /> Gestión de Trámites
+                    <BookOpen size={15} /> Panel Secretaría
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="gap-2 cursor-pointer"
+                    onClick={() => navigate('/secretary/procedures')}
+                  >
+                    <FileText size={15} className="opacity-0" /> Gestionar Trámites
                   </DropdownMenuItem>
                 </>
               )}

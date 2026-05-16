@@ -9,7 +9,7 @@ Verifican:
   - scoping: roles incorrectos reciben 403
 """
 from django.contrib.auth import get_user_model
-from django.urls import reverse
+from django.urls import reverse as _reverse
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
@@ -17,10 +17,17 @@ from rest_framework.test import APIClient, APITestCase
 User = get_user_model()
 
 
+def reverse(name, *args, **kwargs):
+    """Wrapper que agrega el namespace 'platform:' si no está presente."""
+    if ':' not in name:
+        name = f'platform:{name}'
+    return _reverse(name, *args, **kwargs)
+
+
 def _make_user(**overrides):
     base = dict(
         username='user_pdf', email='pdf@example.com', password='pwd12345',
-        first_name='Reporte', last_name='Test', user_type='ESTUDIANTE',
+        first_name='Reporte', last_name='Test', user_type='USUARIO',
         id_card='99020234567', is_active=True,
     )
     base.update(overrides)
@@ -42,7 +49,7 @@ class ReportsPDFEndpointsTests(APITestCase):
         )
         cls.estudiante = _make_user(
             username='student_pdf', email='student_pdf@example.com',
-            id_card='99040434567', user_type='ESTUDIANTE',
+            id_card='99040434567', user_type='USUARIO',
         )
 
     def _auth(self, user):
@@ -94,3 +101,115 @@ class ReportsPDFEndpointsTests(APITestCase):
         })
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(resp['Content-Type'], 'application/pdf')
+
+
+class ReportsCrossModuleScopingTests(APITestCase):
+    """Garantiza que un gestor de un módulo NO pueda generar reportes de otro módulo.
+
+    Cada gestor solo accede a los reportes de su propio módulo + (en ningún caso)
+    al overview global, que es exclusivo de ADMIN. Los USUARIO solo pueden generar
+    su historial personal (`me.pdf`).
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.gestor_interno = _make_user(
+            username='gi_pdf', email='gi_pdf@example.com',
+            id_card='99050534567', user_type='GESTOR_INTERNO',
+        )
+        cls.gestor_secretaria = _make_user(
+            username='gs_pdf', email='gs_pdf@example.com',
+            id_card='99060634567', user_type='GESTOR_SECRETARIA',
+        )
+        cls.gestor_reservas = _make_user(
+            username='gr_pdf', email='gr_pdf@example.com',
+            id_card='99070734567', user_type='GESTOR_RESERVAS',
+        )
+        cls.usuario = _make_user(
+            username='us_pdf', email='us_pdf@example.com',
+            id_card='99080834567', user_type='USUARIO',
+        )
+
+    def _auth(self, user):
+        client = APIClient()
+        client.force_authenticate(user=user)
+        return client
+
+    def _assert_forbidden(self, user, url):
+        resp = self._auth(user).get(url)
+        self.assertEqual(
+            resp.status_code, status.HTTP_403_FORBIDDEN,
+            msg=f'Se esperaba 403 para {user.user_type} en {url}, se recibió {resp.status_code}',
+        )
+
+    def _assert_ok(self, user, url):
+        resp = self._auth(user).get(url)
+        self.assertEqual(
+            resp.status_code, status.HTTP_200_OK,
+            msg=f'Se esperaba 200 para {user.user_type} en {url}, se recibió {resp.status_code}',
+        )
+
+    # ---- GESTOR_INTERNO solo accede a internal/<domain>.pdf ----
+
+    def test_gestor_interno_can_access_internal_domain(self):
+        self._assert_ok(self.gestor_interno, '/api/v1/reports/internal/feeding.pdf')
+
+    def test_gestor_interno_blocked_from_other_modules(self):
+        forbidden = [
+            reverse('reports-overview-pdf'),
+            reverse('reports-tramites-pdf'),
+            reverse('reports-reservations-pdf'),
+            reverse('reports-secretary-pdf'),
+            reverse('reports-my-history-pdf'),
+        ]
+        for url in forbidden:
+            self._assert_forbidden(self.gestor_interno, url)
+
+    # ---- GESTOR_SECRETARIA solo accede a procedures.pdf y secretary.pdf ----
+
+    def test_gestor_secretaria_can_access_own_module(self):
+        self._assert_ok(self.gestor_secretaria, reverse('reports-tramites-pdf'))
+        self._assert_ok(self.gestor_secretaria, reverse('reports-secretary-pdf'))
+
+    def test_gestor_secretaria_blocked_from_other_modules(self):
+        forbidden = [
+            reverse('reports-overview-pdf'),
+            '/api/v1/reports/internal/feeding.pdf',
+            '/api/v1/reports/internal/accommodation.pdf',
+            reverse('reports-reservations-pdf'),
+            reverse('reports-my-history-pdf'),
+        ]
+        for url in forbidden:
+            self._assert_forbidden(self.gestor_secretaria, url)
+
+    # ---- GESTOR_RESERVAS solo accede a reservations.pdf ----
+
+    def test_gestor_reservas_can_access_own_module(self):
+        self._assert_ok(self.gestor_reservas, reverse('reports-reservations-pdf'))
+
+    def test_gestor_reservas_blocked_from_other_modules(self):
+        forbidden = [
+            reverse('reports-overview-pdf'),
+            '/api/v1/reports/internal/transport.pdf',
+            reverse('reports-tramites-pdf'),
+            reverse('reports-secretary-pdf'),
+            reverse('reports-my-history-pdf'),
+        ]
+        for url in forbidden:
+            self._assert_forbidden(self.gestor_reservas, url)
+
+    # ---- USUARIO solo accede a me.pdf ----
+
+    def test_usuario_can_access_own_history(self):
+        self._assert_ok(self.usuario, reverse('reports-my-history-pdf'))
+
+    def test_usuario_blocked_from_module_reports(self):
+        forbidden = [
+            reverse('reports-overview-pdf'),
+            '/api/v1/reports/internal/feeding.pdf',
+            reverse('reports-tramites-pdf'),
+            reverse('reports-reservations-pdf'),
+            reverse('reports-secretary-pdf'),
+        ]
+        for url in forbidden:
+            self._assert_forbidden(self.usuario, url)

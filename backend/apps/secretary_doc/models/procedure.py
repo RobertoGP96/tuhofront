@@ -171,13 +171,14 @@ class SecretaryDocProcedure(Procedure):
         return f"{self.full_name} - {self.get_state_display()} - {self.created_at.strftime('%Y-%m-%d') if self.created_at else ''}"
     
     def save(self, *args, **kwargs):
-        # Lógica adicional antes de guardar
-        if not self.pk:  # Si es un nuevo registro
-            if hasattr(self, 'user'):
-                self.full_name = f"{self.user.first_name} {self.user.last_name}"
+        # Sólo rellenar full_name / email desde el FK user si vienen vacíos,
+        # para no sobreescribir los datos enviados por el solicitante.
+        if not self.pk and hasattr(self, 'user') and self.user:
+            if not self.full_name:
+                self.full_name = f"{self.user.first_name} {self.user.last_name}".strip()
+            if not self.email:
                 self.email = self.user.email
-            # Aquí puedes agregar más lógica de inicialización
-        
+
         super().save(*args, **kwargs)
     
     def get_absolute_url(self):

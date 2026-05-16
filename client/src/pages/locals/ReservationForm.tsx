@@ -120,7 +120,7 @@ export default function ReservationForm() {
 
     setSubmitting(true);
     try {
-      await localsService.createReservation({
+      const created = await localsService.createReservation({
         local: values.local,
         start_time: startIso,
         end_time: endIso,
@@ -134,7 +134,7 @@ export default function ReservationForm() {
         observation: values.observation || undefined,
       });
       toast.success('Reserva creada exitosamente');
-      navigate('/locals/my-reservations');
+      navigate(`/locals/my-reservations/${created.id}`, { state: { justCreated: true } });
     } catch (err: unknown) {
       const e = err as { response?: { data?: Record<string, string[]> } };
       const detail = e.response?.data;

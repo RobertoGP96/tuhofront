@@ -62,11 +62,11 @@ class SecretaryDocProcedureCreateTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.estudiante = _make_user('sec_estudiante', 'ESTUDIANTE', '02050512345')
-        cls.profesor = _make_user('sec_profesor', 'PROFESOR', '80030312345')
-        cls.trabajador = _make_user('sec_trabajador', 'TRABAJADOR', '75060612345')
-        cls.externo = _make_user('sec_externo', 'EXTERNO', '78060612346')
-        cls.secretaria = _make_user('sec_secretaria', 'SECRETARIA_DOCENTE', '70010112345')
+        cls.estudiante = _make_user('sec_estudiante', 'USUARIO', '02050512345')
+        cls.profesor = _make_user('sec_profesor', 'USUARIO', '80030312345')
+        cls.trabajador = _make_user('sec_trabajador', 'USUARIO', '75060612345')
+        cls.externo = _make_user('sec_externo', 'USUARIO', '78060612346')
+        cls.secretaria = _make_user('sec_secretaria', 'GESTOR_SECRETARIA', '70010112345')
         cls.admin = _make_user(
             'sec_admin', 'ADMIN', '85010112345',
             is_staff=True, is_superuser=True,

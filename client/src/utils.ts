@@ -45,6 +45,27 @@ export function formatDateTime(
 }
 
 /**
+ * Convierte un error de axios contra DRF en un mensaje legible para el usuario.
+ * DRF responde 400 con `{ field: ["msg1", "msg2"], ...}` o `{ detail: "msg" }`.
+ */
+export function parseApiError(error: unknown, fallback = 'Ocurrió un error inesperado'): string {
+  const data = (error as { response?: { data?: unknown } })?.response?.data;
+  if (typeof data === 'string') return data;
+  if (data && typeof data === 'object') {
+    const obj = data as Record<string, unknown>;
+    if (typeof obj.detail === 'string') return obj.detail;
+    const parts: string[] = [];
+    for (const [field, value] of Object.entries(obj)) {
+      const msg = Array.isArray(value) ? value.join(', ') : String(value);
+      parts.push(field === 'non_field_errors' ? msg : `${field}: ${msg}`);
+    }
+    if (parts.length) return parts.join(' · ');
+  }
+  const message = (error as { message?: string })?.message;
+  return message || fallback;
+}
+
+/**
  * Desempaqueta respuestas paginadas o arrays planos del backend de forma defensiva.
  * Útil cuando un endpoint puede devolver `{results, count}` o un array directo.
  */

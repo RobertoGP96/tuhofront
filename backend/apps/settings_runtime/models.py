@@ -101,15 +101,11 @@ class SystemSettings(models.Model):
 # user_type choices admitidos para el mapeo grupo LDAP → rol.
 # Debe mantenerse sincronizado con apps.platform.models.user.User.UserType.
 LDAP_USER_TYPE_CHOICES = (
-    ('ADMIN', 'Administrador'),
-    ('SECRETARIA_DOCENTE', 'Secretaría Docente'),
-    ('GESTOR_INTERNO', 'Gestor Interno'),
-    ('GESTOR_TRAMITES', 'Gestor de Trámites'),
+    ('USUARIO', 'Usuario'),
+    ('GESTOR_INTERNO', 'Gestor de Trámites Internos'),
+    ('GESTOR_SECRETARIA', 'Gestor de Secretaría Docente'),
     ('GESTOR_RESERVAS', 'Gestor de Reservas'),
-    ('PROFESOR', 'Profesor'),
-    ('TRABAJADOR', 'Trabajador'),
-    ('ESTUDIANTE', 'Estudiante'),
-    ('EXTERNO', 'Externo'),
+    ('ADMIN', 'Administrador'),
 )
 
 
@@ -318,13 +314,13 @@ class LdapConfig(models.Model):
             'Diccionario {"<grupo>": "<user_type>"}. Para LDAP la clave es '
             'el DN completo; para HTTP API es el nombre del rol/grupo '
             'devuelto por el endpoint. Ej. LDAP: '
-            '{"cn=profesores,ou=groups,dc=uho,dc=edu,dc=cu": "PROFESOR"}. '
-            'Ej. HTTP: {"profesor": "PROFESOR", "estudiante": "ESTUDIANTE"}.'
+            '{"cn=gestores_internos,ou=groups,dc=uho,dc=edu,dc=cu": "GESTOR_INTERNO"}. '
+            'Ej. HTTP: {"gestor_secretaria": "GESTOR_SECRETARIA", "usuario": "USUARIO"}.'
         ),
     )
     default_role = models.CharField(
         max_length=20,
-        default='EXTERNO',
+        default='USUARIO',
         choices=LDAP_USER_TYPE_CHOICES,
         help_text=_('user_type asignado si ningún grupo coincide'),
     )
