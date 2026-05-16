@@ -173,15 +173,43 @@ class HttpApiProvider(ExternalAuthProvider):
             if cfg.http_api_groups_path
             else None
         )
+
+        # Los `http_api_attr_*` admiten notación de punto para alcanzar campos
+        # anidados (ej. "personal_information.given_name"). `_walk_path` con
+        # un path sin puntos equivale a `user_obj.get(key)`, por lo que la
+        # configuración antigua (lookups planos) sigue funcionando. Cuando el
+        # path está vacío se trata como "no configurado" (no se intenta
+        # extraer ese atributo).
+        def _pluck(attr_path: str) -> str:
+            if not attr_path:
+                return ''
+            value = _walk_path(user_obj, attr_path)
+            if isinstance(value, (dict, list)):
+                return ''
+            return _stringify(value)
+
+        username = _pluck(cfg.http_api_attr_username) or fallback_username
+        email = _pluck(cfg.http_api_attr_email)
+        first_name = _pluck(cfg.http_api_attr_first_name)
+        last_name = _pluck(cfg.http_api_attr_last_name)
+        id_card = _pluck(cfg.http_api_attr_id_card)
+        personal_photo = _pluck(cfg.http_api_attr_personal_photo)
+
+        # Sintetizar email si la API no lo devuelve y hay plantilla configurada.
+        # Tolera plantillas mal formadas (placeholder desconocido → email vacío).
+        if not email and cfg.http_api_email_template:
+            try:
+                email = cfg.http_api_email_template.format(username=username)
+            except (KeyError, IndexError, ValueError):
+                email = ''
+
         return AuthResult(
-            username=_stringify(user_obj.get(cfg.http_api_attr_username)) or fallback_username,
-            email=_stringify(user_obj.get(cfg.http_api_attr_email)),
-            first_name=_stringify(user_obj.get(cfg.http_api_attr_first_name)),
-            last_name=_stringify(user_obj.get(cfg.http_api_attr_last_name)),
-            id_card=(
-                _stringify(user_obj.get(cfg.http_api_attr_id_card))
-                if cfg.http_api_attr_id_card else ''
-            ),
+            username=username,
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            id_card=id_card,
+            personal_photo=personal_photo,
             groups=_groups_from(groups_value),
             raw=user_obj if isinstance(user_obj, dict) else {},
         )
@@ -305,6 +333,8 @@ class HttpApiProvider(ExternalAuthProvider):
                 'email': result.email,
                 'first_name': result.first_name,
                 'last_name': result.last_name,
+                'id_card': result.id_card,
+                'personal_photo': result.personal_photo,
                 'groups': result.groups,
             }
         return TestResult(

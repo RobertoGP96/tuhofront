@@ -19,6 +19,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { LdapDnListEditor } from '@/components/admin/LdapDnListEditor';
 import { LdapGroupRoleMapEditor } from '@/components/admin/LdapGroupRoleMapEditor';
 import { LdapTestPanel } from '@/components/admin/LdapTestPanel';
+import { UhoIntegrationGuide } from '@/components/admin/UhoIntegrationGuide';
 import {
   ldapService,
   type AuthProvider,
@@ -67,6 +68,8 @@ export default function AdminLdap() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [headersDraft, setHeadersDraft] = useState('');
+  // Tab activo (controlado para que la guía UHo pueda saltar al panel "Probar").
+  const [activeTab, setActiveTab] = useState<string>('connection');
 
   const fetchConfig = useCallback(async () => {
     setLoading(true);
@@ -248,7 +251,7 @@ export default function AdminLdap() {
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="connection">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="connection">Conexión</TabsTrigger>
           <TabsTrigger value="search">
@@ -258,6 +261,7 @@ export default function AdminLdap() {
           <TabsTrigger value="roles">Mapeo de roles</TabsTrigger>
           <TabsTrigger value="behavior">Comportamiento</TabsTrigger>
           <TabsTrigger value="test">Probar</TabsTrigger>
+          {isHttpApi && <TabsTrigger value="uho">UHo</TabsTrigger>}
         </TabsList>
 
         {/* ---------------- Conexión ---------------- */}
@@ -616,11 +620,36 @@ export default function AdminLdap() {
                         onChange={(e) => update('http_api_attr_id_card', e.target.value)} />
                     </div>
                     <div>
+                      <Label htmlFor="http_api_attr_personal_photo">
+                        Atributo foto de perfil (opcional)
+                      </Label>
+                      <Input id="http_api_attr_personal_photo"
+                        placeholder="personal_information.personal_photo"
+                        value={config.http_api_attr_personal_photo}
+                        onChange={(e) => update('http_api_attr_personal_photo', e.target.value)} />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Soporta paths anidados con notación de punto. Vacío = no sincronizar foto.
+                      </p>
+                    </div>
+                    <div>
                       <Label htmlFor="http_api_groups_path">Path a grupos/roles</Label>
                       <Input id="http_api_groups_path"
                         placeholder="roles, user.groups (vacío = no sync)"
                         value={config.http_api_groups_path}
                         onChange={(e) => update('http_api_groups_path', e.target.value)} />
+                    </div>
+                    <div className="md:col-span-2">
+                      <Label htmlFor="http_api_email_template">
+                        Plantilla de email (opcional)
+                      </Label>
+                      <Input id="http_api_email_template"
+                        placeholder="{username}@uho.edu.cu"
+                        value={config.http_api_email_template}
+                        onChange={(e) => update('http_api_email_template', e.target.value)} />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Si la API no devuelve email, se sintetiza con esta plantilla.
+                        Placeholder soportado: <code>{'{username}'}</code>.
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -808,6 +837,26 @@ export default function AdminLdap() {
         <TabsContent value="test">
           <LdapTestPanel config={config} onTestComplete={() => void fetchConfig()} />
         </TabsContent>
+
+        {/* ---------------- UHo (interactive guide) ---------------- */}
+        {isHttpApi && (
+          <TabsContent value="uho">
+            <UhoIntegrationGuide
+              config={config}
+              onApplyDefaults={(patch) => {
+                // Aplica el parche al state local; el usuario aún debe pulsar
+                // "Guardar cambios" arriba para persistirlo.
+                setConfig((prev) => (prev ? { ...prev, ...patch } : prev));
+                if (patch.http_api_extra_headers !== undefined) {
+                  setHeadersDraft(
+                    JSON.stringify(patch.http_api_extra_headers ?? {}, null, 2),
+                  );
+                }
+              }}
+              onJumpToTab={setActiveTab}
+            />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

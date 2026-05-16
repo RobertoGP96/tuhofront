@@ -11,16 +11,24 @@ class NotificacionModelTests(TestCase):
     """Tests para el modelo Notificación"""
     
     def setUp(self):
-        """Configura datos de prueba"""
+        """Configura datos de prueba.
+
+        El modelo ``User`` exige un ``id_card`` no vacío con formato cubano
+        (11 dígitos, los primeros 6 representan una fecha YYMMDD válida).
+        Cada usuario lleva un carnet único para no chocar con el constraint
+        de unicidad.
+        """
         self.usuario_destinatario = User.objects.create_user(
             username='usuario1',
             email='usuario1@test.com',
-            password='testpass123'
+            password='testpass123',
+            id_card='85010100001',
         )
         self.usuario_remitente = User.objects.create_user(
             username='usuario2',
             email='usuario2@test.com',
-            password='testpass123'
+            password='testpass123',
+            id_card='85010100002',
         )
     
     def test_crear_notificacion_simple(self):
@@ -124,7 +132,8 @@ class NotificacionModelTests(TestCase):
         usuario_3 = User.objects.create_user(
             username='usuario3',
             email='usuario3@test.com',
-            password='testpass123'
+            password='testpass123',
+            id_card='85010100003',
         )
         
         usuarios = [self.usuario_destinatario, usuario_3]

@@ -112,6 +112,8 @@ class RuntimeLdapBackend:
             user.last_name = result.last_name
             user.user_type = cfg.default_role
             user.id_card = result.id_card or self._generate_placeholder_id_card()
+            if result.personal_photo:
+                user.personal_photo = result.personal_photo
             user.set_unusable_password()
             user.save()
             created = True
@@ -131,6 +133,9 @@ class RuntimeLdapBackend:
             if result.id_card and not user.id_card:
                 user.id_card = result.id_card
                 changed.append('id_card')
+            if result.personal_photo and user.personal_photo != result.personal_photo:
+                user.personal_photo = result.personal_photo
+                changed.append('personal_photo')
             if changed:
                 user.save(update_fields=changed)
 

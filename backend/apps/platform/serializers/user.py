@@ -20,7 +20,8 @@ class UserBaseSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
             'full_name', 'id_card', 'phone', 'address', 'date_of_birth',
-            'user_type', 'workplace', 'age', 'is_verified', 'carnet_masked',
+            'user_type', 'workplace', 'personal_photo',
+            'age', 'is_verified', 'carnet_masked',
             'email_verified', 'phone_verified', 'is_active', 'date_joined',
             'role', 'is_staff'
         ]

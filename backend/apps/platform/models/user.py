@@ -121,7 +121,18 @@ class User(AbstractUser):
         verbose_name=_("Centro de trabajo"),
         help_text=_("Institución o departamento donde trabaja/estudia")
     )
-    
+
+    personal_photo = models.TextField(
+        blank=True,
+        default='',
+        verbose_name=_("Foto de perfil"),
+        help_text=_(
+            "Avatar (data URL base64 ej. data:image/png;base64,... o URL externa). "
+            "Sincronizado desde el proveedor externo de autenticación cuando esté "
+            "disponible."
+        ),
+    )
+
     # Campos de auditoría
     created_at = models.DateTimeField(
         auto_now_add=True,

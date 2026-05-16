@@ -28,6 +28,11 @@ class AuthResult:
     first_name: str = ''
     last_name: str = ''
     id_card: str = ''
+    # Foto de perfil opcional. Puede ser un data URL base64
+    # (`data:image/png;base64,...`) o una URL externa. Solo se persiste si
+    # el proveedor la suministra; los proveedores que no la soporten dejan
+    # el default vacío y `User.personal_photo` queda en blanco.
+    personal_photo: str = ''
     # Identificadores de grupos/roles tal como los devuelve el proveedor.
     # Para LDAP son DNs completos. Para HTTP API son strings arbitrarios
     # (ej. "profesor", "admin"). El mapeo a `user_type` se hace en el backend.

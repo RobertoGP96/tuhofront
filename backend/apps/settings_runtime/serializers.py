@@ -50,7 +50,8 @@ class LdapConfigSerializer(serializers.ModelSerializer):
             'http_api_success_field', 'http_api_user_path',
             'http_api_attr_username', 'http_api_attr_email',
             'http_api_attr_first_name', 'http_api_attr_last_name',
-            'http_api_attr_id_card', 'http_api_groups_path',
+            'http_api_attr_id_card', 'http_api_attr_personal_photo',
+            'http_api_groups_path', 'http_api_email_template',
             # mapeo / roles (común a todos los providers)
             'group_to_role_map', 'default_role',
             'make_staff_groups', 'make_superuser_groups',

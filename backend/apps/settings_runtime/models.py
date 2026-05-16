@@ -297,12 +297,30 @@ class LdapConfig(models.Model):
     http_api_attr_first_name = models.CharField(max_length=64, default='first_name')
     http_api_attr_last_name = models.CharField(max_length=64, default='last_name')
     http_api_attr_id_card = models.CharField(max_length=64, blank=True)
+    http_api_attr_personal_photo = models.CharField(
+        max_length=128,
+        blank=True,
+        help_text=_(
+            'Path al campo con la foto del usuario en la respuesta '
+            '(notación de punto). Ej: "personal_information.personal_photo". '
+            'Vacío = no sincronizar foto.'
+        ),
+    )
     http_api_groups_path = models.CharField(
         max_length=255,
         blank=True,
         help_text=_(
             'Path a la lista de grupos/roles en la respuesta. '
             'Ej: "roles", "user.groups". Vacío = no se sincronizan grupos.'
+        ),
+    )
+    http_api_email_template = models.CharField(
+        max_length=128,
+        blank=True,
+        help_text=_(
+            'Plantilla para sintetizar email cuando la API no lo devuelve. '
+            'Placeholders soportados: {username}. Ej: "{username}@uho.edu.cu". '
+            'Vacío = no sintetizar (email puede quedar vacío).'
         ),
     )
 

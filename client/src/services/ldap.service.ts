@@ -56,7 +56,9 @@ export interface LdapConfig {
   http_api_attr_first_name: string;
   http_api_attr_last_name: string;
   http_api_attr_id_card: string;
+  http_api_attr_personal_photo: string;
   http_api_groups_path: string;
+  http_api_email_template: string;
 
   // ----- Comunes -----
   group_to_role_map: Record<string, UserRole>;
@@ -100,6 +102,20 @@ export interface LdapTestRequest {
   test_password?: string;
 }
 
+/**
+ * Atributos extraídos por el provider HTTP API después de un `test()`.
+ * Cada campo refleja lo que se mapearía al modelo `User` en un login real.
+ */
+export interface ExtractedAttrs {
+  username?: string;
+  email?: string;
+  first_name?: string;
+  last_name?: string;
+  id_card?: string;
+  personal_photo?: string;
+  groups?: string[];
+}
+
 export interface LdapTestResponse {
   ok: boolean;
   message: string;
@@ -109,7 +125,7 @@ export interface LdapTestResponse {
   user_attrs?: Record<string, string[]> | null;
   groups?: string[];
   status?: number;
-  extracted?: Record<string, unknown>;
+  extracted?: ExtractedAttrs;
 }
 
 export const ldapService = {

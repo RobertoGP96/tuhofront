@@ -15,6 +15,8 @@ export interface User {
   date_of_birth?: string;
   user_type?: UserRole;
   workplace?: string;
+  /** Avatar como data URL base64 (`data:image/png;base64,...`) o URL externa. */
+  personal_photo?: string;
   role?: 'ADMIN' | 'USER';
   is_staff?: boolean;
   is_active?: boolean;

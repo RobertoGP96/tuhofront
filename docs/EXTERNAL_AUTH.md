@@ -121,6 +121,122 @@ en lugar de LDAP directo. Caso actual de UHo (`auth.uho.edu.cu`).
 
 **Dependencia**: `requests>=2.31.0` (puro Python, sin compilación).
 
+#### 3.2.1 Caso real: Universidad de Holguín (`auth.uho.edu.cu`)
+
+> 🎯 **Acceso rápido**: el sistema incluye una pestaña interactiva
+> **UHo** dentro de `/admin/ldap` (visible cuando `provider=http_api`) que
+> documenta esta sección, aplica los valores recomendados con un botón y
+> diagnostica desfases configuración vs. recomendación.
+
+##### Respuesta esperada
+
+El endpoint institucional responde, ante un login exitoso, con una
+estructura JSON con la información del usuario, la foto de perfil
+(base64) y el rol institucional:
+
+```json
+{
+  "OK": true,
+  "activeUser": {
+    "status": 200,
+    "account_state": "TRUE",
+    "uid": "cmorenot",
+    "personal_information": {
+      "dni": "94061342900",
+      "cn": "CARLOS EMILIO MORENO TEJEDA",
+      "given_name": "CARLOS EMILIO",
+      "sn": "MORENO TEJEDA",
+      "personal_photo": "data:image/png;base64,iVBORw0KGgoAAA…",
+      "overlapping": ""
+    },
+    "account_info": {
+      "user_type": "Trabajador",
+      "create_user": "Marilin Velázquez Marrero [mvelazquezm]",
+      "create_date": "2018-09-05 09:13:43",
+      "modify_user": "AGA-CLI",
+      "modify_data": "2026-04-29 07:19:52 pm",
+      "accept_system_policies": true,
+      "password": {
+        "user_password_set": "2026-03-31 08:51:14 am",
+        "pass_valid": "Valido",
+        "pass_set": "46"
+      }
+    }
+  },
+  "message": "Inició sesión"
+}
+```
+
+Ante un login inválido la API responde con `OK=false` (mismo wrapper)
+y el provider lo traduce a un `None` que cae al `ModelBackend` si
+`fallback_to_local=True`.
+
+##### Configuración recomendada en TUho
+
+| Campo de `LdapConfig` | Valor |
+|---|---|
+| `provider` | `http_api` |
+| `http_api_base_url` | `https://auth.uho.edu.cu` |
+| `http_api_login_path` | `/api/login` *(confirmar con redes UHo)* |
+| `http_api_method` | `POST` |
+| `http_api_username_field` | `username` |
+| `http_api_password_field` | `password` |
+| `http_api_success_field` | `OK` |
+| `http_api_user_path` | `activeUser` |
+| `http_api_attr_username` | `uid` |
+| `http_api_attr_email` | *(vacío — UHo no devuelve email)* |
+| `http_api_attr_first_name` | `personal_information.given_name` |
+| `http_api_attr_last_name` | `personal_information.sn` |
+| `http_api_attr_id_card` | `personal_information.dni` |
+| `http_api_attr_personal_photo` | `personal_information.personal_photo` |
+| `http_api_groups_path` | `activeUser.account_info.user_type` |
+| `http_api_email_template` | `{username}@uho.edu.cu` |
+| `group_to_role_map` | `{"Trabajador":"USUARIO","Estudiante":"USUARIO"}` |
+| `default_role` | `USUARIO` |
+| `http_api_verify_ssl` | `true` |
+
+Los `http_api_attr_*` admiten **notación de punto** desde la iteración 3
+(ver §10.3), por lo que se puede apuntar a campos anidados como
+`personal_information.given_name` sin partir el `http_api_user_path`.
+
+##### Mapeo response → User
+
+| Path JSON | Atributo `User` | Nota |
+|---|---|---|
+| `activeUser.uid` | `username` | Login único institucional |
+| `activeUser.personal_information.given_name` | `first_name` | |
+| `activeUser.personal_information.sn` | `last_name` | |
+| `activeUser.personal_information.dni` | `id_card` | 11 dígitos |
+| `activeUser.personal_information.personal_photo` | `personal_photo` | data URL base64 |
+| *(no devuelto por la API)* | `email` | Sintetizado con `{username}@uho.edu.cu` |
+| `activeUser.account_info.user_type` | → `group_to_role_map` → `user_type` | `"Trabajador"` → `USUARIO` |
+| `OK` | flag de éxito | `true` = login válido |
+
+##### Probar con curl
+
+```bash
+curl -sk -X POST https://auth.uho.edu.cu/api/login \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"cmorenot","password":"***"}'
+```
+
+La respuesta debe tener la forma documentada arriba. Para probar
+desde el panel admin, ir a `/admin/ldap` → tab **Probar** → introducir
+`username` + password reales (el password viaja al backend, que lo
+reenvía a UHo; nunca se persiste localmente).
+
+##### Limitaciones conocidas (caso UHo)
+
+- `activeUser.account_state == "TRUE"` no se valida explícitamente;
+  el provider solo mira `OK == true`.
+- `account_info.password.pass_valid == "Valido"` no se valida: un
+  usuario con password expirado puede entrar si UHo igualmente
+  responde `OK=true`.
+- `accept_system_policies == true` no se obliga.
+- La foto se almacena como data URL en `User.personal_photo`
+  (`TextField`); para gran volumen de usuarios conviene migrar a
+  almacenamiento de objetos en el futuro.
+
 ### 3.3 Futuros proveedores (OAuth2/SAML/OIDC)
 
 Para añadir un nuevo proveedor:
@@ -292,16 +408,26 @@ Respuesta (forma común, detalles específicos del proveedor en `details`):
 ## 6. Frontend
 
 Panel admin `/admin/ldap` accesible desde el dropdown de usuario (solo si
-`is_superuser`). Tres archivos clave en `client/src`:
+`is_superuser`). Archivos clave en `client/src`:
 
 - `pages/AdminLdap.tsx` — página principal con selector de proveedor y
   tabs condicionales (Conexión, Búsqueda/Respuesta, Grupos, Roles,
-  Comportamiento, Probar).
-- `services/ldap.service.ts` — cliente HTTP tipado para los endpoints.
-- `components/admin/LdapTestPanel.tsx` — formulario de prueba.
+  Comportamiento, Probar, **UHo**).
+- `services/ldap.service.ts` — cliente HTTP tipado para los endpoints
+  (incluye el tipo `ExtractedAttrs` para los atributos parseados desde
+  HTTP API).
+- `components/admin/LdapTestPanel.tsx` — formulario de prueba
+  **provider-aware**: muestra DN/grupos LDAP en modo LDAP y tabla
+  de atributos extraídos + mini-preview de la foto en modo HTTP API.
+- `components/admin/UhoIntegrationGuide.tsx` — guía interactiva para
+  el caso UHo: ejemplo de respuesta, tabla de mapeo, botón
+  "Aplicar valores recomendados" y diagnóstico campo a campo.
 - `components/admin/LdapGroupRoleMapEditor.tsx` — editor del mapeo
   grupo → rol.
 - `components/admin/LdapDnListEditor.tsx` — editor de listas de DNs/grupos.
+
+El tab **UHo** solo aparece cuando `provider=http_api`; ofrece la
+configuración recomendada para `auth.uho.edu.cu` con un click.
 
 Para añadir un proveedor en el UI:
 
@@ -436,3 +562,29 @@ El nombre del modelo (`LdapConfig`), del backend (`RuntimeLdapBackend`)
 y de las URLs (`/api/v1/settings/ldap/`) se mantuvieron por
 compatibilidad. Se podrían renombrar a futuro usando `RenameModel`
 + `path()` con alias temporales.
+
+### Iteración 3 — Integración real con `auth.uho.edu.cu`
+
+- `HttpApiProvider`: los `http_api_attr_*` ahora admiten **notación de
+  punto** (vía `_walk_path`), por lo que se puede apuntar a
+  `personal_information.given_name` sin partir el `http_api_user_path`.
+  Retro-compatible: un path sin puntos sigue siendo un lookup plano.
+- Nuevo campo `LdapConfig.http_api_attr_personal_photo` para extraer la
+  foto del JSON de la respuesta.
+- Nuevo campo `LdapConfig.http_api_email_template` con placeholder
+  `{username}` para sintetizar email cuando la API no lo devuelve
+  (caso real UHo).
+- Nuevo campo `User.personal_photo` (`TextField`) que persiste el data
+  URL base64 de la foto. Expuesto vía `UserBaseSerializer`.
+- Nuevo dataclass field `AuthResult.personal_photo` (default `''`).
+- `RuntimeLdapBackend._resolve_user` persiste y resync la foto en cada
+  login si `sync_on_login=True`.
+- Frontend: `LdapTestPanel` refactor a **provider-aware** (LDAP /
+  HTTP API). Nuevo componente `UhoIntegrationGuide` y nuevo tab "UHo"
+  en `/admin/ldap`.
+- Tests: `apps.platform.test.test_http_api_uho` con 6 casos cubriendo
+  parseo nested, sintetización de email, fallback sin template,
+  rechazo cuando `OK=false`, extracción completa vía `test()`, y
+  retro-compat con lookups planos.
+- Migraciones: `platform/0012_user_personal_photo.py` y
+  `settings_runtime/0006_uho_fields.py` (ambas additivas).
